@@ -1,0 +1,66 @@
+http://trollmaker.com/article3/arduino-and-hc-sr04-ultrasonic-sensor/
+
+
+Here is just a simple code example.
+
+/*
+ HC-SR04 Ping distance sensor]
+ VCC to arduino 5v GND to arduino GND
+ Echo to Arduino pin 13 Trig to Arduino pin 12
+ More info at: http://goo.gl/kJ8Gl
+ */
+
+#define trigPin 12
+#define echoPin 13
+
+void setup() {
+  Serial.begin (9600);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+}
+
+void loop() {
+  int duration, distance;
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(1000);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance = (duration/2) / 29.1;
+  if (distance >= 200 || distance <= 0){
+    Serial.println("Out of range");
+  }
+  else {
+    Serial.print(distance);
+    Serial.println(" cm");
+  }
+  delay(500);
+}
+The Theory Behind It:
+
+In the program above, we want to calculate the distance of an object in front of the ultrasonic sensor. This sensor can send a "ping" at a given moment and receive the ping bouncing back on an object at another given moment.
+A ping is nothing but a sound that is inaudible for the human hear and this is why this sensor is called "ultrasonic".
+The sensor send a ping at a time t1 and receive the bouncing ping at a time t2.
+Knowing the speed of sound, the time difference ?t = t2 - t1 can give us an idea of the distance of an object.
+Example, if ?t = 500 microseconds, we know it took 250 microseconds for the ping to hit an object and another 250 microseconds to come back.
+The approximate speed of sound in dry air is given by the formula:
+c = 331.5 + 0.6 * [air temperature in degrees Celsius]
+At 20°C, c = 331.5 + 0.6 * 20 = 343.5 m/s
+If we convert the speed in centimetres per microseconds we get:
+c = 343.5 * 100 / 1000000 = 0.03435 cm/us
+The distance is therefore, D = (?t/2) * c
+or D = 250 * 0.03435 = 8.6 cm
+Instead of using the Speed of Sound, we can also use the "Pace of Sound".
+The Pace of Sound = 1 / Speed of Sound = 1 / 0.03435 = 29.1 us/cm
+In this case the equation to calculate the distance become: D = (?t/2) / Pace of sound
+and for the example above: D = 250 / 29.1 = 8.6 cm
+
+
+Other articles you may like
+Arduino Police Light and Sound
+How to install Gnome Shell 3.2 on Debian Testing
+Arduino and SN754410 H-Bridge Motor Driver
+Arduino Smooth Random RGB LED Colour
+Arduino 1.0 with enc28j60 Ethernet Shield V1.1
+
+
+

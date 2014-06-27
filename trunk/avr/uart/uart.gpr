@@ -1,0 +1,17 @@
+with "avr.gpr";
+
+
+project uart is
+
+    package Compiler renames AVR.Compiler;
+    package Builder  renames AVR.Builder;
+    package Binder   renames AVR.Binder;
+    package Linker   renames AVR.Linker;
+
+    for Languages use ("Ada");
+    for Exec_Dir use ".";    
+    for Source_Dirs use (".");
+--    for Source_Files use ("uart.adb");    
+    for Main use ("uart_prog.adb");
+
+end uart;
