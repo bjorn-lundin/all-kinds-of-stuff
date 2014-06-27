@@ -1,0 +1,18 @@
+with "avr.gpr";
+with "onewire_lib.gpr";
+
+
+project ada_ds1820 is
+
+    package Compiler renames AVR.Compiler;
+    package Builder  renames AVR.Builder;
+    package Binder   renames AVR.Binder;
+    package Linker   renames AVR.Linker;
+
+    for Languages use ("Ada");
+    for Exec_Dir use ".";    
+    for Source_Dirs use (".");
+--    for Source_Files use ("ada_ds1820.adb");    
+    for Main use ("ada_ds1820.adb");
+
+end ada_ds1820;

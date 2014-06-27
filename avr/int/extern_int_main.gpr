@@ -1,0 +1,15 @@
+with "avr.gpr";
+
+project extern_int_main is
+
+    package Compiler renames AVR.Compiler;
+    package Builder  renames AVR.Builder;
+    package Binder   renames AVR.Binder;
+    package Linker   renames AVR.Linker;
+
+    for Languages use ("Ada");
+    for Exec_Dir use ".";    
+    for Source_Dirs use (".");
+    for Main use ("extern_int_main.adb");
+
+end extern_int_main;
