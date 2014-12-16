@@ -1,0 +1,35 @@
+project Usb is
+
+   for Languages use ("Ada", "C");
+   for Main use ("usb_client.adb");
+
+   package Ide is
+      for Vcs_Kind use "Subversion";
+      for Vcs_Repository_Root use "http://lundin.homelinux.net/svn/ada/usb";
+   end Ide;
+
+   package Naming is
+      for Specification_Suffix ("c") use ".h";
+      for Implementation_Suffix ("c") use ".c";
+   end Naming;
+
+   package Compiler is
+      for Default_Switches ("c") use ("-g");
+      for Default_Switches ("ada") use ("-gnatf", "-g", "-gnat05");
+   end Compiler;
+
+   package Linker is
+      for Default_Switches ("c") use ("-g");
+      for Default_Switches ("ada") use ("-g", "-largs", "/lib/libusb-0.1.so.4");
+   end Linker;
+
+   package Builder is
+      for Default_Switches ("ada") use ("-s", "-k", "-g");
+   end Builder;
+
+   package Binder is
+      for Default_Switches ("ada") use ("-E");
+   end Binder;
+
+end Usb;
+

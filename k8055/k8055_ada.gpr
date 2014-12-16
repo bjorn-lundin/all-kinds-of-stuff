@@ -1,0 +1,33 @@
+project K8055_Ada is
+
+   --   package Ide is
+   --      for Vcs_Kind use "Subversion";
+   --      for Vcs_Repository_Root use "http://ibm/svn/ada/k8055";
+   --   end Ide;
+
+   for Source_Dirs use (".//**");
+
+   package Linker is
+     for Default_Switches ("ada") use ("-lk8055", "-lusb");
+   end Linker;
+
+   package Binder is
+      for Default_Switches ("ada") use ("-E");
+   end Binder;
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-gnatf", "-g", "-gnat05");
+   end Compiler;
+
+   package Builder is
+      for Default_Switches ("ada") use ("-s", "-k", "-g");
+   end Builder;
+
+   package Pretty_Printer is
+      for Default_Switches ("ada") use ("-i2", "-A1");
+   end Pretty_Printer;
+
+   for Main use ("k8055_ada.adb");
+
+end K8055_Ada;
+

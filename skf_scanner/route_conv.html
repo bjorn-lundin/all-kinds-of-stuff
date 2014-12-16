@@ -1,0 +1,299 @@
+
+<html>
+	<head>
+		<title>Route/Conveyor connection</title>
+		<script language='javascript' type='text/javascript'>
+// Definitions starts here
+			var host = "http://ibm"
+			var path = host + "/cgi-bin/route_conv.cgi"
+
+// helper logic starts here
+			var request = null;
+			var logrequest = null;
+			function createRequest() {
+				try {
+//					request = new XMLHttpRequest();
+					return new XMLHttpRequest();
+				} catch (trymicrosoft) {
+					try {
+						return new ActiveXObject("Msxml2.XMLHTTP");
+//						request = new ActiveXObject("Msxml2.XMLHTTP");
+					} catch (othermicrosoft) {
+						try {
+							return new ActiveXObject("Microsoft.XMLHTTP");
+//							request = new ActiveXObject("Microsoft.XMLHTTP");
+						} catch (failed) {
+								request = null;
+						}
+					}
+				}
+//				if (request == null) {
+					alert("error creating XMLHttp object :-(");
+//				}
+			}
+			function replaceText(el, text) {
+				if (el != null) {
+					clearText(el);
+					var newNode = document.createTextNode(text);
+					el.appendChild(newNode);
+				}
+			}
+			function clearText(el) {
+				if (el != null) {
+					if (el.childNodes) {
+						for (var i = 0; i < el.childNodes.length; i++) {
+							var childNode = el.childNodes[i];
+							el.removeChild(childNode);
+						}
+					}
+				}
+			}
+			function getText(el) {
+				var text = "";
+				if (el != null) {
+					if (el.childNodes) {
+						for (var i = 0; i < el.childNodes.length; i++) {
+							var childNode = el.childNodes[i];
+							if (childNode.nodeValue != null) {
+								text = text + childNode.nodeValue;
+							}
+						}
+					}
+				}
+				return text;
+			}
+			function trim(stringToTrim) {
+				return stringToTrim.replace(/^\s+|\s+$/g,"");
+			}
+			function ltrim(stringToTrim) {
+				return stringToTrim.replace(/^\s+/,"");
+			}
+			function rtrim(stringToTrim) {
+				return stringToTrim.replace(/\s+$/,"");
+			}
+
+// application logic starts here
+			function show() {
+				if (request.readyState == 4) {
+					if (request.status == 200) {
+						var rtrimmedResponse = rtrim(request.responseText); // value \t \idx \n several rows
+						var allResponse = rtrimmedResponse.split("\n"); 
+						for (var i = 0 ; i < allResponse.length; i++) {
+							var thisResponse = allResponse[i].split("\t"); // value \t \idx \n
+							var idx = thisResponse[1];
+							var value = trim(thisResponse[0]); // will get back the new route
+							var route = document.getElementById("rou" + idx);
+							replaceText(route, value);
+							var textbox = document.getElementById("txtRoute" + idx);
+							textbox.value = "";
+							delete request;
+							request = null;
+						}
+					} else {
+						alert("Error: - got code:" + request.status + " back from server :-(");
+					}
+				}
+			}
+			function isNumeric(value) {
+				if (value == "") return false;
+				for (var i=0; i<value.length; i++) {
+					if (value.charAt(i) < "0") return false;
+					if (value.charAt(i) > "9") return false;
+				}
+				return true;
+			}
+			function Update(idx) {
+				var value = document.getElementById("txtRoute" + idx).value;
+				if (value.length > 10 ) {
+					alert("'" + value + "' seems to be far too big\n(more than 10 digits)...\nTry again!");
+					return;
+				}
+				request = createRequest();
+				var url = path + "?action=update&index=" + idx + "&value=" + value;
+				request.open("GET", url, true);
+				request.onreadystatechange = show;
+				request.send(null);
+			}
+			function loadAll() {
+				request = createRequest();
+				var url = path + "?action=show&index=0";
+				request.open("GET", url, true);
+				request.onreadystatechange = show;
+				request.send(null);
+			}
+
+			function doShowLog() {
+				if (logrequest.readyState == 4) {
+					if (logrequest.status == 200) {
+						var response = logrequest.responseText;
+						var logarea = document.getElementById("logpara");
+						replaceText(logarea, response);
+						delete logrequest;
+						logrequest = null;
+					} else {
+						alert("Error: - got code:" + logrequest.status + " back from server :-(");
+					}
+				}
+			}
+
+			function showLog(loghour) {
+				logrequest = createRequest();
+				var url = path + "?action=showLog&index=" + loghour;
+				logrequest.open("GET", url, true);
+				logrequest.onreadystatechange = doShowLog;
+				logrequest.send(null);
+			}
+		</script>
+
+
+	</head>
+	<body onLoad='loadAll();'>
+		<hr/>
+		<div id='application'>
+			<p>Here you change the route for a conveyor</p>
+			<table border='1'>
+				<tr><th>Conveyor</th><th>Route</th><th>New route</th><th>Update</th></tr>
+				<tr>
+					<td><span id='con1'>1</span></td><td><span id='rou1'>first route</span></td>
+					<td><input type='text' id='txtRoute1' size='14'/></td><td><input type='button' onClick='Update(1);' value='save'/></td>
+				</tr>
+				<tr>
+					<td><span id='con2'>2</span></td><td><span id='rou2'>second route</span></td>
+					<td><input type='text' id='txtRoute2' size='14'/></td><td><input type='button' onClick='Update(2);' value='save'/></td>
+				</tr>
+				<tr>
+					<td><span id='con3'>3</span></td><td><span id='rou3'>third route</span></td>
+					<td><input type='text' id='txtRoute3' size='14'/></td><td><input type='button' onClick='Update(3);' value='save'/></td>
+				</tr>
+				<tr>
+					<td><span id='con4'>4</span></td><td><span id='rou4'>fourth route</span></td>
+					<td><input type='text' id='txtRoute4' size='14'/></td><td><input type='button' onClick='Update(4);' value='save'/></td>
+				</tr>
+			</table>
+		</div>
+
+		<hr/>
+
+		<div id='log'>
+			<p>There is a log for the last 24 hours available. The log is divided into 24 files,
+			each logging an hour. If you want to see the log for 15:34, then click the '15' button.
+			<table border='1'>
+				<tr>
+					<td><input type='button' onClick='showLog("00");' value='00'/></td>
+					<td><input type='button' onClick='showLog("01");' value='01'/></td>
+					<td><input type='button' onClick='showLog("02");' value='02'/></td>
+					<td><input type='button' onClick='showLog("03");' value='03'/></td>
+					<td><input type='button' onClick='showLog("04");' value='04'/></td>
+					<td><input type='button' onClick='showLog("05");' value='05'/></td>
+					<td><input type='button' onClick='showLog("06");' value='06'/></td>
+					<td><input type='button' onClick='showLog("07");' value='07'/></td>
+					<td><input type='button' onClick='showLog("08");' value='08'/></td>
+					<td><input type='button' onClick='showLog("09");' value='09'/></td>
+					<td><input type='button' onClick='showLog("10");' value='10'/></td>
+					<td><input type='button' onClick='showLog("11");' value='11'/></td>
+				</tr>
+				<tr>
+					<td><input type='button' onClick='showLog("12");' value='12'/></td>
+					<td><input type='button' onClick='showLog("13");' value='13'/></td>
+					<td><input type='button' onClick='showLog("14");' value='14'/></td>
+					<td><input type='button' onClick='showLog("15");' value='15'/></td>
+					<td><input type='button' onClick='showLog("16");' value='16'/></td>
+					<td><input type='button' onClick='showLog("17");' value='17'/></td>
+					<td><input type='button' onClick='showLog("18");' value='18'/></td>
+					<td><input type='button' onClick='showLog("19");' value='19'/></td>
+					<td><input type='button' onClick='showLog("20");' value='20'/></td>
+					<td><input type='button' onClick='showLog("21");' value='21'/></td>
+					<td><input type='button' onClick='showLog("22");' value='22'/></td>
+					<td><input type='button' onClick='showLog("23");' value='23'/></td>
+				</tr>
+			</table>
+			<p><pre><span id='logpara'>log file paragraph</span></pre></p>
+		</div>
+
+		<hr/>
+
+		<div='documentation'>
+			<h1>Documentation</h1>
+			<p>
+				This system is divided into four vital parts.
+				<ul>
+					<li>Ftp server - handle incoming transactions</li>
+					<li>Daemon application - handle scanning of loads and communication with PLC</li>
+					<li>Web server - backend of handle conveyor/route connection and view logfiles</li>
+					<li>Javascript - frontend handle conveyor/route connection and view logfiles</li>
+				</ul>
+			</p>
+			<h2>Ftp</h2>
+			<p>
+				The ftp server receives transactions from the WMS. The transactions are
+				flat files that mapps a pallet to a trip/route. Simple format, a header, paller number and route on
+				a single row. One row per pallet. These transactions arrive on before hand.
+			</p>
+			<h2>Scanner handler (daemon application)</h2>
+			<p>
+				Within the application, called scanner_handler, a file task will watch the incoming ftp directory for files.
+				When it decides a file is fully transfered, ie it has not grown in 5 seconds, it will move it
+				to a working directory. After all files are moved, each file will be treated. The load/route connection
+				is saved into a list in the process. Ok files are moved to log directory, bad files are moved
+				into an error directory. The log directory will keep files for 14 days, the error
+				directory will keep files for 90 days.
+			</p>
+			<p>
+				There are also a route task, that reads a file every 5 minutes. In order not to
+				interfere with the web application writing to this file, a lock file is used,
+				that both the scanner_handler and the web application respects. A lock file must not be 
+				present when the application tries to use the route file. Wait and try again then.
+				The file contains the mapping between a route/trip and an output conveyor.
+				There are only 4 conveyors. The mapping is put into another list in the application.  
+			</p>
+			<p>
+				A third task is the io task. It will watch a scanner on the serial port,
+				and when a scan string arrives to the process, it will decode it, and use
+				the load number to check the load/route list for a route/trip. With that
+				route/trip it will then check the route/conveyor list for the actual conveyor.
+				Finally it will write the conveyor to the parallel port.
+			</p>
+			<h2>Route/conveyor maintenance (Web)</h2>
+			<p>
+				Written as a web application, it is run from the a java script enabled browser.
+				Update each conveyor with wanted route. Will accept text with 10 characters or less.
+				The application itself is a CGI-script written
+				in Tcl, in Ajax style, it will not return any html, but just data.
+				It updates the file that above mentioned route task is reading. Will update when 
+				it has sucessfully placed a lock-file, or else wait until a lock-file may be placed.
+				If no success within 10 seconds, it will give up. 
+			</p>
+			<h2>Javascript</h2>
+			<p>
+				All javascript is within this file. Requests for updating convoyor for a route,
+				view logfiles, it's all in here. Important is varible <b>host</b>, which points to
+				the machine running the webapplication. 
+			</p>
+			<h2>Files</h2>
+			<p>
+				<table border='1'>
+					<tr><th>Location</th><th>Purpose</th><th>Remark</th></tr>
+					<tr><td>/var/www/route_conv.html</td><td>User interface of the route/conveyor maintenace
+							application. Also documentation of the system</td><td>This file</td></tr>
+					<tr><td>/usr/lib/cgi-bin/route_conv.cgi</td><td>Web application logic</td><td>Does the acual 
+                            update of route/conveyor file, on behalf of route_conv.html</td></tr>
+					<tr><td>/usr/lib/cgi-bin/lock.tcl</td><td>lock file package</td><td>used by route_conv.cgi</td></tr>
+					<tr><td>/usr/lib/cgi-bin/cgi.tcl</td><td>cgi package</td><td>used by route_conv.cgi</td></tr>
+					<tr><td>/var/run/scanner_handler.pid</td><td>daemon pid</td><td>used by startscrip. Contains pid of daemon</td></tr>
+					<tr><td>/etc/init.d/scanner</td><td>start/stop daemon</td><td>will start at boot</td></tr>
+					<tr><td>*.c</td><td>lowlevel hardware access</td><td>daemon uses them</td></tr>
+					<tr><td>*.ad[bs]</td><td>daemon logic</td><td>scanner.adb has all logic, scanner.ads has definitions</td></tr>
+					<tr><td>makefile</td><td>compile/install</td><td>make &amp;&amp; sudo make install</td></tr>
+					<tr><td>/var/lock/route_conveyor.lock</td><td>Ensure safe access to the route/conveyor mapping file</td><td> It is
+                            supposed to exist a short while, like 0.1 seconds. If it stays around for more than 30 seconds, delete it 
+                            manually, since something is wrong. Most probably, the process crating it crashed. Or restart the 
+                            scanner_handler. The startup script deletes it if it exists for more than 12 seconds during startup</td></tr>
+					<tr><td>/usr/local/scanner_handler/route_conveyor.dat</td><td>The route/conveyor mapping file</td><td> Updated
+							by the webapplication, read by the scanner_handler</td></tr>
+
+				</table>
+			</p>
+		</div>
+		<hr/>
+	</body>
+</html>
