@@ -35,8 +35,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package PGAda is
-
+package Pgada is
    pragma Pure;
-
-end PGAda;
+end Pgada;

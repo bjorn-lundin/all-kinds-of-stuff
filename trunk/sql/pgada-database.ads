@@ -36,38 +36,57 @@
 ------------------------------------------------------------------------------
 
 with Ada.Finalization;
-with PGAda.Thin;
+with Pgada.Thin; use Pgada.Thin;
+with Ada.Strings;
+with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 
-package PGAda.Database is
+package Pgada.Database is
 
-   pragma Preelaborate;
+   --   pragma Preelaborate;
 
-   PG_Error : exception;
+   Pg_Error : exception;
+   No_Such_Column : exception; --bnl
+
+
+   type Tuple_Index_Type is new Positive;  -- bnl
+   type Field_Index_Type is new Natural;  -- bnl
+   type Encoding_Type is (Utf_8, Latin_1); -- bnl
 
    type Connection_Type is
      new Ada.Finalization.Limited_Controlled with private;
 
-   procedure Set_DB_Login (Connection : in out Connection_Type;
+   procedure Set_Db_Login (Connection : in out Connection_Type;
                            Host       : in String  := "";
                            Port       : in Natural := 0;
                            Options    : in String  := "";
-                           TTY        : in String  := "";
-                           DB_Name    : in String  := "";
+                           Tty        : in String  := "";
+                           Db_Name    : in String  := "";
                            Login      : in String := "";
                            Password   : in String := "");
    --  Connect to a database
 
-   function DB (Connection : Connection_Type) return String;
+   function Db (Connection : Connection_Type) return String;
    function Host (Connection : Connection_Type) return String;
    function Port (Connection : Connection_Type) return Positive;
    function Options (Connection : Connection_Type) return String;
-   function TTY (Connection : Connection_Type) return String;
+   function Tty (Connection : Connection_Type) return String;
+   procedure Set_Host (Connection : in out Connection_Type; Host : String);
+   procedure Set_Port (Connection : in out Connection_Type; Port : Natural);
+   procedure Set_Options (Connection : in out Connection_Type; Options : String);
+   procedure Set_Tty (Connection : in out Connection_Type; Tty : String);
+   procedure Set_Db_Name (Connection : in out Connection_Type; Db_Name : String);
+   procedure Set_User (Connection : in out Connection_Type; User : String);
+   procedure Set_Password (Connection : in out Connection_Type; Password : String);
+   procedure Login(Connection : in out Connection_Type) ;
+   procedure Login(Connection : in out Connection_Type; Conn_Info : String);
+   
+   
    --  Query characteristics of an open connection
 
-   type Connection_Status_Type is (Connection_OK, Connection_Bad);
+   type Connection_Status_Type is (Connection_Ok, Connection_Bad);
 
    function Status (Connection : Connection_Type)
-     return Connection_Status_Type;
+                    return Connection_Status_Type;
 
    function Error_Message (Connection : Connection_Type) return String;
 
@@ -76,7 +95,7 @@ package PGAda.Database is
    procedure Reset (Connection : in Connection_Type);
 
    type Result_Type is
-      new Ada.Finalization.Controlled with private;
+     new Ada.Finalization.Controlled with private;
 
    procedure Exec (Connection : in Connection_Type'Class;
                    Query      : in String;
@@ -86,17 +105,17 @@ package PGAda.Database is
    --  tagged types.
 
    function Exec (Connection : Connection_Type'Class; Query : String)
-     return Result_Type;
+                  return Result_Type;
    --  Function form of the subprogram
 
-   procedure Exec (Connection : in Connection_Type'Class;
-                   Query      : in String);
-   --  This procedure executes the query but does not test the result. It
-   --  can be used for queries that do not require a result and cannot fail.
+   --   procedure Exec (Connection : in Connection_Type'Class;
+   --                   Query      : in String);
+   --   --  This procedure executes the query but does not test the result. It
+   --   --  can be used for queries that do not require a result and cannot fail.
 
    type Exec_Status_Type is (Empty_Query,
-                             Command_OK,
-                             Tuples_OK,
+                             Command_Ok,
+                             Tuples_Ok,
                              Copy_Out,
                              Copy_In,
                              Bad_Response,
@@ -104,73 +123,137 @@ package PGAda.Database is
                              Fatal_Error);
 
    function Result_Status (Result : Result_Type) return Exec_Status_Type;
+   --bnl
+   function Result_Error_Message (Result : Result_Type) return String;
 
    function Nbr_Tuples (Result : Result_Type) return Natural;
 
    function Nbr_Fields (Result : Result_Type) return Natural;
 
    function Field_Name (Result      : Result_Type;
-                        Field_Index : Positive)
-     return String;
+                        Field_Index : Field_Index_Type)
+                        return String;
+   function Field_Index (Result      : Result_Type;
+                         Field_Name  : String)
+                        return Field_Index_Type ;
 
    function Get_Value (Result      : Result_Type;
-                       Tuple_Index : Positive;
-                       Field_Index : Positive)
-     return String;
+                       Tuple_Index : Tuple_Index_Type;
+                       Field_Index : Field_Index_Type)
+                       return String;
 
-   function Get_Value (Result      : Result_Type;
-                       Tuple_Index : Positive;
-                       Field_Name  : String)
-     return String;
+   --   function Get_Value (Result      : Result_Type;
+   --                       Tuple_Index : Tuple_Index_Type;
+   --                       Field_Name  : String)
+   --     return String;
 
-   function Get_Value (Result      : Result_Type;
-                       Tuple_Index : Positive;
-                       Field_Index : Positive)
-     return Integer;
+   --   function Get_Value (Result      : Result_Type;
+   --                       Tuple_Index : Tuple_Index_Type;
+   --                       Field_Index : Field_Index_Type)
+   --     return Integer;
 
-   function Get_Value (Result      : Result_Type;
-                       Tuple_Index : Positive;
-                       Field_Name  : String)
-     return Integer;
+   --   function Get_Value (Result      : Result_Type;
+   --                       Tuple_Index : Tuple_Index_Type;
+   --                       Field_Name  : String)
+   --     return Integer;
 
    function Get_Length (Result      : Result_Type;
-                        Tuple_Index : Positive;
-                        Field_Index : Positive)
-     return Natural;
+                        Tuple_Index : Tuple_Index_Type;
+                        Field_Index : Field_Index_Type)
+                        return Natural;
 
-   function Is_Null (Result : Result_Type;
-                     Tuple_Index : Positive;
-                     Field_Index : Positive)
-     return Boolean;
+   function Is_Null (Result      : Result_Type;
+                     Tuple_Index : Tuple_Index_Type;
+                     Field_Index : Field_Index_Type)
+                     return Boolean;
 
    function Command_Status (Result : Result_Type) return String;
 
--- bnl
+   -- bnl
    function Rows_Affected (Result : Result_Type) return Natural;
-   function Get_Field_Number(Result      : Result_Type;
-                             Field_Name  : String) return Natural;
+   --   function Get_Field_Number(Result      : Result_Type;
+   --                             Field_Name  : String) return Natural;
 
--- bnl
 
-   function OID_Status (Result : Result_Type) return String;
+   procedure Set_Client_Encoding (Connection : in out Connection_Type;
+                                  Encoding   : in String);
+
+   function Client_Encoding_Code (Connection : Connection_Type) return Natural;
+
+   function Client_Encoding_Name (Connection : Connection_Type) return String;
+
+   --  procedure Exec_Prepared(Connection    : in  Connection_Type'Class;
+   --                          Statment_Name : in  String;
+   --                          Number_Params : in  Natural;
+   --                          Param_Values  : in  String_Array_Type;
+   --                          Param_Lengths : in  Int_Array_Type;
+   --                          Param_Formats : in  Int_Array_Type;
+   --                          Result        : out Result_Type) ;
+   --
+   --  procedure Prepare(Connection    : in  Connection_Type'Class;
+   --                    Statment_Name : in  String;
+   --                    Query         : in  String;
+   --                    Number_Params : in  Natural;
+   --                    Param_Types   : in Int_Array_Type;
+   --                    Result        : out Result_Type);
+
+   -- bnl
+
+   function Oid_Status (Result : Result_Type) return String;
 
    procedure Clear (Result : in out Result_Type);
+   ----------------------------------------------------------------------------
+   function Parameter_Status (Conn : Connection_Type; Parameter : String) return String ;
+   function Database_Encoding (Conn : Connection_Type) return String ;
+
+   function  Get_Encoding (Conn : Connection_Type) return Encoding_Type ;
+   procedure Set_Encoding (Conn :  in out Connection_Type; Encoding : Encoding_Type)  ;
+   procedure Set_Encoding (Res  : in out  Result_Type;     Encoding : Encoding_Type)  ;
+   procedure Set_Connected (Connection : in out Connection_Type; Connected : in Boolean);
+   function Get_Connected (Connection : Connection_Type) return Boolean;
+
+   function Error_Severity (Res : Result_Type) return String;
+   function Error_Sql_State (Res : Result_Type) return String;
+   function Error_Message_Primary (Res : Result_Type) return String;
+   function Error_Message_Detail (Res : Result_Type) return String;
+   function Error_Message_Hint (Res : Result_Type) return String;
+   function Error_Statement_Position (Res : Result_Type) return String;
+   function Error_Internal_Position (Res : Result_Type) return String;
+   function Error_Internal_Query (Res : Result_Type) return String;
+   function Error_Context (Res : Result_Type) return String;
+   function Error_Source_File (Res : Result_Type) return String;
+   function Error_Source_Line (Res : Result_Type) return String;
+   function Error_Source_Function (Res : Result_Type) return String;
+
+   function Escape (Conn   : in Connection_Type;
+                    Source : in String) return String;
 
 private
 
    type Connection_Type is new Ada.Finalization.Limited_Controlled with record
-      Actual : Thin.PG_Conn_Access;
+      Actual       : Thin.Pg_Conn_Access;
+      Encoding     : Encoding_Type := Utf_8; --bnl
+      Is_Connected : Boolean := False;       --bnl
+      Host         : Unbounded_String  := Null_Unbounded_String;
+      Port         : Natural := 5432;
+      Options      : Unbounded_String  := Null_Unbounded_String;
+      Tty          : Unbounded_String  := Null_Unbounded_String;
+      Db_Name      : Unbounded_String  := Null_Unbounded_String;
+      User         : Unbounded_String  := Null_Unbounded_String;
+      Password     : Unbounded_String  := Null_Unbounded_String;
    end record;
+   
    procedure Finalize (Connection : in out Connection_Type);
 
    type Natural_Access is access Natural;
 
    type Result_Type is new Ada.Finalization.Controlled with record
-      Actual    : Thin.PG_Result_Access;
-      Ref_Count : Natural_Access := new Integer'(1);
+      Actual    : Thin.Pg_Result_Access;
+--      Ref_Count : Natural_Access := new Integer'(1);
+      Encoding  : Encoding_Type := Utf_8;    --bnl
    end record;
-   procedure Adjust (Result : in out Result_Type);
+  -- procedure Adjust (Result : in out Result_Type);
    procedure Finalize (Result : in out Result_Type);
 
-end PGAda.Database;
+end Pgada.Database;
 
