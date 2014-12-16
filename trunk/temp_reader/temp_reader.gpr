@@ -1,0 +1,25 @@
+
+with "../k8055/k8055_ada";
+
+project Temp_Reader is
+
+   --   package Ide is
+   --      for Vcs_Kind use "Subversion";
+   --      for Vcs_Repository_Root use "http://ibm/svn/ada/k8055";
+   --   end Ide;
+
+   for Source_Dirs use (".//**");
+   for Object_Dir use "obj";
+   for Exec_Dir   use ".";
+   package Linker         renames k8055_ada.Linker;
+   package Binder         renames k8055_ada.Binder;
+   package Compiler       renames k8055_ada.Compiler;
+   package Builder        renames k8055_ada.Builder;
+   package Pretty_Printer renames k8055_ada.Pretty_Printer;
+
+   for Main use ("temp_reader.adb");
+
+end Temp_Reader;
+
+
+
