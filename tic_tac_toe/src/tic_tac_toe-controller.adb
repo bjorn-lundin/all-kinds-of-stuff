@@ -1,7 +1,7 @@
 with Gnoga.Gui.Base;
 with Gnoga.Gui.Element;
 with Tic_Tac_Toe.View;
-with Gnoga.Server.Template_Parser;
+--with Gnoga.Server.Template_Parser;
 with Gnoga.Gui.Element.Common;
 with Text_Io;
 
@@ -242,8 +242,6 @@ package body Tic_Tac_Toe.Controller is
       View.Source.Is_Set := True;
 
       Debug("stop 'Start_Drag'",View.Source.To_String & " Target: " & View.Target.To_String);
-      Gnoga.Server.Template_Parser.Write_String_To_File
-        ("start_drag2.html",View.Outer_HTML);
    end Start_Drag;
 
       -- for Board -- source was set by start_drag
@@ -359,8 +357,6 @@ package body Tic_Tac_Toe.Controller is
      View.Source.Is_Set := False;
      View.Target.Is_Set := False;
      
-     Gnoga.Server.Template_Parser.Write_String_To_File
-        ("drop.html",View.Outer_HTML);
      Debug("stop 'Drop'", "Source: " & View.Source.To_String & " Target: " & View.Target.To_String);
    end Drop;
 
@@ -502,11 +498,6 @@ package body Tic_Tac_Toe.Controller is
           end case;
         end loop;
       end loop;
-
-     Gnoga.Server.Template_Parser.Write_String_To_File
-        ("site2.html",View.Outer_HTML);
-
-
    end Default;
 
 begin
