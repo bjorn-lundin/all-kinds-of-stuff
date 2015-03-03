@@ -1,7 +1,7 @@
 with Gnoga.Gui.Base;
 with Gnoga.Gui.Element;
 with Tic_Tac_Toe.View;
---with Gnoga.Server.Template_Parser;
+with Gnoga.Server.Template_Parser;
 with Gnoga.Gui.Element.Common;
 with Text_Io;
 
@@ -20,7 +20,8 @@ package body Tic_Tac_Toe.Controller is
       View : Tic_Tac_Toe.View.Default_View_Access :=
                Tic_Tac_Toe.View.Default_View_Access (Object.Parent);
    begin
-      View.Label_Text.Put_Line ("Click");
+      View.Label_Text.Put_Line ("makeing site.html");
+      Gnoga.Server.Template_Parser.Write_String_To_File ("site.html",View.Outer_HTML);
    end On_Click;
 
 
@@ -373,11 +374,13 @@ package body Tic_Tac_Toe.Controller is
       View.Dynamic;
       View.Create (Main_Window);
       View.Click_Button.On_Click_Handler (On_Click'access);
-
+      View.Overflow(Gnoga.Gui.Element.Auto);
+   
+   
       --  Draw our board at a fixed position in browser
       for Row in Row_Type'range loop
         for Col in Col_Type'range loop
-          View.Board(Row,Col).Elem.Position (Gnoga.Gui.Element.Fixed);
+          View.Board(Row,Col).Elem.Position (Gnoga.Gui.Element.Absolute);
           View.Board(Row,Col).Elem.Top(150 * Integer(Row));
           View.Board(Row,Col).Elem.Left(150 * Integer(Col));
           View.Board(Row,Col).Elem.Width(112);
