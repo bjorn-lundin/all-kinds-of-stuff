@@ -29,7 +29,8 @@ project Brickpi is
    for Exec_Dir use Brickpi_Root & "/bin"  ;
    for Source_Dirs use (Brickpi_Root);
 
-   for Main use ("motor_test.adb");
+   for Main use ("motor_test.adb",
+                 "test_light_sensor.adb");
    
    package Compiler is
      for Default_Switches ("ada") use Platform_Independent_Compiler_Switches & ("-O0");

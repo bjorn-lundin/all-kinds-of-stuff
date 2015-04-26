@@ -29,7 +29,7 @@ begin
 
   loop
     if F = 1  then
-      Brick.Motor_Speed(BrickPi.PORT_A):= 200;
+      Brick.Motor_Speed(BrickPi.PORT_A):= 80;
       Brick.Motor_Speed(BrickPi.PORT_B):= 100;
       if v > 30 then
         F := 0;
@@ -37,7 +37,7 @@ begin
       end if;
       v := v+1;
     else
-      Brick.Motor_Speed(BrickPi.PORT_A):= -200;
+      Brick.Motor_Speed(BrickPi.PORT_A):= -80;
       Brick.Motor_Speed(BrickPi.PORT_B):= -100;
       if v > 30 then
         F := 1;
