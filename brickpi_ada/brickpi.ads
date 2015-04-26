@@ -75,22 +75,22 @@ package Brickpi is
     -- Motors      
     Motor_Speed       : Motor_Speed_Type;           -- Motor speeds, from -255 to 255
     Motor_Enable      : Motor_Enable_Type;          -- Motor enable/disable
-   -- Encoders     
-   Encoder_Offset     : Encoder_Offset_Type;        -- Encoder offsets (not yet implemented)
-   Encoder            : Encoder_Type;               -- Encoder values
-   -- Sensors
-   Sensor_Value       : Sensor_Value_Type;          -- Primary sensor values
-   Sensor_Array       : Sensor_Array_Type;          -- For more sensor values for the sensor (e.g. for color sensor FULL mode).
-   Sensor_Type        : Sensor_Type_Type;           -- Sensor types
-   Sensor_Settings    : Sensor_Settings_Type;       -- Sensor settings, used for specifying I2C settings.
-   -- I2C 
-   Sensor_I2C_Devices : Sensor_I2C_Devices_Type;    --How many I2C devices are on each bus (1 - 8).
-   Sensor_I2C_Speed   : Sensor_I2C_Speed_Type;      --The I2C speed.
-   Sensor_I2C_Addr    : Sensor_I2C_Addr_Type;       --The I2C address of each device on each bus.  
-   Sensor_I2C_Write   : Sensor_I2C_Write_Type;      --How many bytes to write
-   Sensor_I2C_Read    : Sensor_I2C_Read_Type;       --How many bytes to read
-   Sensor_I2C_Out     : Sensor_I2C_Out_Type;        --The I2C bytes to write
-   Sensor_I2C_In      : Sensor_I2C_In_Type;         --The I2C input buffers
+    -- Encoders     
+    Encoder_Offset     : Encoder_Offset_Type;        -- Encoder offsets (not yet implemented)
+    Encoder            : Encoder_Type;               -- Encoder values
+    -- Sensors
+    Sensor_Value       : Sensor_Value_Type;          -- Primary sensor values
+    Sensor_Array       : Sensor_Array_Type;          -- For more sensor values for the sensor (e.g. for color sensor FULL mode).
+    Sensor_Type        : Sensor_Type_Type;           -- Sensor types
+    Sensor_Settings    : Sensor_Settings_Type;       -- Sensor settings, used for specifying I2C settings.
+    -- I2C 
+    Sensor_I2C_Devices : Sensor_I2C_Devices_Type;    --How many I2C devices are on each bus (1 - 8).
+    Sensor_I2C_Speed   : Sensor_I2C_Speed_Type;      --The I2C speed.
+    Sensor_I2C_Addr    : Sensor_I2C_Addr_Type;       --The I2C address of each device on each bus.  
+    Sensor_I2C_Write   : Sensor_I2C_Write_Type;      --How many bytes to write
+    Sensor_I2C_Read    : Sensor_I2C_Read_Type;       --How many bytes to read
+    Sensor_I2C_Out     : Sensor_I2C_Out_Type;        --The I2C bytes to write
+    Sensor_I2C_In      : Sensor_I2C_In_Type;         --The I2C input buffers
   end record;
   pragma Convention(C,Brick_Pi_Record);
   type Brick_Pi_Record_Pointer is access all Brick_Pi_Record;
@@ -102,6 +102,6 @@ package Brickpi is
   pragma Import(C, Get_Pointer_To_Brick_Pi, "GetPointerToBrickPi");
   
   
-             
-
+  TYPE_SENSOR_LIGHT_ON  : constant Interfaces.C.Unsigned_Char := 9;             
+  TYPE_SENSOR_LIGHT_OFF : constant Interfaces.C.Unsigned_Char := 9;     
 end Brickpi;
