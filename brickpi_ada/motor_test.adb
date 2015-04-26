@@ -51,6 +51,13 @@ begin
     if R > 0 then 
       return;
     end if;
+    
+    Put_Line("Encoder A " & Brick.Encoder(BrickPi.PORT_A)'Img);
+    Put_Line("Encoder B " & Brick.Encoder(BrickPi.PORT_B)'Img);
+
+    Put_Line("Encoder_Offset A " & Brick.Encoder_Offset(BrickPi.PORT_A)'Img);
+    Put_Line("Encoder_Offset B " & Brick.Encoder_Offset(BrickPi.PORT_B)'Img);
+    
     delay 0.1;
   
   end loop;
