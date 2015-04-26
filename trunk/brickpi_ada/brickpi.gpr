@@ -41,9 +41,10 @@ project Brickpi is
    end Binder;
 
    package Linker is
-    for Default_Switches ("ada") use ("/home/pi/svn/brickpi_c/trunk/Sensor_Examples/bnlbrickpi.o",
-                                      "-lrt",
-                                      "-lm");
+    for Default_Switches ("ada") use ("-lrt",
+                                      "-lm",
+                                      "-L/usr/local/lib -lwiringPi",
+                                      "/home/pi/svn/brickpi_ada/c/bnlbrickpi.o");
    end Linker;
 
    package Builder is
