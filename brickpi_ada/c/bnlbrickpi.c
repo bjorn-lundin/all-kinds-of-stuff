@@ -90,7 +90,7 @@ int print_constants() {
   printf("  TYPE_SENSOR_EV3_INFRARED_M3 : constant Interfaces.C.Int := %d; \n", TYPE_SENSOR_EV3_INFRARED_M3);
   printf("  TYPE_SENSOR_EV3_INFRARED_M4 : constant Interfaces.C.Int := %d; \n", TYPE_SENSOR_EV3_INFRARED_M4);
   printf("  TYPE_SENSOR_EV3_INFRARED_M5 : constant Interfaces.C.Int := %d; \n", TYPE_SENSOR_EV3_INFRARED_M5);
-  printf("  TYPE_SENSOR_EV3_TOUCH_0		: constant Interfaces.C.Int := %d; \n", TYPE_SENSOR_EV3_TOUCH_0);
+  printf("  TYPE_SENSOR_EV3_TOUCH_0     : constant Interfaces.C.Int := %d; \n", TYPE_SENSOR_EV3_TOUCH_0);
   printf("  BIT_I2C_MID                 : constant Interfaces.C.Int := %d; \n", BIT_I2C_MID);
   printf("  BIT_I2C_SAME                : constant Interfaces.C.Int := %d; \n", BIT_I2C_SAME);
   printf("  INDEX_RED                   : constant Interfaces.C.Int := %d; \n", INDEX_RED);
