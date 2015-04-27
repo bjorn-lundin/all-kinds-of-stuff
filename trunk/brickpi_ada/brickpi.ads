@@ -29,26 +29,21 @@ package Brickpi is
   function Current_Tick_Ms return Interfaces.C.Unsigned_Long ;
   pragma Import(C, Current_Tick_Ms, "CurrentTickMs");
 
-
-
 --extern unsigned long CurrentTickUs();
   function Current_Tick_Us return Interfaces.C.Unsigned_Long ;
   pragma Import(C, Current_Tick_Us, "CurrentTicKUs");
-
-  
-
   
   type Motor_Port_Type is (Port_A, Port_B, Port_C, Port_D);
   for Motor_Port_Type'size use Interfaces.C.Unsigned_Char'Size;
   for Motor_Port_Type use (Port_A => 0, Port_B => 1, Port_C => 2, Port_D => 3);
-  function Motor_Port is new Unchecked_Conversion(Motor_Port_Type,  Interfaces.C.Unsigned_Char);
-  function Motor_Port is new Unchecked_Conversion(Interfaces.C.Unsigned_Char,Motor_Port_Type);
+  function Motor_Port is new Unchecked_Conversion(Motor_Port_Type, Interfaces.C.Unsigned_Char);
+  function Motor_Port is new Unchecked_Conversion(Interfaces.C.Unsigned_Char, Motor_Port_Type);
 
   type Sensor_Port_Type is (Port_1, Port_2, Port_3, Port_4);
   for Sensor_Port_Type use (Port_1 => 0, Port_2 => 1, Port_3 => 2, Port_4 => 3);
   for Sensor_Port_Type'size use Interfaces.C.Unsigned_Char'Size;
-  function Sensor_Port is new Unchecked_Conversion(Sensor_Port_Type,  Interfaces.C.Unsigned_Char);
-  function Sensor_Port is new Unchecked_Conversion(Interfaces.C.Unsigned_Char,Sensor_Port_Type);
+  function Sensor_Port is new Unchecked_Conversion(Sensor_Port_Type, Interfaces.C.Unsigned_Char);
+  function Sensor_Port is new Unchecked_Conversion(Interfaces.C.Unsigned_Char, Sensor_Port_Type);
 
   type Address_Type is array(1..2) of Interfaces.C.Unsigned_Char;
   type Motor_Speed_Type is array(Motor_Port_Type'range) of Interfaces.C.Int;
@@ -95,11 +90,14 @@ package Brickpi is
   pragma Convention(C,Brick_Pi_Record);
   type Brick_Pi_Record_Pointer is access all Brick_Pi_Record;
 
-
-
 --extern struct BrickPiStruct * GetPointerToBrickPi();
   function Get_Pointer_To_Brick_Pi return Brick_Pi_Record_Pointer ;
   pragma Import(C, Get_Pointer_To_Brick_Pi, "GetPointerToBrickPi");
+  
+  
+  procedure Print_Constants; -- discards result since it is always 0
+  pragma Import(C, Print_Constants, "print_constants");
+  
   
   
   TYPE_SENSOR_LIGHT_ON  : constant Interfaces.C.Unsigned_Char := 9;             
