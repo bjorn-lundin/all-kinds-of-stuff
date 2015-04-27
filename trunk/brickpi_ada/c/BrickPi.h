@@ -153,6 +153,7 @@ int uart0_filestream = -1;
 long gotten_bits = 0;
 
 void BrickPiTx(unsigned char dest, unsigned char ByteCount, unsigned char OutArray[]);
+int BrickPiRx(unsigned char *InBytes, unsigned char *InArray, long timeout) ; //bnl
 
 struct BrickPiStruct{
   unsigned char Address        [2];     // Communication addresses
@@ -306,7 +307,7 @@ unsigned char Array[256];
 unsigned char BytesReceived;
 
 int BrickPiChangeAddress(unsigned char OldAddr, unsigned char NewAddr){
-  unsigned char i = 0;
+  //bnl unsigned char i = 0;
   Array[BYTE_MSG_TYPE] = MSG_TYPE_CHANGE_ADDR;
   Array[BYTE_NEW_ADDRESS] = NewAddr;
   BrickPiTx(OldAddr, 2, Array);
@@ -761,7 +762,7 @@ int BrickPiRx(unsigned char *InBytes, unsigned char *InArray, long timeout){  //
   unsigned char RxBytes = 0;
   unsigned char CheckSum = 0;
   unsigned char i = 0;
-  int result;
+   //bnl int result;
   unsigned long OrigionalTick = CurrentTickUs();
 
   // Check the buffer for values.  If we don't find anything, wait 0.1ms and check again. 

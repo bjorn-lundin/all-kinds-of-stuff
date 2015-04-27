@@ -30,7 +30,8 @@ project Brickpi is
    for Source_Dirs use (Brickpi_Root);
 
    for Main use ("motor_test.adb",
-                 "test_light_sensor.adb");
+                 "test_light_sensor.adb",
+                 "create_constants.adb");
    
    package Compiler is
      for Default_Switches ("ada") use Platform_Independent_Compiler_Switches & ("-O0");
@@ -42,10 +43,10 @@ project Brickpi is
    end Binder;
 
    package Linker is
-    for Default_Switches ("ada") use ("-lrt",
+    for Default_Switches ("ada") use (Brickpi'Object_Dir & "/bnlbrickpi.o",
+                                      "-lrt",
                                       "-lm",
-                                      "-L/usr/local/lib -lwiringPi",
-                                      "/home/pi/svn/brickpi_ada/c/bnlbrickpi.o");
+                                      "-L/usr/local/lib -lwiringPi");
    end Linker;
 
    package Builder is
