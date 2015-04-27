@@ -45,24 +45,24 @@ package Brickpi is
   function Sensor_Port is new Unchecked_Conversion(Sensor_Port_Type, Interfaces.C.Unsigned_Char);
   function Sensor_Port is new Unchecked_Conversion(Interfaces.C.Unsigned_Char, Sensor_Port_Type);
 
-  type Address_Type is array(1..2) of Interfaces.C.Unsigned_Char;
-  type Motor_Speed_Type is array(Motor_Port_Type'range) of Interfaces.C.Int;
-  type Motor_Enable_Type is array(Motor_Port_Type'range) of Interfaces.C.Unsigned_Char;
-  type Encoder_Offset_Type is array(Motor_Port_Type'range) of Interfaces.C.Long;
-  type Encoder_Type is array(Motor_Port_Type'range) of Interfaces.C.Long;
-  type Sensor_Value_Type is array(Sensor_Port_Type'range) of Interfaces.C.Long;
-  type Sensor_Array_Type is array(Sensor_Port_Type'range, 1..4) of Interfaces.C.Long;
+  type Address_Type            is array(1..2)                                of Interfaces.C.Unsigned_Char;
+  type Motor_Speed_Type        is array(Motor_Port_Type'range)               of Interfaces.C.Int;
+  type Motor_Enable_Type       is array(Motor_Port_Type'range)               of Interfaces.C.Unsigned_Char;
+  type Encoder_Offset_Type     is array(Motor_Port_Type'range)               of Interfaces.C.Long;
+  type Encoder_Type            is array(Motor_Port_Type'range)               of Interfaces.C.Long;
+  type Sensor_Value_Type       is array(Sensor_Port_Type'range)              of Interfaces.C.Long;
+  type Sensor_Array_Type       is array(Sensor_Port_Type'range, 1..4)        of Interfaces.C.Long;                               
+  type Sensor_Type_Type        is array(Sensor_Port_Type'range)              of Interfaces.C.Unsigned_Char;
   
-  type Sensor_Type_Type is array(Sensor_Port_Type'range) of Interfaces.C.Unsigned_Char;
-  type Sensor_Settings_Type is array(Sensor_Port_Type'range, 1..8) of Interfaces.C.Unsigned_Char;
-  
-  type Sensor_I2C_Devices_Type is array(Sensor_Port_Type'range) of Interfaces.C.Unsigned_Char;
-  type Sensor_I2C_Speed_Type is array(Sensor_Port_Type'range) of Interfaces.C.Unsigned_Char;
-  type Sensor_I2C_Addr_Type is array(Sensor_Port_Type'range,1..8) of Interfaces.C.Unsigned_Char;
-  type Sensor_I2C_Write_Type is array(Sensor_Port_Type'range,1..8) of Interfaces.C.Unsigned_Char;
-  type Sensor_I2C_Read_Type is array(Sensor_Port_Type'range,1..8) of Interfaces.C.Unsigned_Char;
-  type Sensor_I2C_Out_Type is array(Sensor_Port_Type'range,1..8,1..16) of Interfaces.C.Unsigned_Char;
-  type Sensor_I2C_In_Type is array(Sensor_Port_Type'range,1..8,1..16) of Interfaces.C.Unsigned_Char;
+  -- mostly I2C stuff below  
+  type Sensor_Settings_Type    is array(Sensor_Port_Type'range, 1..8)        of Interfaces.C.Unsigned_Char;
+  type Sensor_I2C_Devices_Type is array(Sensor_Port_Type'range)              of Interfaces.C.Unsigned_Char;
+  type Sensor_I2C_Speed_Type   is array(Sensor_Port_Type'range)              of Interfaces.C.Unsigned_Char;
+  type Sensor_I2C_Addr_Type    is array(Sensor_Port_Type'range, 1..8)        of Interfaces.C.Unsigned_Char;
+  type Sensor_I2C_Write_Type   is array(Sensor_Port_Type'range, 1..8)        of Interfaces.C.Unsigned_Char;
+  type Sensor_I2C_Read_Type    is array(Sensor_Port_Type'range, 1..8)        of Interfaces.C.Unsigned_Char;
+  type Sensor_I2C_Out_Type     is array(Sensor_Port_Type'range, 1..8, 1..16) of Interfaces.C.Unsigned_Char;
+  type Sensor_I2C_In_Type      is array(Sensor_Port_Type'range, 1..8, 1..16) of Interfaces.C.Unsigned_Char;
     
   type Brick_Pi_Record is record
     Address           : Address_Type;               -- Communication addresses
@@ -77,8 +77,8 @@ package Brickpi is
     Sensor_Value       : Sensor_Value_Type;          -- Primary sensor values
     Sensor_Array       : Sensor_Array_Type;          -- For more sensor values for the sensor (e.g. for color sensor FULL mode).
     Sensor_Type        : Sensor_Type_Type;           -- Sensor types
+    -- I2C     
     Sensor_Settings    : Sensor_Settings_Type;       -- Sensor settings, used for specifying I2C settings.
-    -- I2C 
     Sensor_I2C_Devices : Sensor_I2C_Devices_Type;    --How many I2C devices are on each bus (1 - 8).
     Sensor_I2C_Speed   : Sensor_I2C_Speed_Type;      --The I2C speed.
     Sensor_I2C_Addr    : Sensor_I2C_Addr_Type;       --The I2C address of each device on each bus.  
