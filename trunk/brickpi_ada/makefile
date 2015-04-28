@@ -4,22 +4,23 @@
 #                                                                             #
 ###############################################################################
 
-.PHONY : all clean auto
+.PHONY : all clean auto lob
 
 all : 
-	cd c && $(MAKE) 
-	gnatmake -p -P brickpi.gpr 
+	gprbuild -p -P brickpi.gpr 
+lib :
+	cd c && gprbuild -p -P cbrickpi.gpr 
 
 auto : brickpi-constants.ads
     
 bin/create_constants : create_constants.adb    
-	gnatmake -p -P brickpi.gpr create_constants
+	gprbuild -p -P brickpi.gpr create_constants
  
 brickpi-constants.ads : bin/create_constants
 	bin/create_constants > brickpi-constants.ads
 
 clean :
-	cd c && $(MAKE) clean
-	gnatclean -P brickpi.gpr
+	cd c && gnat clean -P cbrickpi.gpr
+	gnat clean -P brickpi.gpr
 	rm brickpi-constants.ads
 	

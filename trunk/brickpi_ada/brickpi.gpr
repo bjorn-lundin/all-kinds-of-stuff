@@ -1,5 +1,6 @@
 
 
+with "c/cbrickpi.gpr";
 
 project Brickpi is
 
@@ -43,7 +44,7 @@ project Brickpi is
    end Binder;
 
    package Linker is
-    for Default_Switches ("ada") use (Brickpi'Object_Dir & "/bnlbrickpi.o",
+    for Default_Switches ("ada") use ("-L" & Brickpi'Object_Dir & " -libcbrickpi",
                                       "-lrt",
                                       "-lm",
                                       "-L/usr/local/lib -lwiringPi");
