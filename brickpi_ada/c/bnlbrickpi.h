@@ -7,10 +7,8 @@
 *  gcc -c -Wall bnlbrickpi.c -o bnlbrickpi.o -L/usr/local/lib -lwiringPi -lm -lrt
 */
 
-
 //bnlbrickpi.c
 extern int print_constants() ;
-
 
 //BrickPi.h
 extern int BrickPiSetup();
