@@ -6,6 +6,7 @@ library project cBrickpi is          --  "library" is optional
   for Library_Name use "cbrickpi";  --  will create "libcbrickpi.a" on Unix
   for Library_Dir  use "../lib";      --  different from object_dir
   for Object_Dir   use "../objects";
+  
   for Source_Files use (
          "bnlbrickpi.c",
          "bnlbrickpi.h",
@@ -15,6 +16,8 @@ library project cBrickpi is          --  "library" is optional
   package Compiler is
     C_Switches := ("-Wall");
     for Default_Switches ("C") use C_Switches;
+    for Dependency_Switches ("C") use ("-Wp,-MD,");
+    for Dependency_Driver ("C") use ("gcc", "-E", "-Wp,-M", "");  
   end Compiler;
 end cBrickpi;
 
