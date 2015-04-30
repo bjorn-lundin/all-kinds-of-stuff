@@ -5,7 +5,7 @@ with Brickpi.Thin;
 --with Brickpi.Constants;
 with Text_Io; use Text_Io;
 
-procedure Motor_Test is
+procedure Test_Motor is
   V,F,R : Int := -2;
   Brick : Brickpi.Thin.Brick_Pi_Record_Pointer := Brickpi.Thin.Get_Pointer_To_Brick_Pi;
 begin
@@ -64,5 +64,5 @@ begin
   end loop;
   
   
-end Motor_Test;
+end Test_Motor;
 
