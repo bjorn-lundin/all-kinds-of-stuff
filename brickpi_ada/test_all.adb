@@ -4,7 +4,7 @@ with Interfaces.C; use Interfaces.C;
 with Text_Io; use Text_Io;
 
 procedure Test_All is
-  Speed : Int := 0;
+  Speed : Brickpi.Speed_Type := 0;
   Last_Encoder_Value, 
   This_Encoder_Value : Long := 0;
 begin
