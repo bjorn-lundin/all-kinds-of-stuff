@@ -32,11 +32,6 @@ package Brickpi.Thin is
   function Current_Tick_Us return Interfaces.C.Unsigned_Long ;
   pragma Import(C, Current_Tick_Us, "CurrentTicKUs");
   
-  type Motor_Port_Type is (Port_A, Port_B, Port_C, Port_D);
-  for Motor_Port_Type'size use Interfaces.C.Unsigned_Char'Size;
-  for Motor_Port_Type use (Port_A => 0, Port_B => 1, Port_C => 2, Port_D => 3);
-  function Motor_Port is new Unchecked_Conversion(Motor_Port_Type, Interfaces.C.Unsigned_Char);
-  function Motor_Port is new Unchecked_Conversion(Interfaces.C.Unsigned_Char, Motor_Port_Type);
 
   type Sensor_Port_Type is (Port_1, Port_2, Port_3, Port_4);
   for Sensor_Port_Type use (Port_1 => 0, Port_2 => 1, Port_3 => 2, Port_4 => 3);

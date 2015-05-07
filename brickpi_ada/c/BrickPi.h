@@ -130,7 +130,13 @@
 #define TYPE_SENSOR_EV3_INFRARED_M4    65
 #define TYPE_SENSOR_EV3_INFRARED_M5    66
 
-#define TYPE_SENSOR_EV3_TOUCH_0		   67
+#define TYPE_SENSOR_EV3_TOUCH_0	       67
+
+
+#define TYPE_SENSOR_EV3_TOUCH_DEBOUNCE  68 //# EV3 Touch sensor, debounced.
+#define TYPE_SENSOR_TOUCH_DEBOUNCE      69 //# NXT Touch sensor, debounced.
+#define RETURN_VERSION                  70 //# Returns firmware version.
+
 
 #define BIT_I2C_MID  0x01  // Do one of those funny clock pulses between writing and reading. defined for each device.
 #define BIT_I2C_SAME 0x02  // The transmit data, and the number of bytes to read and write isn't going to change. defined for each device.
