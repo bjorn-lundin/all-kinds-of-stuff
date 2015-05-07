@@ -10,19 +10,20 @@ procedure Test_Light_Sensor is
   R : Int := -2;
 begin
 
-  Brickpi.Thin.Clear_Tick;
+ -- Brickpi.Thin.Clear_Tick;
   R := Brickpi.Thin.Setup;
   Put_Line("Setup result " & R'Img);
   if R > 0 then 
     return;
   end if;
   
-  Brick.Address(1) := 1;
-  Brick.Address(2) := 2;
+--  Brick.Address(1) := 1;
+--  Brick.Address(2) := 2;
 
   
-  Brick.Sensor_Type(BrickPi.Thin.PORT_4) := Brickpi.Constants.TYPE_SENSOR_LIGHT_ON;
-  Brick.Sensor_Type(BrickPi.Thin.PORT_3) := Brickpi.Constants.TYPE_SENSOR_LIGHT_OFF;
+-- Brick.Sensor_Type(BrickPi.Thin.PORT_4) := Brickpi.Constants.TYPE_SENSOR_LIGHT_ON;
+--  Brick.Sensor_Type(BrickPi.Thin.PORT_3) := Brickpi.Constants.TYPE_SENSOR_LIGHT_OFF;
+  Brick.Sensor_Type(BrickPi.Thin.PORT_4) := Brickpi.Constants.RETURN_VERSION;
   R := Brickpi.Thin.Setup_Sensors;
   
   Put_Line("Setup_Sensors result " & R'Img);
@@ -37,6 +38,10 @@ begin
     if R > 0 then 
       return;
     end if;
+    
+    Put("version= " &  Brick.Sensor_Value(BrickPi.Thin.PORT_4)'Img);
+    exit;
+    
     
     Put("Sensor 3 " &  Brick.Sensor_Value(BrickPi.Thin.PORT_3)'Img);
     Put(Brick.Sensor_Array(BrickPi.Thin.PORT_3,1)'Img);
