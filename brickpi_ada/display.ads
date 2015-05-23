@@ -20,6 +20,8 @@ package Display is
   procedure Write_Command(Lcd : in out LCD_Type; What : in Byte_2_Array);
   procedure Clear(Lcd : in out LCD_Type);
   procedure Home(Lcd : in out LCD_Type);
+  procedure Display_On(Lcd : in out LCD_Type);
+  procedure Display_Off(Lcd : in out LCD_Type);
   
   
 private 
@@ -29,7 +31,9 @@ private
 --    File_Ptr : File_Id := 0;
 --  end record;
 
-    Cmd_Clear : constant Byte_2_Array := (16#FE#, 16#58#);
-    Cmd_Home  : constant Byte_2_Array := (16#FE#, 16#48#);
+    Cmd_Clear       : constant Byte_2_Array := (16#FE#, 16#58#);
+    Cmd_Home        : constant Byte_2_Array := (16#FE#, 16#48#);
+    Cmd_Display_On  : constant Byte_2_Array := (16#FE#, 16#42#);
+    Cmd_Display_Off : constant Byte_2_Array := (16#FE#, 16#46#);
   
 end Display;
