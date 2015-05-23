@@ -33,6 +33,7 @@ project Brickpi is
    for Main use ("test_motor.adb",
                  "test_light_sensor.adb",
                  "test_all.adb",
+                 "test_lcd.adb",
                  "create_constants.adb");
    
    package Compiler is
