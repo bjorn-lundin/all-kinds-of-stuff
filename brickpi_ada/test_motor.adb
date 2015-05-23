@@ -1,33 +1,16 @@
 
-with Ada.Strings;         use Ada.Strings;
-with Ada.Strings.Fixed;   use Ada.Strings.Fixed;
 
 
 with Interfaces.C; use Interfaces.C;
 with Brickpi.Thin;
 with Text_Io; use Text_Io;
-with Display;
 
 procedure Test_Motor is
   V,F,R : Int := -2;
   Brick : Brickpi.Thin.Brick_Pi_Record_Pointer := Brickpi.Thin.Get_Pointer_To_Brick_Pi;
   
-  Lcd : Display.Lcd_Type;
-  tmp : string (1..4) := (others => ' ');
   
 begin
-  Lcd.Open;
-  Lcd.Clear;
-  
-  for i in 1 .. 200 loop
-    Move(I'Img,Tmp);
-    Lcd.Home;
-    Lcd.Write(" " & Trim(Tmp,Both));
-    delay 0.1;
-  end loop;
-  
-  Lcd.Close;
-  return;
 
   Brickpi.Thin.Clear_Tick;
   R := Brickpi.Thin.Setup;

@@ -15,7 +15,7 @@ package body Display is
                    Flags : Interfaces.C.Int) return File_Id;
     pragma Import(C, C_Open, "open" );
   begin
-    Lcd.File_Ptr :=C_Open( LCD_Path'access, Brickpi.Constants.O_WRONLY);
+    Lcd.File_Ptr := C_Open( LCD_Path'access, Brickpi.Constants.O_WRONLY);
   end Open;
   -----------------------------------------------------------------  
   procedure Close(Lcd : in out LCD_Type) is
