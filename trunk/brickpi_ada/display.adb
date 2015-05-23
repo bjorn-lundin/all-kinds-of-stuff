@@ -70,6 +70,15 @@ package body Display is
   end Home;
   -----------------------------------------------------------------  
 
+  procedure Display_On(Lcd : in out LCD_Type) is
+  begin
+    Lcd.Write_Command(What => Cmd_Display_On); 
+  end Display_On;
+  
+  procedure Display_Off(Lcd : in out LCD_Type) is
+  begin
+    Lcd.Write_Command(What => Cmd_Display_Off); 
+  end Display_Off;
   
   
 end Display;
