@@ -107,6 +107,20 @@ int print_constants() {
   printf("  US_I2C_IDX                  : constant Interfaces.C.Int := %d; \n", US_I2C_IDX);
   printf("  LEGO_US_I2C_ADDR            : constant Interfaces.C.Int := %d; \n", LEGO_US_I2C_ADDR);
   printf("  LEGO_US_I2C_DATA_REG        : constant Interfaces.C.Int := %d; \n", LEGO_US_I2C_DATA_REG);
+  
+  printf("\n  -- for files\n");  
+  printf("  O_RDONLY    : constant Interfaces.C.Int := %d; -- open for reading only\n",O_RDONLY);
+  printf("  O_WRONLY    : constant Interfaces.C.Int := %d; -- open for writing only\n",O_WRONLY);
+  printf("  O_RDWR      : constant Interfaces.C.Int := %d; -- open for reading and writing\n",O_RDWR);
+  printf("  O_CREAT     : constant Interfaces.C.Int := %d; -- no file? create it\n",O_CREAT);
+  printf("  O_EXCL      : constant Interfaces.C.Int := %d; -- lock file (see below)\n",O_EXCL);
+  printf("\n  -- for lockf\n");  
+  printf("  F_ULOCK : constant Interfaces.C.Int := %d; --  /usr/include/fcntl.h:188\n",F_ULOCK);  
+  printf("  F_LOCK : constant Interfaces.C.Int := %d;  --  /usr/include/fcntl.h:189\n",F_LOCK);  
+  printf("  F_TLOCK : constant Interfaces.C.Int := %d; --  /usr/include/fcntl.h\n",F_TLOCK);  
+  printf("  F_TEST : constant Interfaces.C.Int := %d;  --  /usr/include/fcntl.h\n",F_TEST);  
+  
+  
   printf("end Brickpi.Constants;\n");
   return 0;
 
