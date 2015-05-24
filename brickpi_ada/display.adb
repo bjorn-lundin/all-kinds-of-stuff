@@ -20,17 +20,15 @@ package body Display is
   subtype Ssize_T is Size_T;
 
   procedure Open(Lcd : in out LCD_Type; Path : String) is
-    subtype Path_Name_Type is String(Path'first .. Path'last +1);
-    LCD_Path : aliased Path_Name_Type := Path & Ascii.Nul;
-    function C_Open(Path  : access Path_Name_Type;
-                   Flags : Interfaces.C.Int) return File_Id;
+    use Interfaces.C.Strings;
+    function C_Open(Path  : Chars_Ptr;
+                    Flags : Interfaces.C.Int) return File_Id;
     pragma Import(C, C_Open, "open" );
+    C_Path : Chars_Ptr := New_String(Path);
   begin
-    Lcd.File_Ptr := C_Open(LCD_Path'access, C_Constants.O_WRONLY);
+    Lcd.File_Ptr := C_Open(C_Path, C_Constants.O_WRONLY);
+    Interfaces.C.Strings.Free (C_Path);
   end Open;
-  -----------------------------------------------------------------
-
-
   -----------------------------------------------------------------
   procedure Open(Lcd : in out LCD_Type) is
   begin
@@ -41,7 +39,7 @@ package body Display is
     Close_Result : File_Id;
     pragma Warnings(Off,Close_Result);
     function C_Close( File : File_Id ) return File_Id;
-    pragma import( C, C_Close ,"close" );
+    pragma Import( C, C_Close ,"close" );
   begin
     Close_Result := C_Close(Lcd.File_Ptr);
   end Close;
@@ -51,7 +49,7 @@ package body Display is
     function C_Write(Fd    : File_Id;
                      Buf   : Chars_Ptr;
                      Count : Size_T ) return Ssize_T;
-    pragma import(C, C_Write , "write");
+    pragma Import(C, C_Write , "write");
     Write_Result :  Ssize_T := 0;
     pragma Warnings(Off,Write_Result);
     Message_Buffer : Chars_Ptr := New_String(What);
@@ -68,7 +66,7 @@ package body Display is
     function C_Write(Fd    : File_Id;
                      Buf   : access This_Byte_Array;
                      Count : Size_T ) return Ssize_T;
-    pragma import(C, C_Write , "write");
+    pragma Import(C, C_Write , "write");
     Message_Buffer : aliased This_Byte_Array := What;
     Write_Result :  Ssize_T := 0;
     pragma Warnings(Off,Write_Result);
