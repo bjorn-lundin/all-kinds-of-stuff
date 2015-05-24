@@ -94,6 +94,8 @@ package Brickpi.Thin is
   procedure Print_Constants; -- discards result since it is always 0
   pragma Import(C, Print_Constants, "print_constants");
   
+  procedure Print_IO_Constants; -- discards result since it is always 0
+  pragma Import(C, Print_IO_Constants, "print_io_constants");
   
   
 end Brickpi.Thin;
