@@ -9,6 +9,7 @@
 
 //bnlbrickpi.c
 extern int print_constants() ;
+extern int print_io_constants() ;
 
 //BrickPi.h
 extern int BrickPiSetup();
