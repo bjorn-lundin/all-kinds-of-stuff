@@ -15,13 +15,14 @@ package Display is
    end record;
  
   procedure Open(Lcd : in out LCD_Type);
+  procedure Open(Lcd : in out LCD_Type; Path : String);
   procedure Close(Lcd : in out LCD_Type) ;
   procedure Write(Lcd : in out LCD_Type; What : in String);
   procedure Write_Command(Lcd : in out LCD_Type; What : in Byte_2_Array);
   procedure Clear(Lcd : in out LCD_Type);
   procedure Home(Lcd : in out LCD_Type);
-  procedure Display_On(Lcd : in out LCD_Type);
-  procedure Display_Off(Lcd : in out LCD_Type);
+ -- procedure Display_On(Lcd : in out LCD_Type);
+ -- procedure Display_Off(Lcd : in out LCD_Type);
   
   
 private 
@@ -30,10 +31,10 @@ private
 --  type LCD_Type is new Ada.Finalization.Controlled with record
 --    File_Ptr : File_Id := 0;
 --  end record;
-
-    Cmd_Clear       : constant Byte_2_Array := (16#FE#, 16#58#);
-    Cmd_Home        : constant Byte_2_Array := (16#FE#, 16#48#);
-    Cmd_Display_On  : constant Byte_2_Array := (16#FE#, 16#42#);
-    Cmd_Display_Off : constant Byte_2_Array := (16#FE#, 16#46#);
-  
+    Delay_After_Write : constant Duration := 0.05; 
+    Cmd_Clear         : constant Byte_2_Array := (16#FE#, 16#58#);
+    Cmd_Home          : constant Byte_2_Array := (16#FE#, 16#48#);
+    Cmd_Display_On    : constant Byte_2_Array := (16#FE#, 16#42#);
+    Cmd_Display_Off   : constant Byte_2_Array := (16#FE#, 16#46#);
+    
 end Display;
