@@ -7,21 +7,106 @@ with Text_Io;
 
 package body Tic_Tac_Toe.Controller is
 
-
+   -- robot is X
 
    procedure Debug(Where, What : in String) is
    begin
      Text_Io.Put_Line(Text_Io.Standard_Error,Where & " - " & What);
    end Debug;
 
+   procedure Play_Winning_Move(View : in Tic_Tac_Toe.View.Default_View_Access; Did_Win : in out Boolean) is
+   begin
+     null;
+   end Play_Winning_Move;  
+   
+   procedure Block_Opponent_From_Winning(View : in Tic_Tac_Toe.View.Default_View_Access; Did_Block : in out Boolean) is
+   begin
+     null;
+   end Block_Opponent_From_Winning;  
+   
+   function I_Got_Center(View : Tic_Tac_Toe.View.Default_View_Access) return Boolean is
+     use type Tic_Tac_Toe.View.Square_Value_Type;
+   begin
+     return View.Board(2,2).State = Tic_Tac_Toe.View.X;
+   end I_Got_Center;  
+   
+   function Oppenent_Has_Two_Diagonal_Ends(View : Tic_Tac_Toe.View.Default_View_Access) return Boolean is
+     use type Tic_Tac_Toe.View.Square_Value_Type;
+   begin
+     return 
+       (View.Board(1,3).State = Tic_Tac_Toe.View.O and 
+        View.Board(3,1).State = Tic_Tac_Toe.View.O) 
+        or
+       (View.Board(1,1).State = Tic_Tac_Toe.View.O and 
+        View.Board(3,3).State = Tic_Tac_Toe.View.O) ;
+   end Oppenent_Has_Two_Diagonal_Ends;  
+
+   function Center_Is_Free(View : Tic_Tac_Toe.View.Default_View_Access) return Boolean is
+     use type Tic_Tac_Toe.View.Square_Value_Type;
+   begin
+     return View.Board(2,2).State = Tic_Tac_Toe.View.Free;
+   end Center_Is_Free;  
+
+   function A_Corner_Is_Free(View : Tic_Tac_Toe.View.Default_View_Access) return Boolean is
+     use type Tic_Tac_Toe.View.Square_Value_Type;
+   begin
+     return 
+       View.Board(1,1).State = Tic_Tac_Toe.View.Free or else
+       View.Board(1,3).State = Tic_Tac_Toe.View.Free or else
+       View.Board(3,1).State = Tic_Tac_Toe.View.Free or else
+       View.Board(3,3).State = Tic_Tac_Toe.View.Free;
+   end A_Corner_Is_Free;  
+   
+      
+   procedure Play_Non_Corner_To_Make_Opponent_Block_Me(View : in Tic_Tac_Toe.View.Default_View_Access) is
+   begin
+     null;
+   end Play_Non_Corner_To_Make_Opponent_Block_Me;  
+   
+   procedure Play_Center(View : in Tic_Tac_Toe.View.Default_View_Access) is
+   begin
+     null;
+   end Play_Center;  
+   
+   procedure Play_Corner(View : in Tic_Tac_Toe.View.Default_View_Access) is
+   begin
+     null;
+   end Play_Corner;  
+   
+   procedure Play_Any_Free(View : in Tic_Tac_Toe.View.Default_View_Access) is
+   begin
+     null;
+   end Play_Any_Free;
+   
    procedure On_Click (Object : in out Gnoga.Gui.Base.Base_Type'Class);
 
    procedure On_Click (Object : in out Gnoga.Gui.Base.Base_Type'Class) is
       View : Tic_Tac_Toe.View.Default_View_Access :=
                Tic_Tac_Toe.View.Default_View_Access (Object.Parent);
+      Did_Block,Did_Win : Boolean := False;
    begin
       View.Label_Text.Put_Line ("makeing site.html");
-      Gnoga.Server.Template_Parser.Write_String_To_File ("site.html",View.Outer_HTML);
+      -- Gnoga.Server.Template_Parser.Write_String_To_File ("site.html",View.Outer_HTML);
+
+      Play_Winning_Move(View, Did_Win);
+      if Did_Win then
+        View.Label_Text.Put_Line ("I won :-)");
+      else
+        Block_Opponent_From_Winning(View, Did_Block);
+        if not Did_Block then
+          if I_Got_Center(View) and Oppenent_Has_Two_Diagonal_Ends(View) then
+            Play_Non_Corner_To_Make_Opponent_Block_Me(View);
+          elsif Center_Is_Free(View) then
+            Play_Center(View);
+          elsif A_Corner_Is_Free(View) then
+            Play_Corner(View);
+          else
+            Play_Any_Free(View);
+          end if;
+        end if;        
+        View.Label_Text.Put_Line ("Your Turn");
+      end if;      
+      
    end On_Click;
 
 
