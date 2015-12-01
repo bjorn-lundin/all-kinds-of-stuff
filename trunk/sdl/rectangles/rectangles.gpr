@@ -1,0 +1,24 @@
+
+
+with "sdlada";
+
+
+project rectangles is
+ 
+   for Source_Dirs use ("src");
+   
+   for Object_Dir use "obj";
+   for Exec_Dir use "exe";
+   
+   for Main use ("rectangles.adb");
+   
+   package Compiler is   
+      for Default_Switches ("ada") use ( "-g", "-gnat12", "-gnatwaKM");
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("ada") use ("-E");
+   end Binder;
+ 
+ end rectangles;
+ 
