@@ -1,6 +1,6 @@
-with Interfaces.C.Strings;
+--with Interfaces.C.Strings;
 with SDL.Error;
-with SDL.Log;
+--with SDL.Log;
 
 
 package body SDL.TTF.Thin is
@@ -34,8 +34,6 @@ package body SDL.TTF.Thin is
     Font_Ptr := null;
   end Close;
   --------------------------------------------------------------------------------
-  
-  
   
   procedure Init is
     use Interfaces.C;
