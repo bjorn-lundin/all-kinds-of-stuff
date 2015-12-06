@@ -1,4 +1,5 @@
 with Interfaces.C;
+with Interfaces.C.Strings;
 
 
 with SDL.TTF;
@@ -22,12 +23,26 @@ package SDL.TTF.Thin is
   --void TTF_SetFontStyle(TTF_Font *font, int style)
   procedure Set_Font_Style(Font_Ptr : in SDL.TTF.C_Font_Access;  Style : in Interfaces.C.Int) ;
   
+  --int TTF GetFontStyle(TTF_Font *font)  
+  function Get_Font_Style(Font_Ptr : in SDL.TTF.C_Font_Access) return Interfaces.C.Int ;
   
+  --int TTF_FontHeight(const TTF_Font *font)
+  function Get_Font_Height(Font_Ptr : in SDL.TTF.C_Font_Access) return Interfaces.C.Int ;
+  
+  --int TTF_SizeText(TTF_Font *font, const char *text, int *w, int *h)
+  function Get_Text_Size(Font_Ptr : in     SDL.TTF.C_Font_Access;
+                         Text     : in     Interfaces.C.Strings.Chars_Ptr;
+                         W        : in out Interfaces.C.Int;
+                         H        : in out Interfaces.C.Int) return Interfaces.C.Int ;
+
   
 private
   pragma Import (C, Was_Init, "TTF_WasInit");
   pragma Import (C, Quit, "TTF_Quit");
   pragma Import (C, Set_Font_Style, "TTF_SetFontStyle");
+  pragma Import (C, Get_Font_Style, "TTF_GetFontStyle");
+  pragma Import (C, Get_Font_Height, "TTF_FontHeight");
+  pragma Import (C, Get_Text_Size, "TTF_SizeText");
 
 end SDL.TTF.Thin;
 

@@ -9,6 +9,10 @@ package SDL.Video.Surfaces.Fonts is
                    Font     : in     SDL.TTF.Font;
                    Color    : in     SDL.Video.Palettes.Colour ;
                    Text     : in     String );
+                   
+  procedure Destroy(Surface  : in out SDL.Video.Surfaces.Surface);
+  --SDL_FreeSurface                   
+                   
 end SDL.Video.Surfaces.Fonts ;
 
 
