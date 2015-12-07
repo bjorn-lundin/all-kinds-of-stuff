@@ -25,12 +25,14 @@ package body SDL.Video.Surfaces.Fonts is
     SDL.Video.Surfaces.Create(Self => Surface, Internal => Surface_Ptr, Owns => True);
   end Create;
   
-  procedure Destroy(Surface  : in out SDL.Video.Surfaces.Surface) is
-    procedure SDL_FreeSurface ( Surface_Ptr : in SDL.C_Pointers.Surface_Pointer);
-    pragma Import (C, SDL_FreeSurface, "SDL_FreeSurface");
-  begin
-    SDL_FreeSurface(Surface.Internal);
-  end Destroy;  
+  
+-- Finalize will do this  
+--  procedure Destroy(Surface  : in out SDL.Video.Surfaces.Surface) is
+--    procedure SDL_FreeSurface ( Surface_Ptr : in SDL.C_Pointers.Surface_Pointer);
+--    pragma Import (C, SDL_FreeSurface, "SDL_FreeSurface");
+--  begin
+--    SDL_FreeSurface(Surface.Internal);
+--  end Destroy;  
   
   --SDL_FreeSurface                   
   
