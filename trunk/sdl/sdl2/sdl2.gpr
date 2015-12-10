@@ -1,0 +1,39 @@
+
+
+project sdl2 is
+ 
+   Sdlada_Home := "/home/bnl/svn/lundin/trunk/sdl/sdl2/";
+   Bot_Global := "/home/bnl/bnlbot/botstart/bot-1-0/source/ada/global";
+ 
+   for Source_Dirs use ("src",
+                        Sdl2ada_Home, 
+                        Sdl2ada_Home & "/linux", 
+                        Bot_Global);
+   
+   for Object_Dir use "obj";
+   for Exec_Dir use "exe";
+   
+   for Main use ("sdl2test.adb");
+   
+   Ada_Switches := ("-ffunction-sections", 
+                    "-fdata-sections",
+                    "-g",
+                    "-gnat12",
+                    "-fstack-check",
+                    "-gnata",
+                    "-gnatvoU",
+                    "-gnatwlaKW",
+                    "-O0");
+   
+   
+   
+   package Compiler is   
+      for Default_Switches ("ada") use ( "-g") & Ada_Switches;
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("ada") use ("-E");
+   end Binder;
+ 
+ end sdl2;
+ 
