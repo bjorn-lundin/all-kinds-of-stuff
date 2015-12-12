@@ -23,12 +23,11 @@ project sdl2 is
                     "-gnata",
                     "-gnatvoU",
                     "-gnatwlaKW",
+                    "-gnateE",
                     "-O0");
    
-   
-   
    package Compiler is   
-      for Default_Switches ("ada") use ( "-g") & Ada_Switches;
+      for Default_Switches ("ada") use Ada_Switches;
    end Compiler;
 
    package Binder is

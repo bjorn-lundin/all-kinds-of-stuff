@@ -82,12 +82,8 @@ package SDL2.Video.Windows is
    --  TODO: Check this type!
    type Brightness is digits 3 range 0.0 .. 1.0;
 
-   
-   type Windows is null record;
-   type Windows_Pointer is access all Windows with
-     Convention => C;
-   
-   
+   type Windows_Pointer ;
+     
    --  type Window is tagged limited Private;
    type Window is new Ada.Finalization.Limited_Controlled with private;
    function Get_Internal (Self : in Window) return Windows_Pointer;
@@ -198,6 +194,8 @@ package SDL2.Video.Windows is
    procedure Create (Win : in out Window; Native : in Native_Window) with
      Inline => True;
    
+   type Windows_Pointer is access all Windows with
+     Convention => C;
    
    
 private
