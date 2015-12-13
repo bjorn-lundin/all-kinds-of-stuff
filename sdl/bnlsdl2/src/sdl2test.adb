@@ -3,31 +3,21 @@
 
 with Ada.Command_Line;
 with Ada.Exceptions;
-with SDL.Log;
-with Stacktrace;
-
-
-with SDL.TTF;
-
-
-with SDL.Video.Windows;
-
-with SDL.Video.Palettes;
-with SDL.Video.Textures;
-
-with SDL.Video.Renderers;
-
-with SDL.Video.Surfaces;
-with SDL.Video.Surfaces.Fonts;
-
-
-with SDL.Video.Rectangles;
-
-
 with Interfaces.C;
-
-
 with Text_Io; use Text_Io;
+
+with  SDL2.Log;
+with  SDL2.TTF;
+with  SDL2.Video.Windows;
+with  SDL2.Video.Palettes;
+with  SDL2.Video.Textures;
+with  SDL2.Video.Renderers;
+with  SDL2.Video.Surfaces;
+with  SDL2.Video.Rectangles;
+
+
+
+with  Stacktrace;
 
 
 procedure SDL2Test is
@@ -42,10 +32,10 @@ procedure SDL2Test is
 
   -- Our new function for setting uo SDL_TTF
   function SetupTTF( fontname : string ) return Boolean;
-  Font : Sdl.TTF.Font;
+  Font :  SDL2.TTF.Font;
 
-  procedure SurfaceToTexture (T : in out SDL.Video.Textures.Texture;
-                              S : in     SDL.Video.Surfaces.Surface ) ;
+  procedure SurfaceToTexture (T : in out  SDL2.Video.Textures.Texture;
+                              S : in      SDL2.Video.Surfaces.Surface ) ;
   --SDL_Texture* SurfaceToTexture( SDL_Surface* surf );
   
   procedure CreateTextTextures ;
@@ -57,24 +47,24 @@ procedure SDL2Test is
   -- Stuff for text rendering
   --SDL_Color textColor = { 255, 255, 255, 255 }; -- white
   --SDL_Color backgroundColor = { 0, 0, 0, 255 }; -- black
-  textColor       : SDL.Video.Palettes.Colour := (Red => 255, Green => 255, Blue => 255, Alpha => 255);-- white
-  backgroundColor : SDL.Video.Palettes.Colour := (Red =>   0, Green =>   0, Blue =>   0, Alpha => 255);-- black
-  Red             : SDL.Video.Palettes.Colour := (Red => 255, Green =>   0, Blue =>   0, Alpha => 255);-- red
+  textColor       :  SDL2.Video.Palettes.Colour := (Red => 255, Green => 255, Blue => 255, Alpha => 255);-- white
+  backgroundColor :  SDL2.Video.Palettes.Colour := (Red =>   0, Green =>   0, Blue =>   0, Alpha => 255);-- black
+  Red             :  SDL2.Video.Palettes.Colour := (Red => 255, Green =>   0, Blue =>   0, Alpha => 255);-- red
 
 
-  solidTexture   : SDL.Video.Textures.Texture;
-  blendedTexture : SDL.Video.Textures.Texture;
-  shadedTexture  : SDL.Video.Textures.Texture;
+  solidTexture   :  SDL2.Video.Textures.Texture;
+  blendedTexture :  SDL2.Video.Textures.Texture;
+  shadedTexture  :  SDL2.Video.Textures.Texture;
   
   
-  solidRect : SDL.Video.Rectangles.Rectangle := (0,0,0,0);
-  blendedRect : SDL.Video.Rectangles.Rectangle := (0,0,0,0);
-  shadedRect : SDL.Video.Rectangles.Rectangle := (0,0,0,0);
+  solidRect :  SDL2.Video.Rectangles.Rectangle := (0,0,0,0);
+  blendedRect :  SDL2.Video.Rectangles.Rectangle := (0,0,0,0);
+  shadedRect :  SDL2.Video.Rectangles.Rectangle := (0,0,0,0);
   
-  windowRect : SDL.Video.Rectangles.Rectangle := (900, 300, 400, 400 );
+  windowRect :  SDL2.Video.Rectangles.Rectangle := (900, 300, 400, 400 );
 
-  Window           : SDL.Video.Windows.Window;
-  Renderer         : SDL.Video.Renderers.Renderer;
+  Window           :  SDL2.Video.Windows.Window;
+  Renderer         :  SDL2.Video.Renderers.Renderer;
 
 
   
@@ -103,7 +93,7 @@ procedure SDL2Test is
   function SetupTTF( Fontname : String ) return Boolean is
   begin
     -- SDL2_TTF needs to be initialized just like SDL2
-    SDL.TTF.Init;
+     SDL2.TTF.Init;
     -- Load our fonts, with a huge size
     Font.Open( Fontname, 90 );
     -- Error check
@@ -111,17 +101,17 @@ procedure SDL2Test is
   end SetupTTf;
 
   procedure CreateTextTextures is
-     Solid   : SDL.Video.Surfaces.Surface;
-     Blended : SDL.Video.Surfaces.Surface;
-     Shaded  : SDL.Video.Surfaces.Surface;
+     Solid   :  SDL2.Video.Surfaces.Surface;
+     Blended :  SDL2.Video.Surfaces.Surface;
+     Shaded  :  SDL2.Video.Surfaces.Surface;
      F       : Natural          := 0;
      A       : Interfaces.C.Int := 0;
   begin
 
-    SDL.Video.Surfaces.Fonts.Create(Surface  => Solid,
-                                    Font     => Font,
-                                    Color    => textColor, 
-                                    Text     => "solid");
+     SDL2.Video.Surfaces.Create(Surface  => Solid,
+                                Font     => Font,
+                                Color    => textColor, 
+                                Text     => "solid");
     SurfaceToTexture(T => solidTexture, S => solid);
     
     solidTexture.Query(Format => F,
@@ -132,10 +122,10 @@ procedure SDL2Test is
     solidRect.y := 0;
 
 
-    SDL.Video.Surfaces.Fonts.Create(Surface  => Blended,
-                                    Font     => Font,
-                                    Color    => textColor, 
-                                    Text     => "blended");
+     SDL2.Video.Surfaces.Create(Surface  => Blended,
+                                Font     => Font,
+                                Color    => textColor, 
+                                Text     => "blended");
     SurfaceToTexture(T => blendedTexture, S => blended);
     
     blendedTexture.Query(Format => F,
@@ -146,10 +136,10 @@ procedure SDL2Test is
     blendedRect.y := solidRect.y + solidRect.Height +  20;
 
   
-    SDL.Video.Surfaces.Fonts.Create(Surface  => Shaded,
-                                    Font     => Font,
-                                    Color    => textColor, 
-                                    Text     => "shaded");
+     SDL2.Video.Surfaces.Create(Surface  => Shaded,
+                                Font     => Font,
+                                Color    => textColor, 
+                                Text     => "shaded");
     SurfaceToTexture(T => shadedTexture, S=> Shaded);
     
     shadedTexture.Query(Format => F,
@@ -160,10 +150,10 @@ procedure SDL2Test is
     shadedRect.y := blendedRect.y + blendedRect.Height + 20;
   end CreateTextTextures;
 
-  procedure SurfaceToTexture (T : in out SDL.Video.Textures.Texture;
-                              S : in     SDL.Video.Surfaces.Surface ) is
+  procedure SurfaceToTexture (T : in out  SDL2.Video.Textures.Texture;
+                              S : in      SDL2.Video.Surfaces.Surface ) is
   begin
-    SDL.Video.Textures.Create(Tex      => T,
+     SDL2.Video.Textures.Create(Tex      => T,
                                      Renderer => Renderer,
                                      Surface  => S);
   end SurfaceToTexture;  
@@ -183,7 +173,7 @@ procedure SDL2Test is
 
   function InitSDL return Boolean is
   begin
-    if not SDL.Initialise then
+    if not  SDL2.Initialise then
       Put_Line ("initilise failed");
       return false;
     end if;  
@@ -192,7 +182,7 @@ procedure SDL2Test is
 
   function CreateWindow return Boolean is
   begin
-   SDL.Video.Windows.Create (Win    => Window,
+    SDL2.Video.Windows.Create (Win    => Window,
                                     Title  => "Rektanglar test)",
                                     X      => Integer(windowRect.x),
                                     Y      => Integer(windowRect.y),
@@ -205,12 +195,12 @@ procedure SDL2Test is
 
   function CreateRenderer return Boolean  is 
   begin
-    SDL.Video.Renderers.Create(Renderer,Window,SDL.Video.Renderers.Accelerated);
+     SDL2.Video.Renderers.Create(Renderer,Window, SDL2.Video.Renderers.Accelerated);
     return true;
   end CreateRenderer;
 
   procedure SetupRenderer is
-    Window_Size : SDL.Video.Rectangles.Size := (windowRect.Width, windowRect.Height);
+    Window_Size :  SDL2.Video.Rectangles.Size := (windowRect.Width, windowRect.Height);
   begin
     -- Set size of renderer to the same as window
     Renderer.Set_Logical_Size(Window_Size);
@@ -219,13 +209,13 @@ procedure SDL2Test is
  end SetupRenderer; 
 
 begin
-  SDL.Log.Set (Category => SDL.Log.Application, Priority => SDL.Log.Debug);
+   SDL2.Log.Set (Category =>  SDL2.Log.Application, Priority =>  SDL2.Log.Debug);
   if not InitEverything
      then return ;
   end if;
   RunGame;
   Font.Close;
-  Sdl.TTF.Quit;
+   SDL2.TTF.Quit;
   
 exception
   when E: others =>
@@ -234,10 +224,10 @@ exception
       Last_Exception_Messsage : constant String  := Ada.Exceptions.Exception_Message(E);
       Last_Exception_Info     : constant String  := Ada.Exceptions.Exception_Information(E);
     begin
-       SDL.Log.Put_Debug(Last_Exception_Name);
-       SDL.Log.Put_Debug("Message : " & Last_Exception_Messsage);
-       SDL.Log.Put_Debug(Last_Exception_Info);
-       SDL.Log.Put_Debug("addr2line" & " --functions --basenames --exe=" &
+        SDL2.Log.Put_Debug(Last_Exception_Name);
+        SDL2.Log.Put_Debug("Message : " & Last_Exception_Messsage);
+        SDL2.Log.Put_Debug(Last_Exception_Info);
+        SDL2.Log.Put_Debug("addr2line" & " --functions --basenames --exe=" &
            Ada.Command_Line.Command_Name & " " & Stacktrace.Pure_Hexdump(Last_Exception_Info));
     end ;
   

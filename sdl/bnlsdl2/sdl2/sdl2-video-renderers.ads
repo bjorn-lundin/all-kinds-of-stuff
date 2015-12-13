@@ -54,12 +54,34 @@ package SDL2.Video.Renderers is
 
    --  SDL_GetRenderDriverInfo
 
-   type Renderer_Pointer;
+   type Renderer_Pointer is access all Interfaces.C.Int with
+   Convention => C;
 
    type Renderer is new Ada.Finalization.Limited_Controlled with private;
 
    Null_Renderer : constant Renderer;
 
+   
+   
+   
+   procedure Create
+     (Rend   : in out Renderer;
+      Window : in out SDL.Video.Windows.Window;
+      Driver : in Positive;
+      Flags  : in Renderer_Flags := Default_Renderer_Flags);
+
+   --  Specifically create a renderer using the first available driver.
+   procedure Create
+     (Rend   : in out Renderer;
+      Window : in out SDL.Video.Windows.Window;
+      Flags  : in Renderer_Flags := Default_Renderer_Flags);
+
+   --  Create a software renderer using a surface.
+   procedure Create
+     (Rend    : in out Renderer;
+      Surface : in SDL.Video.Surfaces.Surface);
+
+   
    overriding
    procedure Finalize (Self : in out Renderer);
 
@@ -135,8 +157,6 @@ package SDL2.Video.Renderers is
    function Get_Internal (Self : in Renderer) return Renderer_Pointer;
 
    
-   type Renderer_Pointer is access all Renderer with
-     Convention => C;
    
    
 private
