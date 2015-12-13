@@ -10,7 +10,7 @@ package body  SDL2.TTF is
   
   
   
-  function Ptr(Self : Font) return C_Font_Access is
+  function Ptr(Self : Font) return Font_Pointer is
   begin
     return Self.Ptr;
   end Ptr;

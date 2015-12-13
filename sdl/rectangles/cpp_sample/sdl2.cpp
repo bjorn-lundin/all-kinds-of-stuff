@@ -100,6 +100,12 @@ void CreateTextTextures() {
     SDL_QueryTexture( shadedTexture , NULL, NULL, &shadedRect.w, &shadedRect.h );
     shadedRect.x = 0;
     shadedRect.y = blendedRect.y + blendedRect.h + 20;
+    
+    std::cout << "solid   x y w h : " << solidRect.x << " " << solidRect.y << " " << solidRect.w << " " << solidRect.h << std::endl;
+    std::cout << "blended x y w h : " << blendedRect.x << " " << blendedRect.y << " " << blendedRect.w << " " << blendedRect.h << std::endl;
+    std::cout << "shaded  x y w h : " << shadedRect.x << " " << shadedRect.y << " " << shadedRect.w << " " << shadedRect.h << std::endl;
+
+    
 }
 
 // Convert an SDL_Surface to SDL_Texture. We've done this before, so I'll keep it short

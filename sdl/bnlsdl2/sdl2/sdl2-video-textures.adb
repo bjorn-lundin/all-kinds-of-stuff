@@ -20,7 +20,6 @@
 --     3. This notice may not be removed or altered from any source
 --     distribution.
 --------------------------------------------------------------------------------------------------------------------
-with Interfaces.C;
 with Ada.Unchecked_Conversion;
 with SDL2.Error;
 
@@ -62,9 +61,8 @@ package body SDL2.Video.Textures is
    end Set_Alpha;
 
    function Get_Blend_Mode (Self : in Texture) return Blend_Modes is
-      type Blend_Modes_Ptr is access all Blend_Modes;
       function SDL_Get_Texture_Blend_Mode (T     : in  Texture_Pointer;
-                                           Blend : out Blend_Modes_Ptr) return C.int ;
+                                           Blend : access Blend_Modes) return C.int ;
       pragma Import (C, SDL_Get_Texture_Blend_Mode, "SDL_GetTextureBlendMode");
       Data   : aliased Blend_Modes;
       Result : C.int := SDL_Get_Texture_Blend_Mode (Self.Internal, Data'access);
@@ -87,9 +85,8 @@ package body SDL2.Video.Textures is
    end Set_Blend_Mode;
 
    function Get_Modulate_Colour (Self : in Texture) return SDL2.Video.Palettes.RGB_Colour is
-      type Colour_Component_Ptr is access all SDL2.Video.Palettes.Colour_Component;
       function SDL_Get_Texture_Color_Mod (T       : in Texture_Pointer;
-                                          R, G, B : out Colour_Component_Ptr) return C.int ;
+                                          R, G, B : access SDL2.Video.Palettes.Colour_Component) return C.int ;
       pragma Import (C, SDL_Get_Texture_Color_Mod, "SDL_GetTextureColorMod");
       R, G, B : aliased SDL2.Video.Palettes.Colour_Component;
       Result : C.int := SDL_Get_Texture_Color_Mod (Self.Internal,R'access, G'access, B'access);
@@ -218,56 +215,5 @@ package body SDL2.Video.Textures is
       return Self.Internal;
    end Get_Internal;
    
-   
-    procedure Create
-     (Tex      : in out Texture;
-      Renderer : in SDL.Video.Renderers.Renderer;
-      Format   : in SDL.Video.Pixel_Formats.Pixel_Format_Names;
-      Kind     : in Kinds;
-      Size     : in SDL.Video.Windows.Sizes) is
-
-      --  Convert the Pixel_Format_Name to an Unsigned_32 because the compiler is changing the value somewhere along
-      --  the lines from the start of this procedure to calling SDL_Create_Texture.
-      function To_Unsigned32 is new Ada.Unchecked_Conversion (Source => SDL.Video.Pixel_Formats.Pixel_Format_Names,
-                                                              Target => Interfaces.Unsigned_32);
-
-      function SDL_Create_Texture
-        (R      : in Renderer_Pointer;
-         Format : in Interfaces.Unsigned_32;
-         Kind   : in Kinds;
-         W, H   : in C.int) return Texture_Pointer ;
-         pragma Import (C, SDL_Create_Texture, "SDL_CreateTexture");
-
-   begin
-      Tex.Internal := SDL_Create_Texture (Renderer.Get_Internal ,
-                                          To_Unsigned32 (Format),
-                                          Kind,
-                                          C.int (Size.Width),
-                                          C.int (Size.Height));
-      if Tex.Internal = null then
-         raise Texture_Error with SDL.Error.Get;
-      end if;
-      Tex.Size         := Size;
-      Tex.Pixel_Format := Format;
-   end Create;
-
-   procedure Create
-     (Tex      : in out Texture;
-      Renderer : in SDL.Video.Renderers.Renderer;
-      Surface  : in SDL.Video.Surfaces.Surface) is
-
-      function SDL_Create_Texture_Form_Surface (R : in  SDL2.Video.Renderers.Renderer_Pointer;
-                                                S : in  SDL2.Video.Surfaces.Surface_Pointer)
-                                                return Texture_Pointer ;
-      pragma Import (C, SDL_Create_Texture_Form_Surface, "SDL_CreateTextureFromSurface");
-   begin
-      Tex.Internal := SDL_Create_Texture_Form_Surface (Renderer.Get_Internal,
-                                                       Surface.Get_Interal);
-
-      if Tex.Internal = null then
-         raise Texture_Error with SDL.Error.Get;
-      end if;
-   end Create;
-  
    
 end SDL2.Video.Textures;

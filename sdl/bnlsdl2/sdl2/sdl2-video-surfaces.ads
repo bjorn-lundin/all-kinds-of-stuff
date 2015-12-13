@@ -34,6 +34,7 @@ package SDL2.Video.Surfaces is
    Convention => C;
 
    type Surface is new Ada.Finalization.Limited_Controlled with private;
+   function Get_Internal(Self : in Surface) return Surface_Pointer;
 
    Null_Surface : constant Surface;
 
@@ -44,18 +45,27 @@ package SDL2.Video.Surfaces is
                      Internal : Surface_Pointer;
                      Owns     : Boolean)  ;
                      
-  procedure Create(Self  : in out Surface;
-                   Font  : in     SDL2.TTF.Font;
-                   Color : in     SDL2.Video.Palettes.Colour ;
-                   Text  : in     String ) is
+  procedure Create_Solid(Self  : in out Surface;
+                         Font  : in     SDL2.TTF.Font;
+                         Color : in     SDL2.Video.Palettes.RGB_Colour ;
+                         Text  : in     String ) ;
 
-  function Get_Internal(Self : in Surface) return Surface_Pointer;
+  procedure Create_Blended(Self  : in out Surface;
+                           Font  : in     SDL2.TTF.Font;
+                           Color : in     SDL2.Video.Palettes.RGB_Colour ;
+                           Text  : in     String ) ;
+
+  procedure Create_Shaded(Self       : in out Surface;
+                          Font       : in     SDL2.TTF.Font;
+                          Color      : in     SDL2.Video.Palettes.RGB_Colour ;
+                          Back_Color : in     SDL2.Video.Palettes.RGB_Colour ;
+                          Text       : in     String ) ;
    
 private
    type Surface is new Ada.Finalization.Limited_Controlled with
       record
-         Internal :  SDL2.C_Pointers.Surface_Pointer := null;
-         Owns     : Boolean := True;
+         Internal : Surface_Pointer := null;
+         Owns     : Boolean         := True;
       end record;
 
 

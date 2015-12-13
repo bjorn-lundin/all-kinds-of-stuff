@@ -23,9 +23,9 @@
 with Interfaces.C;
 with Interfaces.C.Strings;
 with Ada.Text_IO; use Ada.Text_IO;
-with SDL.Error;
+with SDL2.Error;
 
-package body SDL.Video is
+package body SDL2.Video is
    package C renames Interfaces.C;
 
    use type C.Int;
@@ -61,7 +61,7 @@ package body SDL.Video is
       Num : constant C.Int := SDL_Get_Num_Video_Drivers;
    begin
       if Num < 0 then
-         raise Video_Error with SDL.Error.Get;
+         raise Video_Error with SDL2.Error.Get;
       end if;
       return Positive (Num);
    end Total_Drivers;
@@ -82,7 +82,7 @@ package body SDL.Video is
       use type C.Strings.Chars_Ptr;
    begin
       if C_Str = C.Strings.Null_Ptr then
-         raise Video_Error with SDL.Error.Get;
+         raise Video_Error with SDL2.Error.Get;
       end if;
       return C.Strings.Value (C_Str);
    end Current_Driver_Name;
@@ -93,8 +93,8 @@ package body SDL.Video is
       Num : constant C.Int := SDL_Get_Num_Video_Displays;
    begin
       if Num <= 0 then
-         raise Video_Error with SDL.Error.Get;
+         raise Video_Error with SDL2.Error.Get;
       end if;
       return Positive (Num);
    end Total_Displays;
-end SDL.Video;
+end SDL2.Video;
