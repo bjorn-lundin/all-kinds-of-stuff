@@ -15,22 +15,22 @@ package  SDL2.TTF.Thin is
 
 
   -- TTF_Font *TTF_OpenFont( const char *file, int ptsize)
-  function Open(Filename : String; Point_Size : Integer) return  SDL2.TTF.C_Font_Access;
+  function Open(Filename : String; Point_Size : Integer) return  SDL2.TTF.Font_Pointer;
   
   -- void TTF_CloseFont(TTF_Font* font );
-  procedure Close(Font_Ptr : in out  SDL2.TTF.C_Font_Access);
+  procedure Close(Font_Ptr : in out  SDL2.TTF.Font_Pointer);
 
   --void TTF_SetFontStyle(TTF_Font *font, int style)
-  procedure Set_Font_Style(Font_Ptr : in  SDL2.TTF.C_Font_Access;  Style : in Interfaces.C.Int) ;
+  procedure Set_Font_Style(Font_Ptr : in  SDL2.TTF.Font_Pointer;  Style : in Interfaces.C.Int) ;
   
   --int TTF GetFontStyle(TTF_Font *font)  
-  function Get_Font_Style(Font_Ptr : in  SDL2.TTF.C_Font_Access) return Interfaces.C.Int ;
+  function Get_Font_Style(Font_Ptr : in  SDL2.TTF.Font_Pointer) return Interfaces.C.Int ;
   
   --int TTF_FontHeight(const TTF_Font *font)
-  function Get_Font_Height(Font_Ptr : in  SDL2.TTF.C_Font_Access) return Interfaces.C.Int ;
+  function Get_Font_Height(Font_Ptr : in  SDL2.TTF.Font_Pointer) return Interfaces.C.Int ;
   
   --int TTF_SizeText(TTF_Font *font, const char *text, int *w, int *h)
-  function Get_Text_Size(Font_Ptr : in      SDL2.TTF.C_Font_Access;
+  function Get_Text_Size(Font_Ptr : in      SDL2.TTF.Font_Pointer;
                          Text     : in     Interfaces.C.Strings.Chars_Ptr;
                          W        : in out Interfaces.C.Int;
                          H        : in out Interfaces.C.Int) return Interfaces.C.Int ;

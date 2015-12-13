@@ -29,8 +29,6 @@ with System;
 with SDL2.Video.Palettes;
 with SDL2.Video.Pixel_Formats;
 with SDL2.Video.Pixels;
-with SDL2.Video.Renderers;
-with SDL2.Video.Surfaces;
 with SDL2.Video.Windows;
 with Interfaces.C; --bnl
 
@@ -59,17 +57,6 @@ package SDL2.Video.Textures is
    Null_Texture : constant Texture;
 
    
-   procedure Create
-     (Tex      : in out Texture;
-      Renderer : in SDL2.Video.Renderers.Renderer;
-      Format   : in SDL2.Video.Pixel_Formats.Pixel_Format_Names;
-      Kind     : in Kinds;
-      Size     : in SDL2.Video.Windows.Sizes);
-
-   procedure Create
-     (Tex      : in out Texture;
-      Renderer : in SDL2.Video.Renderers.Renderer;
-      Surface  : in SDL2.Video.Surfaces.Surface);
    
    procedure Destroy (Self : in out Texture);
 
@@ -116,11 +103,6 @@ package SDL2.Video.Textures is
                    
    function Get_Internal (Self : in Texture) return Texture_Pointer;
                    
-   --bnl
-   
-   
-   type Texture_Pointer is access all Texture with
-     Convention => C;
    
    
    --  SDL_UpdateTexture

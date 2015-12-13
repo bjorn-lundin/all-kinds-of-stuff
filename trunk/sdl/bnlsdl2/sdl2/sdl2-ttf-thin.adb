@@ -3,18 +3,18 @@ with  SDL2.Error;
 --with  SDL2.Log;
 
 
-package body  SDL2.TTF.Thin is
+package body SDL2.TTF.Thin is
 
 --int TTF Init()
 
   --------------------------------------------------------------------------------
   -- TTF_Font *TTF_OpenFont( const char *file, int ptsize)
-  function Open(Filename : String; Point_Size : Integer) return  SDL2.TTF.C_Font_Access is    
+  function Open(Filename : String; Point_Size : Integer) return  SDL2.TTF.Font_Pointer is    
     use Interfaces.C;
     use Interfaces.C.Strings;  
    --Font *TTF_OpenFont( const char *file, int ptsize)
-    Local_Font_Access :  SDL2.TTF.C_Font_Access := null;
-    function C_Open(Filename : Chars_Ptr; Point_Size : Int ) return  SDL2.TTF.C_Font_Access ;
+    Local_Font_Access :  SDL2.TTF.Font_Pointer := null;
+    function C_Open(Filename : Chars_Ptr; Point_Size : Int ) return  SDL2.TTF.Font_Pointer ;
     pragma Import (C, C_Open, "TTF_OpenFont");
     C_Filename : Chars_Ptr := New_String(Filename);
   begin
@@ -25,8 +25,8 @@ package body  SDL2.TTF.Thin is
   
   --------------------------------------------------------------------------------
   -- void TTF_CloseFont(TTF_Font* font );
-  procedure Close(Font_Ptr : in out  SDL2.TTF.C_Font_Access) is
-    procedure C_Close(Font_Ptr : in  SDL2.TTF.C_Font_Access);
+  procedure Close(Font_Ptr : in out  SDL2.TTF.Font_Pointer) is
+    procedure C_Close(Font_Ptr : in  SDL2.TTF.Font_Pointer);
     pragma Import (C, C_Close, "TTF_CloseFont");
   begin
    -- pragma Compile_Time_Warning(True, "why crash here ?");

@@ -2,18 +2,20 @@
 
 project sdl2 is
  
-   Sdlada_Home := "/home/bnl/svn/lundin/trunk/sdl/sdl2/";
-   Bot_Global := "/home/bnl/bnlbot/botstart/bot-1-0/source/ada/global";
+   Sdl2ada_Home := "/home/bnl/svn/lundin/trunk/sdl/bnlsdl2/sdl2";
+   Bot_Global   := "/home/bnl/bnlbot/botstart/bot-1-0/source/ada/global";
  
    for Source_Dirs use ("src",
                         Sdl2ada_Home, 
-                        Sdl2ada_Home & "/linux", 
+                     --   Sdl2ada_Home & "/linux", 
                         Bot_Global);
    
    for Object_Dir use "obj";
    for Exec_Dir use "exe";
    
-   for Main use ("sdl2test.adb");
+   for Main use ("sdl2test.adb",
+                 "sdl2test2.adb",
+                 "show_result.adb");
    
    Ada_Switches := ("-ffunction-sections", 
                     "-fdata-sections",

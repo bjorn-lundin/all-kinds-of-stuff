@@ -31,39 +31,21 @@ with SDL.Video.Surfaces.Fonts;
 with Interfaces.C;
 
 
-with Text_Io; use Text_Io;
-
 
 procedure AdaFontTest is
   use type Interfaces.C.Int;
 
--- Setup
-  function InitEverything return Boolean;
-  function InitSDL return Boolean;
-  function CreateWindow return Boolean;
-  function CreateRenderer return Boolean;
-  procedure SetupRenderer;
-
-  -- Our new function for setting uo SDL_TTF
-  function SetupTTF( fontname : string ) return Boolean;
   Font : Sdl.TTF.Font;
 
-  procedure SurfaceToTexture (T : in out SDL.Video.Textures.Texture;
-                              S : in     SDL.Video.Surfaces.Surface ) ;
-  --SDL_Texture* SurfaceToTexture( SDL_Surface* surf );
-  
-  procedure CreateTextTextures ;
-
-  -- Update ( happens every frame )
-  procedure Render;
-  procedure RunGame;
-  
   -- Stuff for text rendering
   --SDL_Color textColor = { 255, 255, 255, 255 }; -- white
   --SDL_Color backgroundColor = { 0, 0, 0, 255 }; -- black
-  textColor       : SDL.Video.Palettes.Colour := (Red => 255, Green => 255, Blue => 255, Alpha => 255);-- white
-  backgroundColor : SDL.Video.Palettes.Colour := (Red =>   0, Green =>   0, Blue =>   0, Alpha => 255);-- black
+--  backgroundColor : SDL.Video.Palettes.Colour := (Red =>   0, Green =>   0, Blue =>   0, Alpha => 255);-- black
   Red             : SDL.Video.Palettes.Colour := (Red => 255, Green =>   0, Blue =>   0, Alpha => 255);-- red
+  Green           : SDL.Video.Palettes.Colour := (Red =>   0, Green => 255, Blue =>   0, Alpha => 255);-- Green
+  Blue            : SDL.Video.Palettes.Colour := (Red =>   0, Green =>   0, Blue => 255, Alpha => 255);-- blue
+  White           : SDL.Video.Palettes.Colour := (Red => 255, Green => 255, Blue => 255, Alpha => 255);-- White
+--  Black           : SDL.Video.Palettes.Colour := (Red =>   0, Green =>   0, Blue =>   0, Alpha => 255);-- Black
 
 
   solidTexture   : SDL.Video.Textures.Texture;
@@ -75,44 +57,58 @@ procedure AdaFontTest is
   blendedRect : SDL.Video.Rectangles.Rectangle := (0,0,0,0);
   shadedRect : SDL.Video.Rectangles.Rectangle := (0,0,0,0);
   
-  windowRect : SDL.Video.Rectangles.Rectangle := (900, 300, 400, 400 );
+  windowRect : SDL.Video.Rectangles.Rectangle := (1, 1, 640, 480 );
 
   Window           : SDL.Video.Windows.Window;
   Renderer         : SDL.Video.Renderers.Renderer;
-
-
-  
-  
-  procedure RunGame is
-  begin
-    Render;
-    Put_Line( "runs for 5 secs");
-    delay 5.0;
-  end RunGame;
-
+  -------------------------------------------- 
   procedure Render is
+   --ws : SDL.Video.Windows.Sizes;
+   -- p : SDL.Video.Windows.Positions;
+    
   begin
     -- Clear the window and make it all red
     Renderer.Clear;
-    -- Render our text objects ( like normal )
-    Renderer.Copy(Copy_From => solidTexture , To => solidRect);
-    Renderer.Copy(Copy_From => blendedTexture , To => blendedRect);
-    Renderer.Copy(Copy_From => shadedTexture , To => shadedRect);
+    
+--    Ws := Window.Get_Size;
+--    p  := Window.Get_Position;
+--    Renderer.Copy(Copy_From => solidTexture,   To => solidRect);
+--    Renderer.Copy(Copy_From => blendedTexture, To => blendedRect);
+--    Renderer.Copy(Copy_From => shadedTexture,  To => shadedRect);
+
+    Renderer.Copy(Copy_From => solidTexture);
+    Renderer.Copy(Copy_From => blendedTexture);
+    Renderer.Copy(Copy_From => shadedTexture);
+--    Renderer.Set_Draw_Colour(Green);
+--    Renderer.Draw(solidRect);
+--    Renderer.Set_Draw_Colour(Blue);
+--    Renderer.Draw(blendedRect);
+--    Renderer.Set_Draw_Colour(White);
+--    Renderer.Draw(shadedRect);
     
     -- Render the changes above
     Renderer.Present;
+    
   end Render;
 -- Initialization ++
+
+  procedure RunGame is
+  begin
+    Render;
+    SDL.Log.Put_Debug( "runs for 5 secs");
+    delay 5.0;
+  end RunGame;
+
 -- ==================================================================
-  function SetupTTF( Fontname : String ) return Boolean is
+  procedure SetupTTF( Fontname : String )  is
   begin
     -- SDL2_TTF needs to be initialized just like SDL2
     SDL.TTF.Init;
     -- Load our fonts, with a huge size
-    Font.Open( Fontname, 90 );
+    Font.Open(Fontname, 90 );
     -- Error check
-    return true;
-  end SetupTTf;
+  end SetupTTF;
+  -------------------------------------------- 
 
   procedure CreateTextTextures is
      Solid   : SDL.Video.Surfaces.Surface;
@@ -124,77 +120,81 @@ procedure AdaFontTest is
 
     SDL.Video.Surfaces.Fonts.Create(Surface  => Solid,
                                     Font     => Font,
-                                    Color    => textColor, 
+                                    Color    => White, 
                                     Text     => "solid");
-    SurfaceToTexture(T => solidTexture, S => solid);
-    
-    solidTexture.Query(Format => F,
-                       Acess  => A,
-                       W      => solidRect.Width,
-                       H      => solidRect.Height);
-    solidRect.x := 0;
-    solidRect.y := 0;
+                                    
+    SDL.Video.Textures.Makers.Create(Tex      => solidTexture,
+                                     Renderer => Renderer,
+                                     Surface  => Solid);
+--    solidTexture.Query(Format => F,
+--                       Acess  => A,
+--                       W      => solidRect.Width,
+--                       H      => solidRect.Height);
+    solidRect.x      := 1;
+    solidRect.y      := 1;
+    solidRect.Width  := 50;
+    solidRect.Height := 100;
 
+    SDL.Log.Put_Debug("solid   x y w h" & solidRect.x'Img & solidRect.y'Img & solidRect.Width'Img & solidRect.Height'Img);
 
-    SDL.Video.Surfaces.Fonts.Create(Surface  => Blended,
+    SDL.Video.Surfaces.Fonts.Create(Surface  => blended,
                                     Font     => Font,
-                                    Color    => textColor, 
+                                    Color    => Green, 
                                     Text     => "blended");
-    SurfaceToTexture(T => blendedTexture, S => blended);
+                                    
+    SDL.Video.Textures.Makers.Create(Tex      => blendedTexture,
+                                     Renderer => Renderer,
+                                     Surface  => blended);
+                                    
     
-    blendedTexture.Query(Format => F,
-                       Acess  => A,
-                       W      => blendedRect.Width,
-                       H      => blendedRect.Height);
-    blendedRect.x := 0;
-    blendedRect.y := solidRect.y + solidRect.Height +  20;
+--    blendedTexture.Query(Format => F,
+--                         Acess  => A,
+--                         W      => blendedRect.Width,
+--                         H      => blendedRect.Height);
+--    blendedRect.x := 1;
+--    blendedRect.y := solidRect.y + solidRect.Height +  20;
+
+    blendedRect.x      := 1;
+    blendedRect.y      := 110;
+    blendedRect.Width  := 50;
+    blendedRect.Height := 100;
+
+    SDL.Log.Put_Debug("blended x y w h" & blendedRect.x'Img & blendedRect.y'Img & blendedRect.Width'Img & blendedRect.Height'Img);
 
   
     SDL.Video.Surfaces.Fonts.Create(Surface  => Shaded,
                                     Font     => Font,
-                                    Color    => textColor, 
+                                    Color    => Blue, 
                                     Text     => "shaded");
-    SurfaceToTexture(T => shadedTexture, S=> Shaded);
-    
-    shadedTexture.Query(Format => F,
-                       Acess  => A,
-                       W      => shadedRect.Width,
-                       H      => shadedRect.Height);
-    shadedRect.x := 0;
-    shadedRect.y := blendedRect.y + blendedRect.Height + 20;
-  end CreateTextTextures;
-
-  procedure SurfaceToTexture (T : in out SDL.Video.Textures.Texture;
-                              S : in     SDL.Video.Surfaces.Surface ) is
-  begin
-    SDL.Video.Textures.Makers.Create(Tex      => T,
+   
+    SDL.Video.Textures.Makers.Create(Tex      => shadedTexture,
                                      Renderer => Renderer,
-                                     Surface  => S);
-  end SurfaceToTexture;  
+                                     Surface  => Shaded);
 
+--    shadedTexture.Query(Format => F,
+--                        Acess  => A,
+--                        W      => shadedRect.Width,
+--                        H      => shadedRect.Height);
+--    shadedRect.x := 1;
+--    shadedRect.y := blendedRect.y + blendedRect.Height + 20;
+    shadedRect.x      := 1;
+    shadedRect.y      := 220;
+    shadedRect.Width  := 100;
+    shadedRect.Height := 100;
 
-
-  function InitEverything return Boolean is
-  begin
-    if not InitSDL        then return false; end if;
-    if not CreateWindow   then return false; end if;
-    if not CreateRenderer then return false; end if;
-    SetupRenderer;
-    if not SetupTTF( "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf" ) then return false; end if;
-    CreateTextTextures;
-    return true;
-  end InitEverything;
-
-  function InitSDL return Boolean is
+    
+    SDL.Log.Put_Debug("shaded  x y w h" & shadedRect.x'Img & shadedRect.y'Img & shadedRect.Width'Img & shadedRect.Height'Img);
+    
+  end CreateTextTextures;
+  -------------------------------------------- 
+  procedure InitSDL is
   begin
     if not SDL.Initialise then
-      Put_Line ("initilise failed");
-      return false;
+       SDL.Log.Put_Debug ("initilise failed");
     end if;  
-    return true;
   end InitSDL;
-
-  function CreateWindow return Boolean is
+  -------------------------------------------- 
+  procedure CreateWindow is
   begin
    SDL.Video.Windows.Makers.Create (Win    => Window,
                                     Title  => "Rektanglar test)",
@@ -203,30 +203,31 @@ procedure AdaFontTest is
                                     Width  => Integer(windowRect.Width),
                                     Height => Integer(windowRect.Height),
                                     Flags  => 0);
-    
-    return true;
   end CreateWindow;
-
-  function CreateRenderer return Boolean  is 
-  begin
-    SDL.Video.Renderers.Makers.Create(Renderer,Window,SDL.Video.Renderers.Accelerated);
-    return true;
-  end CreateRenderer;
-
+  -------------------------------------------- 
   procedure SetupRenderer is
     Window_Size : SDL.Video.Rectangles.Size := (windowRect.Width, windowRect.Height);
   begin
+    SDL.Video.Renderers.Makers.Create(Renderer,Window,SDL.Video.Renderers.Accelerated);
     -- Set size of renderer to the same as window
     Renderer.Set_Logical_Size(Window_Size);
     -- Set color of renderer to red
     Renderer.Set_Draw_Colour(Red);
  end SetupRenderer; 
-
+  -------------------------------------------- 
+  procedure InitEverything is
+  begin
+    InitSDL ;
+    CreateWindow;
+    SetupRenderer;
+    SetupTTF("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
+    CreateTextTextures;
+  end InitEverything;
+  -------------------------------------------- 
+ 
 begin
   SDL.Log.Set (Category => SDL.Log.Application, Priority => SDL.Log.Debug);
-  if not InitEverything
-     then return ;
-  end if;
+  InitEverything;
   RunGame;
   Font.Close;
   Sdl.TTF.Quit;

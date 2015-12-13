@@ -141,8 +141,8 @@ package body SDL2.Video.Windows is
    end Set_Display_Mode;
 
    function Get_Flags (Self : in Window) return Window_Flags is
-      function SDL_Set_Window_Display_Mode (W : in Window_Pointer) return Window_Flags ;
-      pragma Import(C, SDL_Set_Window_Display_Mode, "SDL_GetWindowFlags");
+      function SDL_Get_Window_Flags (W : in Window_Pointer) return Window_Flags ;
+      pragma Import(C, SDL_Get_Window_Flags, "SDL_GetWindowFlags");
    begin
       return SDL_Get_Window_Flags (Self.Internal);
    end Get_Flags;
@@ -191,7 +191,7 @@ package body SDL2.Video.Windows is
       procedure SDL_Set_Window_Grab (W : in Window_Pointer; G : in SDL_Bool) ;
       pragma Import(C, SDL_Set_Window_Grab, "SDL_SetWindowGrab");
    begin
-      SDL_Set_Window_Grab (Self.Internal, (if Grabbed = True then SDL_True else SDL_False));
+      SDL_Set_Window_Grab (Self.Internal, (if Grabbed then SDL_True else SDL_False));
    end Set_Grabbed;
 
    function Get_ID (Self : in Window) return ID is
@@ -278,6 +278,7 @@ package body SDL2.Video.Windows is
       function SDL_Get_Window_Surface (W : in Window_Pointer) return  SDL2.Video.Surfaces.Surface_Pointer ;
       pragma Import(C, SDL_Get_Window_Surface, "SDL_GetWindowSurface");
       A : SDL2.Video.Surfaces.Surface_Pointer:= SDL_Get_Window_Surface (Self.Internal);
+      use type Sdl2.Video.Surfaces.Surface_Pointer;
    begin
       if A = null then
          raise Window_Error with SDL2.Error.Get;
@@ -393,7 +394,7 @@ package body SDL2.Video.Windows is
    function Get_Internal (Self : in Window) return Window_Pointer is
    begin
       return Self.Internal;
-   end Get_Internal_Window;
+   end Get_Internal;
    
    procedure Create
      (Win    : in out Window;
@@ -420,7 +421,7 @@ package body SDL2.Video.Windows is
    end Create;
 
    procedure Create (Win : in out Window; Native : in Native_Window) is
-      function SDL_Create_Window_From (Native : Native_Window) return Window_Pointer with
+      function SDL_Create_Window_From (Native : Native_Window) return Window_Pointer;
       pragma Import(C, SDL_Create_Window_From, "SDL_CreateWindowFrom");
    begin
       Win.Internal := SDL_Create_Window_From (Native);

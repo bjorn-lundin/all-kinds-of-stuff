@@ -31,9 +31,15 @@ with SDL2.Video.Surfaces;
 with SDL2.Video.Textures;
 with SDL2.Video.Windows;
 
+
 package SDL2.Video.Renderers is
    --  TODO: Finish this.
+  pragma Assertion_Policy (Post => Check);
+  pragma Assertion_Policy (Pre => Check);
 
+  
+   use type SDL2.Video.Surfaces.Surface_Pointer;
+   
    Renderer_Error : exception;
 
    type Renderer_Flags is mod 2 ** 32 with
@@ -57,29 +63,39 @@ package SDL2.Video.Renderers is
    type Renderer_Pointer is access all Interfaces.C.Int with
    Convention => C;
 
-   type Renderer is new Ada.Finalization.Limited_Controlled with private;
+--   type Renderer is new Ada.Finalization.Limited_Controlled with private;
+--   Null_Renderer : constant Renderer;
 
-   Null_Renderer : constant Renderer;
+   type Renderer is new Ada.Finalization.Limited_Controlled with
+      record
+         Internal : Renderer_Pointer := null;
+         Owns     : Boolean          := True;  --  Does this Window type own the Internal data?
+      end record;
+
 
    
    
    
    procedure Create
-     (Rend   : in out Renderer;
-      Window : in out SDL.Video.Windows.Window;
+     (Self   : in out Renderer;
+      Window : in out SDL2.Video.Windows.Window;
       Driver : in Positive;
-      Flags  : in Renderer_Flags := Default_Renderer_Flags);
+      Flags  : in Renderer_Flags := Default_Renderer_Flags)
+      with Post => Self.Internal /= null;
 
    --  Specifically create a renderer using the first available driver.
    procedure Create
-     (Rend   : in out Renderer;
-      Window : in out SDL.Video.Windows.Window;
-      Flags  : in Renderer_Flags := Default_Renderer_Flags);
+     (Self   : in out Renderer;
+      Window : in out SDL2.Video.Windows.Window;
+      Flags  : in Renderer_Flags := Default_Renderer_Flags)
+      with Post => Self.Internal /= null;
 
    --  Create a software renderer using a surface.
    procedure Create
-     (Rend    : in out Renderer;
-      Surface : in SDL.Video.Surfaces.Surface);
+     (Self    : in out Renderer;
+      Surface : in out SDL2.Video.Surfaces.Surface)
+      with Post => Self.Internal /= null ,
+            Pre => Surface.Get_Internal /= null;
 
    
    overriding
@@ -156,18 +172,22 @@ package SDL2.Video.Renderers is
 
    function Get_Internal (Self : in Renderer) return Renderer_Pointer;
 
-   
-   
-   
-private
-   type Renderer is new Ada.Finalization.Limited_Controlled with
-      record
-         Internal : Renderer_Pointer := null;
-         Owns     : Boolean          := True;  --  Does this Window type own the Internal data?
-      end record;
-
-
-   Null_Renderer : constant Renderer := (Ada.Finalization.Limited_Controlled with
+      Null_Renderer : constant Renderer := (Ada.Finalization.Limited_Controlled with
                                          Internal => null,
                                          Owns     => True);
+
+
+   
+   
+--private
+--   type Renderer is new Ada.Finalization.Limited_Controlled with
+--      record
+--         Internal : Renderer_Pointer := null;
+--         Owns     : Boolean          := True;  --  Does this Window type own the Internal data?
+--      end record;
+--
+--
+--   Null_Renderer : constant Renderer := (Ada.Finalization.Limited_Controlled with
+--                                         Internal => null,
+--                                         Owns     => True);
 end SDL2.Video.Renderers;

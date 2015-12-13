@@ -218,11 +218,13 @@ package body SDL.Video.Renderers is
         Import        => True,
         Convention    => C,
         External_Name => "SDL_RenderCopy";
-      Tmp_To : aliased SDL.Video.Rectangles.Rectangle := To;
-      Result : C.int := SDL_Render_Copy (Self.Internal,
-                                         Get_Internal_Texture (Copy_From),
-                                         null,
-                                         Tmp_To'unchecked_access);
+      Tmp_To : aliased SDL.Video.Rectangles.Rectangle := To;  
+      Tmp_To_Ptr : SDL.Video.Rectangles.Rectangle_Access := Tmp_To'unchecked_access;
+      
+      Result : C.int := SDL_Render_Copy (R    => Self.Internal,
+                                         T    => Get_Internal_Texture (Copy_From),
+                                         Src  => null,
+                                         Dest => Tmp_To_Ptr);
    begin
       if Result /= Success then
          raise Renderer_Error with SDL.Error.Get;

@@ -20,6 +20,7 @@
 --     3. This notice may not be removed or altered from any source
 --     distribution.
 --------------------------------------------------------------------------------------------------------------------
+with Interfaces.C.Strings;
 package body SDL2.Video.Surfaces is
 
    overriding
@@ -53,24 +54,32 @@ package body SDL2.Video.Surfaces is
    end Create;
    -- bnl stop
    
---   function Make (S : in Surface_Pointer; Owns : in Boolean) return Surface is
---   begin
---      return R : Surface := (Ada.Finalization.Limited_Controlled with Internal => S, Owns => Owns) do
---         null;
---      end return;
---   end Make;
-   
-  procedure Create(Self  : in out Surface;
-                   Font  : in     SDL2.TTF.Font;
-                   Color : in     SDL2.Video.Palettes.Colour ;
-                   Text  : in     String ) is
-    
-   --  SDL_Surface *TTF RenderText_Blended(TTF_Font *font, const char *text, SDL_Color fg)  
-    function RenderText_Blended(Font_Ptr    : SDL.TTF.C_Font_Access ;  
+  procedure Create_Solid(Self  : in out Surface;
+                         Font  : in     SDL2.TTF.Font;
+                         Color : in     SDL2.Video.Palettes.RGB_Colour ;
+                         Text  : in     String ) is    
+    function RenderText_Solid(Font_Ptr    : SDL2.TTF.Font_Pointer ;  
                                Text        : Interfaces.C.Strings.Chars_Ptr; 
-                               Fore_Ground : SDL.Video.Palettes.Colour) return Surface_Pointer;
+                               Fore_Ground : SDL2.Video.Palettes.RGB_Colour) return Surface_Pointer;
+    pragma Import(C,RenderText_Solid, "TTF_RenderText_Solid");    
+    C_Text : Interfaces.C.Strings.Chars_Ptr := Interfaces.C.Strings.New_String(Text);
+    Surface_Ptr : Surface_Pointer := null;
+  begin
+    Surface_Ptr := RenderText_Solid(Font_Ptr    => Font.Ptr,  
+                                    Text        => C_Text,
+                                    Fore_Ground => Color); 
+    Interfaces.C.Strings.Free(C_Text);
+    Self.Create(Internal => Surface_Ptr, Owns => True);
+  end Create_Solid;
+  
+  procedure Create_Blended(Self  : in out Surface;
+                           Font  : in     SDL2.TTF.Font;
+                           Color : in     SDL2.Video.Palettes.RGB_Colour ;
+                           Text  : in     String ) is    
+    function RenderText_Blended(Font_Ptr    : SDL2.TTF.Font_Pointer ;  
+                               Text        : Interfaces.C.Strings.Chars_Ptr; 
+                               Fore_Ground : SDL2.Video.Palettes.RGB_Colour) return Surface_Pointer;
     pragma Import(C,RenderText_Blended, "TTF_RenderText_Blended");    
---    pragma Import(C,RenderText_Blended, "TTF_RenderText_Solid");    
     C_Text : Interfaces.C.Strings.Chars_Ptr := Interfaces.C.Strings.New_String(Text);
     Surface_Ptr : Surface_Pointer := null;
   begin
@@ -79,11 +88,33 @@ package body SDL2.Video.Surfaces is
                                       Fore_Ground => Color); 
     Interfaces.C.Strings.Free(C_Text);
     Self.Create(Internal => Surface_Ptr, Owns => True);
-  end Create;
-  
+  end Create_Blended;
+
+  procedure Create_Shaded(Self  : in out Surface;
+                          Font  : in     SDL2.TTF.Font;
+                          Color : in     SDL2.Video.Palettes.RGB_Colour ;
+                          Back_Color : in     SDL2.Video.Palettes.RGB_Colour ;
+                          Text  : in     String ) is
+    function RenderText_Shaded(Font_Ptr    : SDL2.TTF.Font_Pointer ;  
+                               Text        : Interfaces.C.Strings.Chars_Ptr; 
+                               Fore_Ground : SDL2.Video.Palettes.RGB_Colour;
+                               Back_Ground : SDL2.Video.Palettes.RGB_Colour ) return Surface_Pointer;
+    pragma Import(C,RenderText_Shaded, "TTF_RenderText_Shaded");    
+    C_Text : Interfaces.C.Strings.Chars_Ptr := Interfaces.C.Strings.New_String(Text);
+    Surface_Ptr : Surface_Pointer := null;
+  begin
+    Surface_Ptr := RenderText_Shaded(Font_Ptr    => Font.Ptr,  
+                                     Text        => C_Text,
+                                     Fore_Ground => Color,
+                                     Back_Ground => Back_Color); 
+    Interfaces.C.Strings.Free(C_Text);
+    Self.Create(Internal => Surface_Ptr, Owns => True);
+  end Create_Shaded;
+
+
   
 -- Finalize will do this  
---  procedure Destroy(Surface  : in out SDL.Video.Surfaces.Surface) is
+--  procedure Destroy(Surface  : in out SDL2.Video.Surfaces.Surface) is
 --    procedure SDL_FreeSurface ( Surface_Ptr : in Surface_Pointer);
 --    pragma Import (C, SDL_FreeSurface, "SDL_FreeSurface");
 --  begin

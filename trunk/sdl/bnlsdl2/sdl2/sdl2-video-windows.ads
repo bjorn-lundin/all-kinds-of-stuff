@@ -194,10 +194,7 @@ package SDL2.Video.Windows is
    --  Create a window from an existing window created in some other way.
    procedure Create (Win : in out Window; Native : in Native_Window) with
      Inline => True;
-   
-   type Window_Pointer is access all Windows with
-     Convention => C;
-   
+      
    
 private
    --  TODO: Make this a proper type.

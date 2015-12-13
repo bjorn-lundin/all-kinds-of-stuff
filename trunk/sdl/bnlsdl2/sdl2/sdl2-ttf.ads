@@ -48,8 +48,9 @@ package  SDL2.TTF is
   
   -- TTF_Font *TTF_OpenFont( const char *file, int ptsize)
   type Font is tagged private;
-  type C_Font_Access is access Interfaces.C.Int;
-  pragma Convention (C, C_Font_Access);
+  type Font_Pointer is access Interfaces.C.Int;
+--  type Font_Pointer is access Font;
+  pragma Convention (C, Font_Pointer);
   
   -- TTF_Font *TTF_OpenFont( const char *file, int ptsize)
   procedure Open(Self : in out Font; Filename : in String; Point_Size : in Integer);
@@ -77,7 +78,7 @@ package  SDL2.TTF is
   
   
   
-  function Ptr(Self : Font) return C_Font_Access;
+  function Ptr(Self : Font) return Font_Pointer;
   
   
   type Font_Access is access Font;
@@ -94,7 +95,7 @@ package  SDL2.TTF is
 private
 
   type Font is tagged record 
-    Ptr : C_Font_Access := null;
+    Ptr : Font_Pointer := null;
   end record;
 
 

@@ -8,7 +8,7 @@ SDL2_LIBS := -L/usr/lib/x86_64-linux-gnu -lSDL2 -lpthread -Wl,--no-undefined -lm
 
 all:
 #	echo $(SDL2_LIBS)
-	gprbuild -p -P sdl2test.gpr -largs $(SDL2_LIBS) 
+	gprbuild -p -P sdl2.gpr -largs $(SDL2_LIBS) 2>&1 | tee make_all.log
 
 clean:
-	gnatclean -P sdl2test.gpr  
+	gnatclean -P sdl2.gpr  2>&1 | tee make_clean.log

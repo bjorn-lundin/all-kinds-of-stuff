@@ -1,6 +1,3 @@
--
-
-
 with Ada.Command_Line;
 with Ada.Exceptions;
 with Interfaces.C;
@@ -11,11 +8,10 @@ with  SDL2.TTF;
 with  SDL2.Video.Windows;
 with  SDL2.Video.Palettes;
 with  SDL2.Video.Textures;
+with  SDL2.Video.Textures.Makers;
 with  SDL2.Video.Renderers;
 with  SDL2.Video.Surfaces;
 with  SDL2.Video.Rectangles;
-
-
 
 with  Stacktrace;
 
@@ -33,10 +29,6 @@ procedure SDL2Test is
   -- Our new function for setting uo SDL_TTF
   function SetupTTF( fontname : string ) return Boolean;
   Font :  SDL2.TTF.Font;
-
-  procedure SurfaceToTexture (T : in out  SDL2.Video.Textures.Texture;
-                              S : in      SDL2.Video.Surfaces.Surface ) ;
-  --SDL_Texture* SurfaceToTexture( SDL_Surface* surf );
   
   procedure CreateTextTextures ;
 
@@ -47,9 +39,15 @@ procedure SDL2Test is
   -- Stuff for text rendering
   --SDL_Color textColor = { 255, 255, 255, 255 }; -- white
   --SDL_Color backgroundColor = { 0, 0, 0, 255 }; -- black
-  textColor       :  SDL2.Video.Palettes.Colour := (Red => 255, Green => 255, Blue => 255, Alpha => 255);-- white
-  backgroundColor :  SDL2.Video.Palettes.Colour := (Red =>   0, Green =>   0, Blue =>   0, Alpha => 255);-- black
-  Red             :  SDL2.Video.Palettes.Colour := (Red => 255, Green =>   0, Blue =>   0, Alpha => 255);-- red
+  Textcolor :  SDL2.Video.Palettes.RGB_Colour := (Red => 255, Green => 255, Blue => 255);-- white
+  Backcolor :  SDL2.Video.Palettes.RGB_Colour := (Red =>   0, Green =>   0, Blue =>   0);-- black
+  Red       :  SDL2.Video.Palettes.RGB_Colour := (Red => 255, Green =>   0, Blue =>   0);
+  Green     :  SDL2.Video.Palettes.RGB_Colour := (Red =>   0, Green => 255, Blue =>   0);
+  Blue      :  SDL2.Video.Palettes.RGB_Colour := (Red =>   0, Green =>   0, Blue => 255);
+  White     :  SDL2.Video.Palettes.RGB_Colour := (Red => 255, Green => 255, Blue => 255);
+  Black     :  SDL2.Video.Palettes.RGB_Colour := (Red =>   0, Green =>   0, Blue =>   0);
+  Red_A     :  SDL2.Video.Palettes.Colour := (Red => 255, Green =>   0, Blue =>   0, Alpha => 255);
+  Blue_A    :  SDL2.Video.Palettes.Colour := (Red =>   0, Green =>   0, Blue => 255, Alpha => 255);
 
 
   solidTexture   :  SDL2.Video.Textures.Texture;
@@ -61,13 +59,11 @@ procedure SDL2Test is
   blendedRect :  SDL2.Video.Rectangles.Rectangle := (0,0,0,0);
   shadedRect :  SDL2.Video.Rectangles.Rectangle := (0,0,0,0);
   
-  windowRect :  SDL2.Video.Rectangles.Rectangle := (900, 300, 400, 400 );
+  windowRect :  SDL2.Video.Rectangles.Rectangle := (1, 1, 1200, 700 );
 
   Window           :  SDL2.Video.Windows.Window;
   Renderer         :  SDL2.Video.Renderers.Renderer;
 
-
-  
   
   procedure RunGame is
   begin
@@ -81,9 +77,19 @@ procedure SDL2Test is
     -- Clear the window and make it all red
     Renderer.Clear;
     -- Render our text objects ( like normal )
-    Renderer.Copy(Copy_From => solidTexture , To => solidRect);
-    Renderer.Copy(Copy_From => blendedTexture , To => blendedRect);
-    Renderer.Copy(Copy_From => shadedTexture , To => shadedRect);
+    Renderer.Copy(Copy_From => solidTexture,   To => solidRect);
+    Renderer.Copy(Copy_From => blendedTexture, To => blendedRect);
+    Renderer.Copy(Copy_From => shadedTexture,  To => shadedRect);
+
+--    Renderer.Copy(Copy_From => solidTexture); 
+--    Renderer.Copy(Copy_From => blendedTexture);
+--    Renderer.Copy(Copy_From => shadedTexture);
+
+    
+     SDL2.Log.Put_Debug("solidRect x y w h" & solidRect.X'Img & solidRect.Y'img & solidRect.Width'img & solidRect.Height'img);
+    Renderer.Set_Draw_Colour(Blue_A);
+    Renderer.Draw(solidRect);
+    
     
     -- Render the changes above
     Renderer.Present;
@@ -95,7 +101,7 @@ procedure SDL2Test is
     -- SDL2_TTF needs to be initialized just like SDL2
      SDL2.TTF.Init;
     -- Load our fonts, with a huge size
-    Font.Open( Fontname, 90 );
+    Font.Open( Fontname, 25 );
     -- Error check
     return true;
   end SetupTTf;
@@ -108,12 +114,14 @@ procedure SDL2Test is
      A       : Interfaces.C.Int := 0;
   begin
 
-     SDL2.Video.Surfaces.Create(Surface  => Solid,
-                                Font     => Font,
-                                Color    => textColor, 
-                                Text     => "solid");
-    SurfaceToTexture(T => solidTexture, S => solid);
-    
+    SDL2.Video.Surfaces.Create_Solid(Self  => Solid,
+                               Font     => Font,
+                               Color    => textColor, 
+                               Text     => "solid");
+    SDL2.Video.Textures.Makers.Create(Self     => solidTexture,
+                                      Renderer => Renderer,
+                                      Surface  => Solid);
+       
     solidTexture.Query(Format => F,
                        Acess  => A,
                        W      => solidRect.Width,
@@ -121,12 +129,13 @@ procedure SDL2Test is
     solidRect.x := 0;
     solidRect.y := 0;
 
-
-     SDL2.Video.Surfaces.Create(Surface  => Blended,
-                                Font     => Font,
-                                Color    => textColor, 
-                                Text     => "blended");
-    SurfaceToTexture(T => blendedTexture, S => blended);
+    SDL2.Video.Surfaces.Create_Blended(Self  => Blended,
+                               Font     => Font,
+                               Color    => textColor, 
+                               Text     => "blended");
+    SDL2.Video.Textures.Makers.Create(Self     => blendedTexture,
+                                      Renderer => Renderer,
+                                      Surface  => Blended);
     
     blendedTexture.Query(Format => F,
                        Acess  => A,
@@ -136,11 +145,15 @@ procedure SDL2Test is
     blendedRect.y := solidRect.y + solidRect.Height +  20;
 
   
-     SDL2.Video.Surfaces.Create(Surface  => Shaded,
-                                Font     => Font,
-                                Color    => textColor, 
-                                Text     => "shaded");
-    SurfaceToTexture(T => shadedTexture, S=> Shaded);
+    SDL2.Video.Surfaces.Create_Shaded(Self       => Shaded,
+                                      Font       => Font,
+                                      Color      => Textcolor, 
+                                      Back_Color => Backcolor, 
+                                      Text       => "shaded");
+                                      
+    SDL2.Video.Textures.Makers.Create(Self     => shadedTexture,
+                                      Renderer => Renderer,
+                                      Surface  => Shaded);
     
     shadedTexture.Query(Format => F,
                        Acess  => A,
@@ -149,15 +162,6 @@ procedure SDL2Test is
     shadedRect.x := 0;
     shadedRect.y := blendedRect.y + blendedRect.Height + 20;
   end CreateTextTextures;
-
-  procedure SurfaceToTexture (T : in out  SDL2.Video.Textures.Texture;
-                              S : in      SDL2.Video.Surfaces.Surface ) is
-  begin
-     SDL2.Video.Textures.Create(Tex      => T,
-                                     Renderer => Renderer,
-                                     Surface  => S);
-  end SurfaceToTexture;  
-
 
 
   function InitEverything return Boolean is
@@ -183,12 +187,12 @@ procedure SDL2Test is
   function CreateWindow return Boolean is
   begin
     SDL2.Video.Windows.Create (Win    => Window,
-                                    Title  => "Rektanglar test)",
-                                    X      => Integer(windowRect.x),
-                                    Y      => Integer(windowRect.y),
-                                    Width  => Integer(windowRect.Width),
-                                    Height => Integer(windowRect.Height),
-                                    Flags  => 0);
+                               Title  => "Rektanglar test)",
+                               X      => Integer(windowRect.x),
+                               Y      => Integer(windowRect.y),
+                               Width  => Integer(windowRect.Width),
+                               Height => Integer(windowRect.Height),
+                               Flags  => 0);
     
     return true;
   end CreateWindow;
@@ -205,7 +209,7 @@ procedure SDL2Test is
     -- Set size of renderer to the same as window
     Renderer.Set_Logical_Size(Window_Size);
     -- Set color of renderer to red
-    Renderer.Set_Draw_Colour(Red);
+    Renderer.Set_Draw_Colour(Red_A);
  end SetupRenderer; 
 
 begin
