@@ -51,8 +51,9 @@ package SDL2.Video.Textures is
       Colour_Modulate => 16#0000_0004#);
 
       
-   type Texture_Pointer;
-      
+   type Texture_Pointer is access all Interfaces.C.Int with
+   Convention => C;
+   
    type Texture is new Ada.Finalization.Limited_Controlled with private;
 
    Null_Texture : constant Texture;
