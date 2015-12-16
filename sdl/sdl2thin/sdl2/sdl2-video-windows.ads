@@ -36,4 +36,18 @@ package SDL2.Video.Windows is
   function Get_Pointer (Self : Window_Type) return SDL2.Window_Pointer;
   
   
+  type ID is mod 2 ** 32 ;
+  pragma Convention (C, Id);
+
+  type Positions is record
+     X : Positive;
+     Y : Positive;
+  end record;
+
+  type Sizes is record
+     Width  : Positive;
+     Height : Positive;
+  end record;
+  
+  
 end SDL2.Video.Windows;

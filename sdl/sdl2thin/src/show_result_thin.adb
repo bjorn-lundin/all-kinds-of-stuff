@@ -13,10 +13,7 @@ with SDL2.Error ;
 with SDL2.Video.Colors ; 
 with SDL2.Video.Rectangles ; 
 with SDL2.Video.Windows;
-with SDL2.Video.Surfaces;
-with SDL2.Video.Textures;
-with SDL2.Video.Renderers;
-with SDL2.TTF;
+
 
 procedure Show_Result is
   use type Interfaces.C.Int;
@@ -24,7 +21,7 @@ procedure Show_Result is
       
   Bad : exception;
    
---  Surface_Ptr : Surface_Pointer := null;
+  Surface_Ptr : Surface_Pointer := null;
   C_Text : Chars_Ptr := New_String("Yes, Finally!");
   
 -- Setup
@@ -32,20 +29,11 @@ procedure Show_Result is
   Blue  :  SDL2.Video.Colors.RGB_Color := (Red =>   0, Green =>   0, Blue => 255);
   Green :  SDL2.Video.Colors.RGB_Color := (Red =>   0, Green => 255, Blue =>   0);
   
-  --Font_Ptr           :  Font_Pointer := null;
-  Font : SDL2.TTF.Font;
-  
-  
---  solidTexture_Ptr   :  Texture_Pointer := null;
---  blendedTexture_Ptr :  Texture_Pointer := null;
---  shadedTexture_Ptr  :  Texture_Pointer := null;
-
-  solidTexture   :  SDL2.Video.Textures.Texture;
-  blendedTexture :  SDL2.Video.Textures.Texture;
-  shadedTexture  :  SDL2.Video.Textures.Texture;
-
-
-  
+  Font_Ptr           :  Font_Pointer := null;
+  solidTexture_Ptr   :  Texture_Pointer := null;
+  blendedTexture_Ptr :  Texture_Pointer := null;
+  shadedTexture_Ptr  :  Texture_Pointer := null;
+   
   solidRect   :  aliased SDL2.Video.Rectangles.Rectangle := (0,0,0,0);
   blendedRect :  aliased SDL2.Video.Rectangles.Rectangle := (0,0,0,0);
   shadedRect  :  aliased SDL2.Video.Rectangles.Rectangle := (0,0,0,0);
@@ -54,8 +42,7 @@ procedure Show_Result is
 
 --  Window_Ptr       :  Window_Pointer   := null;
   Window       :  SDL2.Video.Windows.Window_Type;
---  Renderer_Ptr :  Renderer_Pointer := null;
-  Renderer :  SDL2.Video.Renderers.Renderer;
+  Renderer_Ptr :  Renderer_Pointer := null;
 
   
 
@@ -112,23 +99,20 @@ procedure Show_Result is
 -- Initialization ++
 -- ==================================================================
   procedure SetupTTF is
-  --  F_init: C.Int := 0;
-  --  C_Filename : Chars_Ptr := New_String( "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
+    F_init: C.Int := 0;
+    C_Filename : Chars_Ptr := New_String( "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
   begin
-   -- F_Init := TTF_Init;
-   -- if F_Init /= 0 then
-   --   Put_Line ("font initilise failed");
-   --   raise Bad;
-   -- end if;  
-   SDL2.TTF.Init;
-   
-   Font.Open("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 30);
---    Font_Ptr := TTF_OpenFont(C_Filename,90 ) ;
---    if Font_Ptr = null then
---      Put_Line ("font2 initilise failed");
---      raise Bad;
---    end if;  
---    Free(C_Filename);
+    F_Init := TTF_Init;
+    if F_Init /= 0 then
+      Put_Line ("font initilise failed");
+      raise Bad;
+    end if;  
+    Font_Ptr := TTF_OpenFont(C_Filename,90 ) ;
+    if Font_Ptr = null then
+      Put_Line ("font2 initilise failed");
+      raise Bad;
+    end if;  
+    Free(C_Filename);
   end SetupTTF;
   -----------------------------------------------------
   procedure CreateTextTextures is
@@ -137,24 +121,22 @@ procedure Show_Result is
     Local_W      : aliased Interfaces.C.Int := 0;
     Local_H      : aliased Interfaces.C.Int := 0;
     Result : C.Int := 0;
-    
-    Surface1 : SDL2.Video.Surfaces.Surface;
-    Surface2 : SDL2.Video.Surfaces.Surface;
-    Surface3 : SDL2.Video.Surfaces.Surface;
-
   begin
-    SDL2.Video.Surfaces.Create_Solid(Self  => Surface1,
-                                     Font  => Font,
-                                     Color => Blue ,
-                                     Text  => "Thick as a brick" ) ;
-    
-    SDL2.Video.Textures.Create(Self     => solidTexture,
-                               Renderer => Renderer,
-                               Surface  => Surface1);
-    solidTexture.Query (Natural(Local_Format), 
-                        Local_Acess, 
-                        Local_W, 
-                        Local_H);
+    Surface_Ptr := TTF_RenderText_Solid(Font_Ptr    => Font_Ptr,  
+                                        Text        => C_Text,
+                                        Fore_Ground => Blue); 
+    solidTexture_Ptr := SDL_Create_Texture_From_Surface(Renderer_Ptr, Surface_Ptr);
+    SDL_Free_Surface(Surface_Ptr);    
+       
+    Result := SDL_Query_Texture (solidTexture_Ptr, 
+                                 Local_Format'access, 
+                                 Local_Acess'access, 
+                                 Local_W'access, 
+                                 Local_H'access);
+    if Result /= 0 then
+      Put_Line ("SDL_Query_Texture failed");
+      raise Bad with SDL2.Error.Get;
+    end if;  
        
     solidRect.x := 0;
     solidRect.y := 0;
@@ -162,18 +144,21 @@ procedure Show_Result is
     solidRect.Height := Local_H;
     -- -- -- -- -- -- -- -- 
 
-    SDL2.Video.Surfaces.Create_Solid(Self  => Surface2,
-                                     Font  => Font,
-                                     Color => Blue ,
-                                     Text  => "Thick as a brick" ) ;
-    
-    SDL2.Video.Textures.Create(Self     => blendedTexture,
-                               Renderer => Renderer,
-                               Surface  => Surface2);
-    blendedTexture.Query (Natural(Local_Format), 
-                        Local_Acess, 
-                        Local_W, 
-                        Local_H);
+    Surface_Ptr := TTF_RenderText_Blended(Font_Ptr    => Font_Ptr,  
+                                      Text        => C_Text,
+                                      Fore_Ground => Blue); 
+    blendedTexture_Ptr := SDL_Create_Texture_From_Surface(Renderer_Ptr, Surface_Ptr);
+    SDL_Free_Surface(Surface_Ptr);    
+       
+    Result := SDL_Query_Texture (blendedTexture_Ptr, 
+                                 Local_Format'access, 
+                                 Local_Acess'access, 
+                                 Local_W'access, 
+                                 Local_H'access);
+    if Result /= 0 then
+      Put_Line ("SDL_Query_Texture failed");
+      raise Bad with SDL2.Error.Get;
+    end if;  
        
     blendedRect.Width := Local_W;
     blendedRect.Height := Local_H;
@@ -182,23 +167,28 @@ procedure Show_Result is
     blendedRect.y := solidRect.y + solidRect.Height +  20;
     -- -- -- -- -- -- -- -- 
 
-    SDL2.Video.Surfaces.Create_Solid(Self  => Surface3,
-                                     Font  => Font,
-                                     Color => Blue ,
-                                     Text  => "Thick as a brick" ) ;
-    
-    SDL2.Video.Textures.Create(Self     => shadedTexture,
-                               Renderer => Renderer,
-                               Surface  => Surface3);
-    shadedTexture.Query (Natural(Local_Format), 
-                        Local_Acess, 
-                        Local_W, 
-                        Local_H);
+    Surface_Ptr := TTF_RenderText_Shaded(Font_Ptr    => Font_Ptr,  
+                                         Text        => C_Text,
+                                         Fore_Ground => Blue,
+                                         Back_Ground => Green); 
+    shadedTexture_Ptr := SDL_Create_Texture_From_Surface(Renderer_Ptr, Surface_Ptr);
+    SDL_Free_Surface(Surface_Ptr);    
+       
+    Result := SDL_Query_Texture (shadedTexture_Ptr, 
+                                 Local_Format'access, 
+                                 Local_Acess'access, 
+                                 Local_W'access, 
+                                 Local_H'access);
+    if Result /= 0 then
+      Put_Line ("SDL_Query_Texture failed");
+      raise Bad with SDL2.Error.Get;
+    end if;  
        
     shadedRect.Width := Local_W;
     shadedRect.Height := Local_H;
     shadedRect.x := 0;
     shadedRect.y := blendedRect.y + blendedRect.Height + 20;    
+    Free(C_Text);
   end CreateTextTextures;
   -----------------------------------------------------
 
