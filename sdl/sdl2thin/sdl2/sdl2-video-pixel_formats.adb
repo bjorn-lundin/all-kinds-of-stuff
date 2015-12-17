@@ -37,18 +37,18 @@ package body SDL2.Video.Pixel_Formats is
    function To_Masks
      (Format     : in  Pixel_Format_Names;
       Bits       : out Bits_Per_Pixels;
-      Red_Mask   : out Colour_Mask;
-      Green_Mask : out Colour_Mask;
-      Blue_Mask  : out Colour_Mask;
-      Alpha_Mask : out Colour_Mask) return Boolean is
+      Red_Mask   : out Color_Mask;
+      Green_Mask : out Color_Mask;
+      Blue_Mask  : out Color_Mask;
+      Alpha_Mask : out Color_Mask) return Boolean is
 
       function SDL_Pixel_Format_Enum_To_Masks
         (Format     : in  Pixel_Format_Names;
          Bits       : out Bits_Per_Pixels;
-         Red_Mask   : out Colour_Mask;
-         Green_Mask : out Colour_Mask;
-         Blue_Mask  : out Colour_Mask;
-         Alpha_Mask : out Colour_Mask) return C.int ;
+         Red_Mask   : out Color_Mask;
+         Green_Mask : out Color_Mask;
+         Blue_Mask  : out Color_Mask;
+         Alpha_Mask : out Color_Mask) return C.int ;
       pragma Import(C,SDL_Pixel_Format_Enum_To_Masks, "SDL_PixelFormatEnumToMasks");
 
       Error : C.int := SDL_Pixel_Format_Enum_To_Masks

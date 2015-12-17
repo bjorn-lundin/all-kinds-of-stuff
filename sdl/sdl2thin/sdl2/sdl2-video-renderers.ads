@@ -5,6 +5,8 @@ with SDL2.Video.Textures;
 with SDL2.Video.Palettes;
 with SDL2.Video.Rectangles;
 with SDL2.Video.Windows;
+with SDL2.Video.Surfaces;
+
 
 package SDL2.Video.Renderers is
 
@@ -102,10 +104,31 @@ package SDL2.Video.Renderers is
 
    procedure Set_Target (Self : in out Renderer; Target : in SDL2.Video.Textures.Texture);
 
-   function Get_Internal (Self : in Renderer) return SDL2.Renderer_Pointer ;
+   function Get_Pointer (Self : in Renderer) return SDL2.Renderer_Pointer ;
 
 
    function Get_Renderer (Window : in SDL2.Video.Windows.Window_Type) return Renderer;
+  
+  
+   procedure Create
+     (Self   : in out Renderer;
+      Window : in out SDL2.Video.Windows.Window_Type;
+      Driver : in Positive;
+      Flags  : in Renderer_Flags := Default_Renderer_Flags) ;
+--            with Post => Self.Pointer /= null
+
+   procedure Create
+     (Self   : in out Renderer;
+      Window : in out SDL2.Video.Windows.Window_Type;
+      Flags  : in Renderer_Flags := Default_Renderer_Flags);
+     -- with Post => Self.Pointer /= null
+
+
+   procedure Create
+     (Self    : in out Renderer;
+      Surface : in out SDL2.Video.Surfaces.Surface);
+    --  with Post => Self.Pointer /= null
+  
   
   
    Null_Renderer : constant Renderer := (Ada.Finalization.Controlled with

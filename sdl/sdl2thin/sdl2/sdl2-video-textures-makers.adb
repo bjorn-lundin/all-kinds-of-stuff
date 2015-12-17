@@ -26,9 +26,7 @@ with SDL2.Error;
 --with SDL2.Video.Renderers;
 package body SDL2.Video.Textures.Makers is
   package C renames Interfaces.C;
-
-  use type C.int;
-   
+  
   procedure Create
      (Self      : in out Texture;
       Renderer : in SDL2.Video.Renderers.Renderer;
@@ -42,19 +40,19 @@ package body SDL2.Video.Textures.Makers is
                                                               Target => Interfaces.Unsigned_32);
 
       function SDL_Create_Texture
-        (R      : in SDL2.Video.Renderers.Renderer_Pointer;
+        (R      : in SDL2.Renderer_Pointer;
          Format : in Interfaces.Unsigned_32;
          Kind   : in Kinds;
          W, H   : in C.int) return Texture_Pointer ;
          pragma Import (C, SDL_Create_Texture, "SDL_CreateTexture");
 
    begin
-      Self.Internal := SDL_Create_Texture (Renderer.Get_Internal ,
+      Self.Pointer := SDL_Create_Texture (Renderer.Get_Pointer ,
                                           To_Unsigned32 (Format),
                                           Kind,
                                           C.int (Size.Width),
                                           C.int (Size.Height));
-      if Self.Internal = null then
+      if Self.Pointer = null then
          raise Texture_Error with SDL2.Error.Get;
       end if;
       Self.Size         := Size;
@@ -66,17 +64,17 @@ package body SDL2.Video.Textures.Makers is
       Renderer : in SDL2.Video.Renderers.Renderer;
       Surface  : in SDL2.Video.Surfaces.Surface) is
 
-      function SDL_Create_Texture_Form_Surface (R : in  SDL2.Video.Renderers.Renderer_Pointer;
+      function SDL_Create_Texture_Form_Surface (R : in  SDL2.Renderer_Pointer;
                                                 S : in  SDL2.Video.Surfaces.Surface_Pointer)
                                                 return Texture_Pointer ;
       pragma Import (C, SDL_Create_Texture_Form_Surface, "SDL_CreateTextureFromSurface");
    begin
-      Self.Internal := SDL_Create_Texture_Form_Surface(Renderer.Get_Internal,
-                                                       Surface.Get_Internal);
+      Self.Pointer := SDL_Create_Texture_Form_Surface(Renderer.Get_Pointer,
+                                                       Surface.Get_Pointer);
                                                        
       pragma compile_Time_Warning (True, "query for size and pixel format ");                                                       
 
-      if Self.Internal = null then
+      if Self.Pointer = null then
          raise Texture_Error with SDL2.Error.Get;
       end if;
    end Create;

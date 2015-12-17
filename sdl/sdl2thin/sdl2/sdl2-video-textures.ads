@@ -44,7 +44,7 @@ package SDL2.Video.Textures is
    overriding
    procedure Finalize (Self : in out Texture);
 
-   function Get_Internal (Self : in Texture) return SDL2.Texture_Pointer ;
+   function Get_Pointer (Self : in Texture) return SDL2.Texture_Pointer ;
 
    procedure Destroy (Self : in out Texture);
 

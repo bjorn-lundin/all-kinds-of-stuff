@@ -38,7 +38,7 @@ package SDL2.Video.Surfaces is
          Owner   : Boolean         := True;
    end record;
 
-   function Get_Internal(Self : in Surface) return Surface_Pointer;
+   function Get_Pointer(Self : in Surface) return Surface_Pointer;
 
    overriding
    procedure Finalize (Self : in out Surface);

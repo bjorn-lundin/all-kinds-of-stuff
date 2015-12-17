@@ -10,8 +10,8 @@ with SDL2.Video.Renderers;
 package SDL2.Thin is
 
 
---  function SDL_Init (Flags : in SDL2.Init_Flags := SDL2.Enable_Everything) return Int ;
---  pragma Import(C, SDL_Init, "SDL_Init");
+  function SDL_Init (Flags : in SDL2.Init_Flags := SDL2.Enable_Everything) return Int ;
+  pragma Import(C, SDL_Init, "SDL_Init");
 
 -- start font
   function TTF_Init return Int;
@@ -56,34 +56,34 @@ package SDL2.Thin is
   procedure SDL_Render_Present (R : in Renderer_Pointer) ;
   pragma Import(C, SDL_Render_Present, "SDL_RenderPresent");
     
---  function TTF_RenderText_Blended(Font_Ptr    : Font_Pointer ;  
---                                  Text        : Chars_Ptr; 
---                                  Fore_Ground : RGB_Color) return Surface_Pointer;
---  pragma Import(C,TTF_RenderText_Blended, "TTF_RenderText_Blended");    
-
---  function TTF_RenderText_Solid(Font_Ptr      : Font_Pointer ;  
---                                  Text        : Chars_Ptr; 
---                                  Fore_Ground : RGB_Color) return Surface_Pointer;
---  pragma Import(C,TTF_RenderText_Solid, "TTF_RenderText_Solid");   
+  function TTF_RenderText_Blended(Font_Ptr    : Font_Pointer ;  
+                                  Text        : Chars_Ptr; 
+                                  Fore_Ground : RGB_Color) return Surface_Pointer;
+  pragma Import(C,TTF_RenderText_Blended, "TTF_RenderText_Blended");    
   
- -- function TTF_RenderText_Shaded(Font_Ptr     : Font_Pointer ;  
- --                                 Text        : Chars_Ptr; 
- --                                 Fore_Ground : RGB_Color;
- --                                 Back_Ground : RGB_Color) return Surface_Pointer;
- -- pragma Import(C,TTF_RenderText_Shaded, "TTF_RenderText_Shaded");    
+  function TTF_RenderText_Solid(Font_Ptr      : Font_Pointer ;  
+                                  Text        : Chars_Ptr; 
+                                  Fore_Ground : RGB_Color) return Surface_Pointer;
+  pragma Import(C,TTF_RenderText_Solid, "TTF_RenderText_Solid");   
+  
+  function TTF_RenderText_Shaded(Font_Ptr     : Font_Pointer ;  
+                                  Text        : Chars_Ptr; 
+                                  Fore_Ground : RGB_Color;
+                                  Back_Ground : RGB_Color) return Surface_Pointer;
+  pragma Import(C,TTF_RenderText_Shaded, "TTF_RenderText_Shaded");    
 
   function SDL_Create_Texture_From_Surface (R : in  Renderer_Pointer;
                                             S : in  Surface_Pointer)
                                             return Texture_Pointer ;
   pragma Import (C, SDL_Create_Texture_From_Surface, "SDL_CreateTextureFromSurface");
      
---  procedure SDL_Free_Surface(S : in Surface_Pointer);
---  pragma Import (C, SDL_Free_Surface, "SDL_FreeSurface");
-  
---  function SDL_Query_Texture (T       : Texture_Pointer;
---                              F       : access Long ;
---                              A, W, H : access Int) return Int ;
---  pragma Import(C,SDL_Query_Texture, "SDL_QueryTexture");   
+  procedure SDL_Free_Surface(S : in Surface_Pointer);
+  pragma Import (C, SDL_Free_Surface, "SDL_FreeSurface");
+ 
+  function SDL_Query_Texture (T       : Texture_Pointer;
+                              F       : access Long ;
+                              A, W, H : access Int) return Int ;
+  pragma Import(C,SDL_Query_Texture, "SDL_QueryTexture");   
     
   function SDL_Create_Renderer (W     : in Window_Pointer; 
                                 Index : in Int; 
@@ -96,8 +96,8 @@ package SDL2.Thin is
        Red, Green, Blue, Alpha : in Int) return Int ;
   pragma Import(C,SDL_Set_Render_Draw_Color, "SDL_SetRenderDrawColor");   
     
---  function SDL_Get_Error return Chars_Ptr ;
---  pragma Import(C,SDL_Get_Error, "SDL_GetError");
+  function SDL_Get_Error return Chars_Ptr ;
+  pragma Import(C,SDL_Get_Error, "SDL_GetError");
   
   
   

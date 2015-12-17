@@ -15,7 +15,7 @@ with SDL2.Video.Rectangles ;
 with SDL2.Video.Windows;
 
 
-procedure Show_Result is
+procedure Show_Result_Thin is
   use type Interfaces.C.Int;
   package C renames Interfaces.C;
       
@@ -278,4 +278,4 @@ exception
            Ada.Command_Line.Command_Name & " " & Stacktrace.Pure_Hexdump(Last_Exception_Info));
     end ;
   
-end Show_Result;
+end Show_Result_Thin;

@@ -6,7 +6,6 @@ package SDL2.Video.Rectangles is
 
   package C renames Interfaces.C;
 
-
   type Size is record
        Width  : Int;
        Height : Int;

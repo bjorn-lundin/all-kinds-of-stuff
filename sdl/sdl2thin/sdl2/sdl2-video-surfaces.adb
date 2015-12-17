@@ -30,85 +30,85 @@ package body SDL2.Video.Surfaces is
       --          Convention    => C,
       --          External_Name => "SDL_DestroyRenderer";
    begin
-      if Self.Internal /= null and then Self.Owns then
-         --           SDL_Destroy_Renderer (Self.Internal);
+      if Self.Pointer /= null and then Self.Owner then
+         --           SDL_Destroy_Renderer (Self.Pointer);
 
-         Self.Internal := null;
+         Self.Pointer := null;
       end if;
    end Finalize;
 
-   function Get_Internal (Self : in Surface) return Surface_Pointer is
+   function Get_Pointer (Self : in Surface) return Surface_Pointer is
    begin
-      return Self.Internal;
-   end Get_Internal;
+      return Self.Pointer;
+   end Get_Pointer;
    
    
    -- bnl start
    procedure Create( Self     : in out Surface;
-                     Internal : Surface_Pointer;
+                     Pointer  : Surface_Pointer;
                      Owns     : Boolean)  is
                    
    begin
-      Self.Internal := Internal;
-      Self.Owns     := Owns;
+      Self.Pointer := Pointer;
+      Self.Owner   := Owns;
    end Create;
    -- bnl stop
    
   procedure Create_Solid(Self  : in out Surface;
                          Font  : in     SDL2.TTF.Font;
-                         Color : in     SDL2.Video.Palettes.RGB_Colour ;
+                         Color : in     SDL2.Video.Palettes.RGB_Color ;
                          Text  : in     String ) is    
-    function RenderText_Solid(Font_Ptr    : SDL2.TTF.Font_Pointer ;  
+    function RenderText_Solid(Font_Ptr     : SDL2.Font_Pointer ;  
                                Text        : Interfaces.C.Strings.Chars_Ptr; 
-                               Fore_Ground : SDL2.Video.Palettes.RGB_Colour) return Surface_Pointer;
+                               Fore_Ground : SDL2.Video.Palettes.RGB_Color) return Surface_Pointer;
     pragma Import(C,RenderText_Solid, "TTF_RenderText_Solid");    
     C_Text : Interfaces.C.Strings.Chars_Ptr := Interfaces.C.Strings.New_String(Text);
     Surface_Ptr : Surface_Pointer := null;
   begin
-    Surface_Ptr := RenderText_Solid(Font_Ptr    => Font.Ptr,  
+    Surface_Ptr := RenderText_Solid(Font_Ptr    => Font.Get_Pointer,  
                                     Text        => C_Text,
                                     Fore_Ground => Color); 
     Interfaces.C.Strings.Free(C_Text);
-    Self.Create(Internal => Surface_Ptr, Owns => True);
+    Self.Create(Pointer => Surface_Ptr, Owns => True);
   end Create_Solid;
   
   procedure Create_Blended(Self  : in out Surface;
                            Font  : in     SDL2.TTF.Font;
-                           Color : in     SDL2.Video.Palettes.RGB_Colour ;
+                           Color : in     SDL2.Video.Palettes.RGB_Color ;
                            Text  : in     String ) is    
-    function RenderText_Blended(Font_Ptr    : SDL2.TTF.Font_Pointer ;  
+    function RenderText_Blended(Font_Ptr    : SDL2.Font_Pointer ;  
                                Text        : Interfaces.C.Strings.Chars_Ptr; 
-                               Fore_Ground : SDL2.Video.Palettes.RGB_Colour) return Surface_Pointer;
+                               Fore_Ground : SDL2.Video.Palettes.RGB_Color) return Surface_Pointer;
     pragma Import(C,RenderText_Blended, "TTF_RenderText_Blended");    
     C_Text : Interfaces.C.Strings.Chars_Ptr := Interfaces.C.Strings.New_String(Text);
     Surface_Ptr : Surface_Pointer := null;
   begin
-    Surface_Ptr := RenderText_Blended(Font_Ptr    => Font.Ptr,  
+    Surface_Ptr := RenderText_Blended(Font_Ptr    => Font.Get_Pointer,  
                                       Text        => C_Text,
                                       Fore_Ground => Color); 
     Interfaces.C.Strings.Free(C_Text);
-    Self.Create(Internal => Surface_Ptr, Owns => True);
+    Self.Create(Pointer => Surface_Ptr, Owns => True);
   end Create_Blended;
 
   procedure Create_Shaded(Self  : in out Surface;
                           Font  : in     SDL2.TTF.Font;
-                          Color : in     SDL2.Video.Palettes.RGB_Colour ;
-                          Back_Color : in     SDL2.Video.Palettes.RGB_Colour ;
+                          Color : in     SDL2.Video.Palettes.RGB_Color ;
+                          Back_Color : in     SDL2.Video.Palettes.RGB_Color ;
                           Text  : in     String ) is
-    function RenderText_Shaded(Font_Ptr    : SDL2.TTF.Font_Pointer ;  
+    function RenderText_Shaded(Font_Ptr    : SDL2.Font_Pointer ;  
                                Text        : Interfaces.C.Strings.Chars_Ptr; 
-                               Fore_Ground : SDL2.Video.Palettes.RGB_Colour;
-                               Back_Ground : SDL2.Video.Palettes.RGB_Colour ) return Surface_Pointer;
+                               Fore_Ground : SDL2.Video.Palettes.RGB_Color;
+                               Back_Ground : SDL2.Video.Palettes.RGB_Color ) return Surface_Pointer;
     pragma Import(C,RenderText_Shaded, "TTF_RenderText_Shaded");    
     C_Text : Interfaces.C.Strings.Chars_Ptr := Interfaces.C.Strings.New_String(Text);
     Surface_Ptr : Surface_Pointer := null;
   begin
-    Surface_Ptr := RenderText_Shaded(Font_Ptr    => Font.Ptr,  
+    Surface_Ptr := RenderText_Shaded(Font_Ptr    => Font.Get_Pointer,  
                                      Text        => C_Text,
                                      Fore_Ground => Color,
                                      Back_Ground => Back_Color); 
     Interfaces.C.Strings.Free(C_Text);
-    Self.Create(Internal => Surface_Ptr, Owns => True);
+    Self.Create(Pointer => Surface_Ptr, Owns => True);
   end Create_Shaded;
 
 
