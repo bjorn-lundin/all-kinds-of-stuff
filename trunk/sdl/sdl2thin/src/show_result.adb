@@ -10,13 +10,15 @@ with SDL2.Thin ;
 use SDL2.Thin;
 
 with SDL2.Error ; 
-with SDL2.Video.Colors ; 
+with SDL2.Video.Palettes ; 
 with SDL2.Video.Rectangles ; 
 with SDL2.Video.Windows;
 with SDL2.Video.Surfaces;
 with SDL2.Video.Textures;
+with SDL2.Video.Textures.Makers;
 with SDL2.Video.Renderers;
 with SDL2.TTF;
+with SDL2.Log;
 
 procedure Show_Result is
   use type Interfaces.C.Int;
@@ -29,8 +31,11 @@ procedure Show_Result is
   
 -- Setup
 --  Blue            :  Colour := (Red =>   0, Green =>   0, Blue => 255, Alpha => 255);
-  Blue  :  SDL2.Video.Colors.RGB_Color := (Red =>   0, Green =>   0, Blue => 255);
-  Green :  SDL2.Video.Colors.RGB_Color := (Red =>   0, Green => 255, Blue =>   0);
+  Blue  : SDL2.Video.Palettes.RGB_Color := (Red =>   0, Green =>   0, Blue => 255);
+  Green : SDL2.Video.Palettes.RGB_Color := (Red =>   0, Green => 255, Blue =>   0);
+  Red   : SDL2.Video.Palettes.RGB_Color := (Red => 255, Green =>   0, Blue =>   0);
+  
+  Grey : SDL2.Video.Palettes.Color := (Red => 192, Green => 192, Blue => 192, Alpha => 255);
   
   --Font_Ptr           :  Font_Pointer := null;
   Font : SDL2.TTF.Font;
@@ -63,27 +68,35 @@ procedure Show_Result is
      Result : C.int := 0;
   begin
     -- Clear the window and make it all red
-    Result := SDL_Render_Clear(Renderer_Ptr);
-    if Result /= 0 then
-       raise Bad with SDL2.Error.Get;
-    end if;
+   -- Result := SDL_Render_Clear(Renderer_Ptr);
+   -- if Result /= 0 then
+   --    raise Bad with SDL2.Error.Get;
+   -- end if;
     
-    Result  := SDL_Render_Copy (Renderer_Ptr,
-                                solidTexture_Ptr,
-                                null,
-                                solidRect'unchecked_access);
-    if Result /= 0 then
-       raise Bad with SDL2.Error.Get;
-    end if;
+    Renderer.Clear;
+    
+    --Result  := SDL_Render_Copy (Renderer_Ptr,
+    --                            solidTexture_Ptr,
+    --                            null,
+    --                            solidRect'unchecked_access);
+    --if Result /= 0 then
+    --   raise Bad with SDL2.Error.Get;
+    --end if;
+    
+    Renderer.Copy(Copy_From => solidTexture, To => solidRect);
+    
+    
     Put_Line("solidRect   x y w h" & solidRect.X'Img & solidRect.Y'img & solidRect.Width'img & solidRect.Height'img);
     
-    Result  := SDL_Render_Copy (Renderer_Ptr,
-                                blendedTexture_Ptr,
-                                null,
-                                blendedRect'unchecked_access);
-    if Result /= 0 then
-       raise Bad with SDL2.Error.Get;
-    end if;
+    --Result  := SDL_Render_Copy (Renderer_Ptr,
+    --                            blendedTexture_Ptr,
+    --                            null,
+    --                            blendedRect'unchecked_access);
+    --if Result /= 0 then
+    --   raise Bad with SDL2.Error.Get;
+    --end if;
+    Renderer.Copy(Copy_From => blendedTexture, To => blendedRect);
+
     Put_Line("blendedRect x y w h" & blendedRect.X'Img & blendedRect.Y'img & blendedRect.Width'img & blendedRect.Height'img);
 --    
 --    Result  := SDL_Render_Copy (Renderer_Ptr,
@@ -99,7 +112,8 @@ procedure Show_Result is
     
     
     -- Render the changes above
-    SDL_Render_Present(Renderer_Ptr);
+   -- SDL_Render_Present(Renderer_Ptr);
+    Renderer.Present;
   end Render;
   ------------------------------------------------
   procedure RunGame is
@@ -148,9 +162,9 @@ procedure Show_Result is
                                      Color => Blue ,
                                      Text  => "Thick as a brick" ) ;
     
-    SDL2.Video.Textures.Create(Self     => solidTexture,
-                               Renderer => Renderer,
-                               Surface  => Surface1);
+    SDL2.Video.Textures.Makers.Create(Self     => solidTexture,
+                                       Renderer => Renderer,
+                                       Surface  => Surface1);
     solidTexture.Query (Natural(Local_Format), 
                         Local_Acess, 
                         Local_W, 
@@ -167,9 +181,9 @@ procedure Show_Result is
                                      Color => Blue ,
                                      Text  => "Thick as a brick" ) ;
     
-    SDL2.Video.Textures.Create(Self     => blendedTexture,
-                               Renderer => Renderer,
-                               Surface  => Surface2);
+    SDL2.Video.Textures.Makers.Create(Self     => blendedTexture,
+                                      Renderer => Renderer,
+                                      Surface  => Surface2);
     blendedTexture.Query (Natural(Local_Format), 
                         Local_Acess, 
                         Local_W, 
@@ -187,9 +201,9 @@ procedure Show_Result is
                                      Color => Blue ,
                                      Text  => "Thick as a brick" ) ;
     
-    SDL2.Video.Textures.Create(Self     => shadedTexture,
-                               Renderer => Renderer,
-                               Surface  => Surface3);
+    SDL2.Video.Textures.Makers.Create(Self     => shadedTexture,
+                                      Renderer => Renderer,
+                                      Surface  => Surface3);
     shadedTexture.Query (Natural(Local_Format), 
                         Local_Acess, 
                         Local_W, 
@@ -205,10 +219,11 @@ procedure Show_Result is
   procedure InitSDL is
    
   begin
-    if SDL_Init /= 0 then
-      Put_Line ("initilise failed");
-      return ;
-    end if;  
+--    if SDL_Init /= 0 then
+--      Put_Line ("initilise failed");
+--      return ;
+--    end if;  
+    Sdl2.Init;
   end InitSDL;
 -------------------------------------------
   procedure CreateWindow is
@@ -228,14 +243,27 @@ procedure Show_Result is
   begin
      Window := SDL2.Video.Windows.Create("Rektanglar test",
           50,50,100,200,SDL2.Video.Windows.Resizable); 
+          
+     if Window.Get_Pointer = null then
+       raise Sdl_Error with SDL2.Error.Get;
+     end if;
+          
+          
   end CreateWindow;
 -----------------------------------------------------
   procedure CreateRenderer  is 
   begin
-     Renderer_Ptr := SDL_Create_Renderer(Window.Get_Pointer, -1, 16#0000_0002#);
-     if Renderer_Ptr = null then
-         raise Bad with SDL2.Error.Get;
-      end if;
+     SDL2.Video.Renderers.Create(Renderer,Window,SDL2.Video.Renderers.Accelerated);
+     if Renderer.Get_Pointer = null then
+       raise Sdl_Error with SDL2.Error.Get;
+     end if;
+    
+    
+    --Window.Get_Renderer;
+    --Renderer_Ptr := SDL_Create_Renderer(Window.Get_Pointer, -1, 16#0000_0002#);
+    --if Renderer_Ptr = null then
+    --    raise Bad with SDL2.Error.Get;
+    -- end if;
   end CreateRenderer;
 -----------------------------------------------------------
   procedure SetupRenderer is
@@ -245,15 +273,18 @@ procedure Show_Result is
     Result : C.int :=0;      
   begin
     -- Set size of renderer to the same as window
-      Result := SDL_Render_Set_Logical_Size (Renderer_Ptr, We, He);
-      if Result /= 0 then
-         raise Bad with SDL2.Error.Get;
-      end if;
+      Renderer.Set_Logical_Size(Window_Size);
+     -- Result := SDL_Render_Set_Logical_Size (Renderer_Ptr, We, He);
+     -- if Result /= 0 then
+     --    raise Bad with SDL2.Error.Get;
+     -- end if;
       
-      Result := SDL_Set_Render_Draw_Color (Renderer_Ptr, 0, 0, 0, 255);
-      if Result /= 0 then
-         raise Bad with SDL2.Error.Get;
-      end if;
+      Renderer.Set_Draw_Color (Grey);
+      
+  --    Result := SDL_Set_Render_Draw_Color (Renderer_Ptr, 0, 0, 0, 255);
+  --    if Result /= 0 then
+  --       raise Bad with SDL2.Error.Get;
+  --    end if;
  end SetupRenderer; 
 
  
@@ -269,9 +300,12 @@ procedure Show_Result is
   
  
 begin
+  SDL2.Log.Set (Category =>  SDL2.Log.Application, Priority =>  SDL2.Log.Debug);
+
   InitEverything;
   RunGame;
-  TTF_Close_Font(Font_Ptr);
+  --TTF_Close_Font(Font_Ptr);
+  Font.Close;
   TTF_Quit;
   
 exception

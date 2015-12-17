@@ -43,8 +43,6 @@ package SDL2.TTF is
     
   type Style_Array_Type is array (Style_Type'range) of Boolean ;
 
-  
-  
 --  type Font_Access ;
   
   -- TTF_Font *TTF_OpenFont( const char *file, int ptsize)
@@ -52,7 +50,6 @@ package SDL2.TTF is
          Pointer : Font_Pointer := null;
          Owner   : Boolean      := True;
    end record;
-  
     
   -- TTF_Font *TTF_OpenFont( const char *file, int ptsize)
   procedure Open(Self : in out Font; Filename : in String; Point_Size : in Integer);
@@ -79,7 +76,6 @@ package SDL2.TTF is
   procedure Close(Self : in out Font);
  
   function Get_Pointer(Self : Font) return Font_Pointer;
-  
   
   type Font_Access is access Font;
 

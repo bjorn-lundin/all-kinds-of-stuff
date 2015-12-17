@@ -1,5 +1,4 @@
 
-with  SDL2.TTF.Thin;
 with  SDL2.Log;
 with  SDL2.Error;
 --with Interfaces; use Interfaces;
@@ -10,10 +9,10 @@ package body SDL2.TTF is
   
   
   
-  function Get_Internal(Self : Font) return Font_Pointer is
+  function Get_Pointer(Self : Font) return Font_Pointer is
   begin
     return Self.Pointer;
-  end Get_Internal;
+  end Get_Pointer;
   
   --------------------------------------------------------------------------------
   -- TTF_Font *TTF_OpenFont( const char *file, int ptsize)
@@ -23,7 +22,7 @@ package body SDL2.TTF is
     pragma Import (C, TTF_Open_Font, "TTF_OpenFont");
     C_Filename : Chars_Ptr := New_String(Filename);   
   begin
-    Self.Pointer := TTF_Open_Font(C_Filename, Point_Size);
+    Self.Pointer := TTF_Open_Font(C_Filename, C.int(Point_Size));
     Free(C_Filename);
   end Open;
 
@@ -181,8 +180,10 @@ package body SDL2.TTF is
   
   --------------------------------------------------------------------------------
   procedure Debug_Print_Style(Self : in out Font)is
+    function TTF_Get_Font_Style(Font_Ptr : in SDL2.Font_Pointer) return Interfaces.C.Int ;
+    pragma Import (C, TTF_Get_Font_Style, "TTF_GetFontStyle");
   begin
-     SDL2.Log.Put_Debug ("Font Style " &  SDL2.TTF.Thin.Get_Font_Style(Self.Pointer)'Img);
+     SDL2.Log.Put_Debug ("Font Style " &  TTF_Get_Font_Style(Self.Pointer)'Img);
   end Debug_Print_Style;
   --------------------------------------------------------------------------------
   

@@ -12,7 +12,8 @@ project sdl2thin is
    for Object_Dir use "obj";
    for Exec_Dir use "exe";
    
-   for Main use ("show_result.adb");
+   for Main use ("show_result.adb",
+                 "show_result_thin.adb" );
    
    Ada_Switches := ("-ffunction-sections", 
                     "-fdata-sections",
