@@ -106,7 +106,6 @@ package SDL2.Video.Renderers is
 
    function Get_Renderer (Window : in SDL2.Video.Windows.Window_Type) return Renderer;
   
-  
    procedure Create
      (Self   : in out Renderer;
       Window : in out SDL2.Video.Windows.Window_Type;

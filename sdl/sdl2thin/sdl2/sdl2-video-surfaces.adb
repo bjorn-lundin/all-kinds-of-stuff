@@ -20,7 +20,7 @@
 --     3. This notice may not be removed or altered from any source
 --     distribution.
 --------------------------------------------------------------------------------------------------------------------
-with Interfaces.C.Strings;
+with Interfaces.C.Strings; use Interfaces.C.Strings;
 package body SDL2.Video.Surfaces is
 
    overriding
@@ -59,16 +59,16 @@ package body SDL2.Video.Surfaces is
                          Color : in     SDL2.Video.Palettes.RGB_Color ;
                          Text  : in     String ) is    
     function RenderText_Solid(Font_Ptr     : SDL2.Font_Pointer ;  
-                               Text        : Interfaces.C.Strings.Chars_Ptr; 
+                               Text        : Chars_Ptr; 
                                Fore_Ground : SDL2.Video.Palettes.RGB_Color) return Surface_Pointer;
     pragma Import(C,RenderText_Solid, "TTF_RenderText_Solid");    
-    C_Text : Interfaces.C.Strings.Chars_Ptr := Interfaces.C.Strings.New_String(Text);
+    C_Text : Chars_Ptr := New_String(Text);
     Surface_Ptr : Surface_Pointer := null;
   begin
     Surface_Ptr := RenderText_Solid(Font_Ptr    => Font.Get_Pointer,  
                                     Text        => C_Text,
                                     Fore_Ground => Color); 
-    Interfaces.C.Strings.Free(C_Text);
+    Free(C_Text);
     Self.Create(Pointer => Surface_Ptr, Owns => True);
   end Create_Solid;
   
@@ -76,17 +76,17 @@ package body SDL2.Video.Surfaces is
                            Font  : in     SDL2.TTF.Font;
                            Color : in     SDL2.Video.Palettes.RGB_Color ;
                            Text  : in     String ) is    
-    function RenderText_Blended(Font_Ptr    : SDL2.Font_Pointer ;  
-                               Text        : Interfaces.C.Strings.Chars_Ptr; 
+    function RenderText_Blended(Font_Ptr   : SDL2.Font_Pointer ;  
+                               Text        : Chars_Ptr; 
                                Fore_Ground : SDL2.Video.Palettes.RGB_Color) return Surface_Pointer;
     pragma Import(C,RenderText_Blended, "TTF_RenderText_Blended");    
-    C_Text : Interfaces.C.Strings.Chars_Ptr := Interfaces.C.Strings.New_String(Text);
+    C_Text : Chars_Ptr := New_String(Text);
     Surface_Ptr : Surface_Pointer := null;
   begin
     Surface_Ptr := RenderText_Blended(Font_Ptr    => Font.Get_Pointer,  
                                       Text        => C_Text,
                                       Fore_Ground => Color); 
-    Interfaces.C.Strings.Free(C_Text);
+    Free(C_Text);
     Self.Create(Pointer => Surface_Ptr, Owns => True);
   end Create_Blended;
 
@@ -96,18 +96,18 @@ package body SDL2.Video.Surfaces is
                           Back_Color : in     SDL2.Video.Palettes.RGB_Color ;
                           Text  : in     String ) is
     function RenderText_Shaded(Font_Ptr    : SDL2.Font_Pointer ;  
-                               Text        : Interfaces.C.Strings.Chars_Ptr; 
+                               Text        : Chars_Ptr; 
                                Fore_Ground : SDL2.Video.Palettes.RGB_Color;
                                Back_Ground : SDL2.Video.Palettes.RGB_Color ) return Surface_Pointer;
     pragma Import(C,RenderText_Shaded, "TTF_RenderText_Shaded");    
-    C_Text : Interfaces.C.Strings.Chars_Ptr := Interfaces.C.Strings.New_String(Text);
+    C_Text : Chars_Ptr := New_String(Text);
     Surface_Ptr : Surface_Pointer := null;
   begin
     Surface_Ptr := RenderText_Shaded(Font_Ptr    => Font.Get_Pointer,  
                                      Text        => C_Text,
                                      Fore_Ground => Color,
                                      Back_Ground => Back_Color); 
-    Interfaces.C.Strings.Free(C_Text);
+    Free(C_Text);
     Self.Create(Pointer => Surface_Ptr, Owns => True);
   end Create_Shaded;
 

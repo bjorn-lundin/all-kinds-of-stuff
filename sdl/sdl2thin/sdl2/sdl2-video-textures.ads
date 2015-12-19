@@ -32,14 +32,7 @@ package SDL2.Video.Textures is
       Additive        => 16#0000_0002#,
       Color_Modulate => 16#0000_0004#);
 
-   type Texture is new Ada.Finalization.Controlled with
-      record
-         Pointer      : SDL2.Texture_Pointer                        := null;
-         Owner        : Boolean                                     := True;
-         Locked       : Boolean                                     := False;
-         Size         : SDL2.Video.Windows.Sizes                    := (Positive'First, Positive'First);
-         Pixel_Format : SDL2.Video.Pixel_Formats.Pixel_Format_Names := SDL2.Video.Pixel_Formats.Pixel_Format_Unknown;
-      end record;
+   type Texture is new Ada.Finalization.Controlled with private;
 
    overriding
    procedure Finalize (Self : in out Texture);
@@ -89,15 +82,30 @@ package SDL2.Video.Textures is
                    W      : in out Interfaces.C.Int;
                    H      : in out Interfaces.C.Int);
    --bnl
+   
+   
+   Null_Texture : constant Texture ;
+
+   
+   
+   --  SDL_UpdateTexture
+   --  SDL_UpdateYUVTexture
+   
+private
+   type Texture is new Ada.Finalization.Controlled with
+      record
+         Pointer      : SDL2.Texture_Pointer                        := null;
+         Owner        : Boolean                                     := True;
+         Locked       : Boolean                                     := False;
+         Size         : SDL2.Video.Windows.Sizes                    := (Positive'First, Positive'First);
+         Pixel_Format : SDL2.Video.Pixel_Formats.Pixel_Format_Names := SDL2.Video.Pixel_Formats.Pixel_Format_Unknown;
+      end record;
+   
    Null_Texture : constant Texture := (Ada.Finalization.Controlled with
                                        Pointer      => null,
                                        Owner        => True,
                                        Size         => (Positive'First, Positive'First),
                                        Pixel_Format => Pixel_Formats.Pixel_Format_Unknown,
                                        Locked       => False);
-
    
-   
-   --  SDL_UpdateTexture
-   --  SDL_UpdateYUVTexture
 end SDL2.Video.Textures;

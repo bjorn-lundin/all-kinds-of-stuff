@@ -31,19 +31,16 @@ with SDL2.Video.Palettes;
 package SDL2.Video.Surfaces is
 
 
-   type Surface is new Ada.Finalization.Controlled with record
-         Pointer : Surface_Pointer := null;
-         Owner   : Boolean         := True;
-   end record;
+  type Surface is new Ada.Finalization.Controlled with private;
 
-   function Get_Pointer(Self : in Surface) return Surface_Pointer;
+  function Get_Pointer(Self : in Surface) return Surface_Pointer;
 
-   overriding
-   procedure Finalize (Self : in out Surface);
-   
-   procedure Create( Self     : in out Surface;
-                     Pointer  : Surface_Pointer;
-                     Owns     : Boolean)  ;
+  overriding
+  procedure Finalize (Self : in out Surface);
+  
+  procedure Create( Self     : in out Surface;
+                    Pointer  : Surface_Pointer;
+                    Owns     : Boolean)  ;
                      
   procedure Create_Solid(Self  : in out Surface;
                          Font  : in     SDL2.TTF.Font;
@@ -63,9 +60,17 @@ package SDL2.Video.Surfaces is
    
   procedure Destroy(Self  : in out Surface) ;
    
+  Null_Surface : constant Surface ;
    
+private
+  type Surface is new Ada.Finalization.Controlled with record
+        Pointer : Surface_Pointer := null;
+        Owner   : Boolean         := True;
+  end record;
+                                       
   Null_Surface : constant Surface := (Ada.Finalization.Controlled with
                                        Pointer => null,
                                        Owner   => True);
-
+                                       
+                                       
 end SDL2.Video.Surfaces;

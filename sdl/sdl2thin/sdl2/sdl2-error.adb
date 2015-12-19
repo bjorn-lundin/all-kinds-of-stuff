@@ -1,5 +1,4 @@
 
-with SDL2.Thin;
 with Interfaces.C.Strings;
 
 
