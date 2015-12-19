@@ -23,6 +23,32 @@ package body SDL2.Video.Windows is
     end return;
   end Create;        
   
+  
+  
+
+  function Create (Title : String; X,Y: Int; S: SDL2.Video.Rectangles.Size ; Flags : Window_Flags := 0)
+        return Window_Type is
+  begin
+    return Create(Title => Title,
+                  X     => X,
+                  Y     => Y,
+                  W     => S.Width,                  
+                  H     => S.Height,
+                  Flags => Flags);
+  end;  
+        
+  function Create (Title : String; R: SDL2.Video.Rectangles.Rectangle ; Flags : Window_Flags := 0)
+        return Window_Type is
+  begin
+    return Create(Title => Title,
+                  X     => R.X,
+                  Y     => R.Y,
+                  W     => R.Width,                  
+                  H     => R.Height,
+                  Flags => Flags);
+  end;  
+  
+  
   function Get_Pointer (Self : Window_Type) return SDL2.Window_Pointer is
   begin
     return Self.Pointer;

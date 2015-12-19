@@ -23,13 +23,11 @@
 with Interfaces.C;
 with SDL2.Error;
 with System;
-with SDL2.Video.Surfaces;
+
 with SDL2.Log;
 
 package body SDL2.Video.Renderers is
    package C renames Interfaces.C;
-
-   use type C.int;
 
    type Internal_Flip is mod 2 ** 32 ;
    pragma Convention(C,Internal_Flip);
@@ -78,7 +76,7 @@ package body SDL2.Video.Renderers is
       Result : C.int := SDL_Get_Render_Draw_Blend_Mode (Self.Pointer, Mode'access);
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
       return Mode;
    end Get_Blend_Mode;
@@ -90,7 +88,7 @@ package body SDL2.Video.Renderers is
       Result : C.int := SDL_Set_Render_Draw_Blend_Mode (Self.Pointer, Mode);
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Set_Blend_Mode;
 
@@ -104,7 +102,7 @@ package body SDL2.Video.Renderers is
       Result : C.int := SDL_Get_Render_Draw_Color (Self.Pointer, R'access, G'access, B'access, A'access);
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
       Color := (R, G, B, A);
       return Color;
@@ -118,7 +116,7 @@ package body SDL2.Video.Renderers is
       Result : C.int := SDL_Set_Render_Draw_Color (Self.Pointer, Color.Red, Color.Green, Color.Blue, Color.Alpha);
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Set_Draw_Color;
 
@@ -128,7 +126,7 @@ package body SDL2.Video.Renderers is
       Result : C.int := SDL_Render_Clear (Self.Pointer);
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Clear;
 
@@ -148,7 +146,7 @@ package body SDL2.Video.Renderers is
                                          null);
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Copy;
 
@@ -174,7 +172,7 @@ package body SDL2.Video.Renderers is
                                          Tmp_To'access);
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Copy;
    
@@ -197,7 +195,7 @@ package body SDL2.Video.Renderers is
                                          Tmp_To'access);
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Copy;
    --bnl
@@ -234,7 +232,7 @@ package body SDL2.Video.Renderers is
                                             Internal_Flips (Flip));
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Copy;
 
@@ -245,7 +243,7 @@ package body SDL2.Video.Renderers is
       Result : C.int := SDL_Render_Draw_Line (Self.Pointer, Line.Start.X, Line.Start.Y, Line.Finish.X, Line.Finish.Y);
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Draw;
 
@@ -260,7 +258,7 @@ package body SDL2.Video.Renderers is
       Result : C.int := SDL_Render_Draw_Lines (Self.Pointer, Tmp_Lines'access, C.int (Lines'Length * 2));
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Draw;
 
@@ -273,7 +271,7 @@ package body SDL2.Video.Renderers is
       Result : C.int := SDL_Render_Draw_Point (Self.Pointer, Point.X, Point.Y);
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Draw;
 
@@ -288,7 +286,7 @@ package body SDL2.Video.Renderers is
       Result : C.int := SDL_Render_Draw_Points (Self.Pointer, Points'address, C.int (Points'Length));
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Draw;
 
@@ -303,7 +301,7 @@ package body SDL2.Video.Renderers is
       Result : C.int := SDL_Render_Draw_Rect (Self.Pointer, Tmp_R'access);
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Draw;
 
@@ -318,7 +316,7 @@ package body SDL2.Video.Renderers is
       Result : C.int := SDL_Render_Draw_Rects (Self.Pointer, Rectangles'address, C.int (Rectangles'Length));
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Draw;
 
@@ -333,7 +331,7 @@ package body SDL2.Video.Renderers is
       Result : C.int := SDL_Render_Fill_Rect (Self.Pointer, Tmp_R'access);
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Fill;
 
@@ -347,7 +345,7 @@ package body SDL2.Video.Renderers is
       Result : C.int := SDL_Render_Fill_Rects (Self.Pointer, Rectangles'address, C.int (Rectangles'Length));
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Fill;
 
@@ -374,7 +372,7 @@ package body SDL2.Video.Renderers is
       Result : C.int := SDL_Render_Set_Clip_Rect (Self.Pointer, Tmp_R'access);
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Set_Clip;
 
@@ -393,17 +391,13 @@ package body SDL2.Video.Renderers is
 
    procedure Set_Logical_Size (Self : in out Renderer; Size : in SDL2.Video.Rectangles.Size) is
       function SDL_Render_Set_Logical_Size (R : in Renderer_Pointer;
-                                            W : access Interfaces.C.Int;
-                                            H : access Interfaces.C.Int ) return C.int with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_RenderSetLogicalSize";
-      We : aliased Interfaces.C.Int := Size.Width;
-      He : aliased Interfaces.C.Int := Size.Height;
-      Result : C.int := SDL_Render_Set_Logical_Size (Self.Pointer, We'access, He'access);
+                                            W : Interfaces.C.Int;
+                                            H : Interfaces.C.Int ) return C.int ;
+      pragma Import (C, SDL_Render_Set_Logical_Size,"SDL_RenderSetLogicalSize");
+      Result : C.int := SDL_Render_Set_Logical_Size (Self.Pointer, Size.Width, Size.Height);
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Set_Logical_Size;
 
@@ -430,7 +424,7 @@ package body SDL2.Video.Renderers is
       Result : C.int := SDL_Render_Set_Scale (Self.Pointer, C.C_float (X), C.C_float (Y));
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Set_Scale;
 
@@ -457,7 +451,7 @@ package body SDL2.Video.Renderers is
       Result : C.int := SDL_Render_Set_Viewport (Self.Pointer, Tmp_R'access);
    begin
       if Result /= Success then
-         raise  SDL_Error with SDL2.Error.Get;
+         raise SDL_Error with SDL2.Error.Get;
       end if;
    end Set_Viewport;
 
@@ -561,15 +555,22 @@ package body SDL2.Video.Renderers is
       Surface : in out SDL2.Video.Surfaces.Surface)
     --  with Post => Self.Pointer /= null
       is
-
-      function SDL_Create_Software_Renderer (S : in SDL2.Video.Surfaces.Surface_Pointer)
-                                             return Renderer_Pointer with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_CreateSoftwareRenderer";
+      function SDL_Create_Software_Renderer (S : in SDL2.Surface_Pointer)
+                                             return Renderer_Pointer ;
+      pragma Import(c, SDL_Create_Software_Renderer, "SDL_CreateSoftwareRenderer");
    begin
       Self.Pointer := SDL_Create_Software_Renderer (Surface.Get_Pointer);
-      Self.Owner     := True;
+      Self.Owner   := True;
    end Create;
+
+   procedure Create
+     (Self    : in out Renderer;
+      Pointer : SDL2.Renderer_Pointer;
+      Owner   : Boolean) is
+   begin
+      Self.Pointer := Pointer;
+      Self.Owner   := Owner;
+   end Create;
+
    
 end SDL2.Video.Renderers;

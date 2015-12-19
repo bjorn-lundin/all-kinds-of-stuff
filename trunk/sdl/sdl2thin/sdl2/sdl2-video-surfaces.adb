@@ -114,12 +114,12 @@ package body SDL2.Video.Surfaces is
 
   
 -- Finalize will do this  
---  procedure Destroy(Surface  : in out SDL2.Video.Surfaces.Surface) is
---    procedure SDL_FreeSurface ( Surface_Ptr : in Surface_Pointer);
---    pragma Import (C, SDL_FreeSurface, "SDL_FreeSurface");
---  begin
---    SDL_FreeSurface(Surface.Internal);
---  end Destroy;  
+  procedure Destroy(Self  : in out SDL2.Video.Surfaces.Surface) is
+    procedure SDL_FreeSurface ( Surface_Ptr : in Surface_Pointer);
+    pragma Import (C, SDL_FreeSurface, "SDL_FreeSurface");
+  begin
+    SDL_FreeSurface(Self.Pointer);
+  end Destroy;  
   
   --SDL_FreeSurface                   
    

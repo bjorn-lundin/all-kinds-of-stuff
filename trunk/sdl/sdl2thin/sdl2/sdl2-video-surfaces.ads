@@ -30,8 +30,6 @@ with SDL2.Video.Palettes;
 
 package SDL2.Video.Surfaces is
 
-   type Surface_Pointer is access all Interfaces.C.Int ;
-   pragma Convention(C, Surface_Pointer);
 
    type Surface is new Ada.Finalization.Controlled with record
          Pointer : Surface_Pointer := null;
@@ -62,6 +60,9 @@ package SDL2.Video.Surfaces is
                           Color      : in     SDL2.Video.Palettes.RGB_Color ;
                           Back_Color : in     SDL2.Video.Palettes.RGB_Color ;
                           Text       : in     String ) ;
+   
+  procedure Destroy(Self  : in out Surface) ;
+   
    
   Null_Surface : constant Surface := (Ada.Finalization.Controlled with
                                        Pointer => null,

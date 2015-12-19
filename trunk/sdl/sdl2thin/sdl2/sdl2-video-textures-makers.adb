@@ -65,14 +65,14 @@ package body SDL2.Video.Textures.Makers is
       Surface  : in SDL2.Video.Surfaces.Surface) is
 
       function SDL_Create_Texture_Form_Surface (R : in  SDL2.Renderer_Pointer;
-                                                S : in  SDL2.Video.Surfaces.Surface_Pointer)
+                                                S : in  SDL2.Surface_Pointer)
                                                 return Texture_Pointer ;
       pragma Import (C, SDL_Create_Texture_Form_Surface, "SDL_CreateTextureFromSurface");
    begin
       Self.Pointer := SDL_Create_Texture_Form_Surface(Renderer.Get_Pointer,
-                                                       Surface.Get_Pointer);
+                                                      Surface.Get_Pointer);
                                                        
-      pragma compile_Time_Warning (True, "query for size and pixel format ");                                                       
+      pragma Compile_Time_Warning (True, "query for size and pixel format ");                                                       
 
       if Self.Pointer = null then
          raise Texture_Error with SDL2.Error.Get;
