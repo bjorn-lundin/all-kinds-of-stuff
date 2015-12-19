@@ -23,6 +23,12 @@
 with Ada.Finalization; use Ada.Finalization;
 
 package body SDL2.Video.Palettes is
+
+  procedure Dummy is
+  begin
+    null;
+  end Dummy;
+
    --  function Element_Value (Container : in Palette_array; Pos : in Palette_Cursor) return Color is
    --  begin
    --     return Pos.Current.all;
@@ -66,100 +72,100 @@ package body SDL2.Video.Palettes is
    --        Current   => Curr);
    --  end Next;
 
-   type Iterator (Container : access constant Palette'Class) is new Limited_Controlled and
-        Palette_Iterator_Interfaces.Forward_Iterator with
-   record
-      Index : Natural;
-   end record;
-
-   overriding
-   function First (Object : Iterator) return Cursor;
-
-   overriding
-   function Next (Object : Iterator; Position : Cursor) return Cursor;
-
-   function Element (Position : in Cursor) return Color is
-   begin
-      --  return Position.Container.Data.Colors (Position.Index);
-      return Color_Array_Pointer.Value (Position.Current) (0);
-   end Element;
-
-   function Has_Element (Position : Cursor) return Boolean is
-   begin
-      if Position.Index <= Natural (Position.Container.Data.Total) then
-         return True;
-      end if;
-
-      return False;
-   end Has_Element;
-
-   function Constant_Reference
-     (Container : aliased Palette;
-      Position  : Cursor) return Color is
-   begin
-      --  Put_Line ("Constant_Reference" & Natural'Image (Position.Index));
-
-      --  return Position.Container.Data.Colors (Position.Index);
-      return Color_Array_Pointer.Value (Position.Current) (0);
-   end Constant_Reference;
-
-   function Iterate (Container : Palette) return
-     Palette_Iterator_Interfaces.Forward_Iterator'Class is
-   begin
---      Put_Line ("Iterate");
-
-      return It : constant Iterator :=
-        (Limited_Controlled with
-           Container => Container'Access, Index => Natural'First + 1)
-      do
-         --  Put_Line ("  index = " & Natural'Image(It.Index));
-         null;
-      end return;
-   end Iterate;
-
-   function Create (Total_Colors : in Positive) return Palette is
-      function SDL_Alloc_Palette (Ncolors : in C.int) return Internal_Palette_Access ;
-      pragma Import(C, SDL_Alloc_Palette, "SDL_AllocPalette");
-   begin
-      return P : constant Palette :=
-        (Data => SDL_Alloc_Palette (C.int (Total_Colors)))
-      do
-         null;
-      end return;
-   end Create;
-
-   procedure Free (Container : in out Palette) is
-      procedure SDL_Free_Palette (Self : in Internal_Palette_Access) ;
-      pragma Import(C, SDL_Free_Palette, "SDL_FreePalette");
-   begin
-      SDL_Free_Palette (Container.Data);
-      Container.Data := null;
-   end Free;
-
-   overriding
-   function First (Object : Iterator) return Cursor is
-   begin
-      --  Put_Line ("First -> Index = " & Natural'Image (Object.Index));
-
-      return Cursor'(Container => Object.Container,
-                     Index     => Object.Index,
-                     Current   => Object.Container.Data.Colors);
-   end First;
-
-   overriding
-   function Next (Object : Iterator; Position : Cursor) return Cursor is
-      Next_Ptr : Color_Array_Pointer.Pointer := Position.Current;
-   begin
-      Color_Array_Pointer.Increment (Next_Ptr);
-
-      --  Put_Line ("Next");
-
-      --  if Object.Container /= Position.Container then
-      --     raise Program_Error with "Wrong containers";
-      --  end if;
-
-      return Cursor'(Container => Object.Container,
-                     Index     => Position.Index + 1,
-                     Current   => Next_Ptr);
-   end Next;
+--   type Iterator (Container : access constant Palette'Class) is new Limited_Controlled and
+--        Palette_Iterator_Interfaces.Forward_Iterator with
+--   record
+--      Index : Natural;
+--   end record;
+--
+--   overriding
+--   function First (Object : Iterator) return Cursor;
+--
+--   overriding
+--   function Next (Object : Iterator; Position : Cursor) return Cursor;
+--
+--   function Element (Position : in Cursor) return Color is
+--   begin
+--      --  return Position.Container.Data.Colors (Position.Index);
+--      return Color_Array_Pointer.Value (Position.Current) (0);
+--   end Element;
+--
+--   function Has_Element (Position : Cursor) return Boolean is
+--   begin
+--      if Position.Index <= Natural (Position.Container.Data.Total) then
+--         return True;
+--      end if;
+--
+--      return False;
+--   end Has_Element;
+--
+--   function Constant_Reference
+--     (Container : aliased Palette;
+--      Position  : Cursor) return Color is
+--   begin
+--      --  Put_Line ("Constant_Reference" & Natural'Image (Position.Index));
+--
+--      --  return Position.Container.Data.Colors (Position.Index);
+--      return Color_Array_Pointer.Value (Position.Current) (0);
+--   end Constant_Reference;
+--
+--   function Iterate (Container : Palette) return
+--     Palette_Iterator_Interfaces.Forward_Iterator'Class is
+--   begin
+----      Put_Line ("Iterate");
+--
+--      return It : constant Iterator :=
+--        (Limited_Controlled with
+--           Container => Container'Access, Index => Natural'First + 1)
+--      do
+--         --  Put_Line ("  index = " & Natural'Image(It.Index));
+--         null;
+--      end return;
+--   end Iterate;
+--
+--   function Create (Total_Colors : in Positive) return Palette is
+--      function SDL_Alloc_Palette (Ncolors : in C.int) return Internal_Palette_Access ;
+--      pragma Import(C, SDL_Alloc_Palette, "SDL_AllocPalette");
+--   begin
+--      return P : constant Palette :=
+--        (Data => SDL_Alloc_Palette (C.int (Total_Colors)))
+--      do
+--         null;
+--      end return;
+--   end Create;
+--
+--   procedure Free (Container : in out Palette) is
+--      procedure SDL_Free_Palette (Self : in Internal_Palette_Access) ;
+--      pragma Import(C, SDL_Free_Palette, "SDL_FreePalette");
+--   begin
+--      SDL_Free_Palette (Container.Data);
+--      Container.Data := null;
+--   end Free;
+--
+--   overriding
+--   function First (Object : Iterator) return Cursor is
+--   begin
+--      --  Put_Line ("First -> Index = " & Natural'Image (Object.Index));
+--
+--      return Cursor'(Container => Object.Container,
+--                     Index     => Object.Index,
+--                     Current   => Object.Container.Data.Colors);
+--   end First;
+--
+--   overriding
+--   function Next (Object : Iterator; Position : Cursor) return Cursor is
+--      Next_Ptr : Color_Array_Pointer.Pointer := Position.Current;
+--   begin
+--      Color_Array_Pointer.Increment (Next_Ptr);
+--
+--      --  Put_Line ("Next");
+--
+--      --  if Object.Container /= Position.Container then
+--      --     raise Program_Error with "Wrong containers";
+--      --  end if;
+--
+--      return Cursor'(Container => Object.Container,
+--                     Index     => Position.Index + 1,
+--                     Current   => Next_Ptr);
+--   end Next;
 end SDL2.Video.Palettes;

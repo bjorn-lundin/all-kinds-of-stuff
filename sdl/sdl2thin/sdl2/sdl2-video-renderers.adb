@@ -263,11 +263,8 @@ package body SDL2.Video.Renderers is
    end Draw;
 
    procedure Draw (Self : in out Renderer; Point : in SDL2.Video.Rectangles.Point) is
-      function SDL_Render_Draw_Point (R : in Renderer_Pointer; X, Y : in C.int) return C.int with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_RenderDrawPoint";
-
+      function SDL_Render_Draw_Point (R : in Renderer_Pointer; X, Y : in C.int) return C.int ;
+      pragma Import (C,SDL_Render_Draw_Point,"SDL_RenderDrawPoint");
       Result : C.int := SDL_Render_Draw_Point (Self.Pointer, Point.X, Point.Y);
    begin
       if Result /= Success then
@@ -278,11 +275,8 @@ package body SDL2.Video.Renderers is
    procedure Draw (Self : in out Renderer; Points : in SDL2.Video.Rectangles.Point_Arrays) is
       function SDL_Render_Draw_Points (R     : in Renderer_Pointer;
                                        P     : in System.Address;
-                                       Count : in C.int) return C.int with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_RenderDrawPoints";
-
+                                       Count : in C.int) return C.int ;
+      pragma Import (C,SDL_Render_Draw_Points,"SDL_RenderDrawPoints");
       Result : C.int := SDL_Render_Draw_Points (Self.Pointer, Points'address, C.int (Points'Length));
    begin
       if Result /= Success then
@@ -291,12 +285,9 @@ package body SDL2.Video.Renderers is
    end Draw;
 
    procedure Draw (Self : in out Renderer; Rectangle : in SDL2.Video.Rectangles.Rectangle) is
-      type Rectangle_Ptr is access all SDL2.Video.Rectangles.Rectangle;
       function SDL_Render_Draw_Rect (R    : in Renderer_Pointer;
-                                     Rect : in Rectangle_Ptr) return C.int with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_RenderDrawRect";
+                                     Rect :  access SDL2.Video.Rectangles.Rectangle) return C.int ;
+      pragma Import (C,SDL_Render_Draw_Rect,"SDL_RenderDrawRect");
       Tmp_R : aliased SDL2.Video.Rectangles.Rectangle := Rectangle;
       Result : C.int := SDL_Render_Draw_Rect (Self.Pointer, Tmp_R'access);
    begin
@@ -308,11 +299,8 @@ package body SDL2.Video.Renderers is
    procedure Draw (Self : in out Renderer; Rectangles : in SDL2.Video.Rectangles.Rectangle_Arrays) is
       function SDL_Render_Draw_Rects (R     : in Renderer_Pointer;
                                       Rect  : in System.Address;
-                                      Count : in C.int) return C.int with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_RenderDrawRects";
-
+                                      Count : in C.int) return C.int ;
+      pragma Import (C,SDL_Render_Draw_Rects,"SDL_RenderDrawRects");
       Result : C.int := SDL_Render_Draw_Rects (Self.Pointer, Rectangles'address, C.int (Rectangles'Length));
    begin
       if Result /= Success then
@@ -321,12 +309,9 @@ package body SDL2.Video.Renderers is
    end Draw;
 
    procedure Fill (Self : in out Renderer; Rectangle : in SDL2.Video.Rectangles.Rectangle) is
-      type Rectangle_Ptr is access all SDL2.Video.Rectangles.Rectangle;
       function SDL_Render_Fill_Rect (R    : in Renderer_Pointer;
-                                     Rect : in Rectangle_Ptr) return C.int with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_RenderFillRect";
+                                     Rect : access SDL2.Video.Rectangles.Rectangle) return C.int ;
+      pragma Import (C,SDL_Render_Fill_Rect,"SDL_RenderFillRect");
       Tmp_R : aliased  SDL2.Video.Rectangles.Rectangle := Rectangle;
       Result : C.int := SDL_Render_Fill_Rect (Self.Pointer, Tmp_R'access);
    begin
@@ -338,10 +323,8 @@ package body SDL2.Video.Renderers is
    procedure Fill (Self : in out Renderer; Rectangles : in SDL2.Video.Rectangles.Rectangle_Arrays) is
       function SDL_Render_Fill_Rects (R     : in Renderer_Pointer;
                                       Rect  : in System.Address;
-                                      Count : in C.int) return C.int with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_RenderFillRects";
+                                      Count : in C.int) return C.int ;
+      pragma Import (C,SDL_Render_Fill_Rects,"SDL_RenderFillRects");
       Result : C.int := SDL_Render_Fill_Rects (Self.Pointer, Rectangles'address, C.int (Rectangles'Length));
    begin
       if Result /= Success then
@@ -351,10 +334,8 @@ package body SDL2.Video.Renderers is
 
    procedure Get_Clip (Self : in Renderer; Rectangle : out SDL2.Video.Rectangles.Rectangle) is
       procedure SDL_Render_Get_Clip_Rect (R    : in Renderer_Pointer;
-                                          Rect : access SDL2.Video.Rectangles.Rectangle) with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_RenderGetClipRect";
+                                          Rect : access SDL2.Video.Rectangles.Rectangle) ;
+      pragma Import (C,SDL_Render_Get_Clip_Rect,"SDL_RenderGetClipRect");
       Tmp_R : aliased SDL2.Video.Rectangles.Rectangle := SDL2.Video.Rectangles.Null_Rectangle;
    begin
       SDL_Render_Get_Clip_Rect (Self.Pointer, Tmp_R'access);
@@ -363,11 +344,8 @@ package body SDL2.Video.Renderers is
 
    procedure Set_Clip (Self : in out Renderer; Rectangle : in SDL2.Video.Rectangles.Rectangle) is
       function SDL_Render_Set_Clip_Rect (R    : in Renderer_Pointer;
-                                         Rect : access SDL2.Video.Rectangles.Rectangle) return C.int with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_RenderSetClipRect";
-
+                                         Rect : access SDL2.Video.Rectangles.Rectangle) return C.int ;
+      pragma Import (C,SDL_Render_Set_Clip_Rect,"SDL_RenderSetClipRect");
       Tmp_R : aliased SDL2.Video.Rectangles.Rectangle := Rectangle;
       Result : C.int := SDL_Render_Set_Clip_Rect (Self.Pointer, Tmp_R'access);
    begin
@@ -379,10 +357,8 @@ package body SDL2.Video.Renderers is
    procedure Get_Logical_Size (Self : in Renderer; Size : out SDL2.Video.Rectangles.Size) is
       procedure SDL_Render_Get_Logical_Size (R : in Renderer_Pointer;
                                              W : access Interfaces.C.Int;
-                                             H : access Interfaces.C.Int ) with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_RenderGetLogicalSize";
+                                             H : access Interfaces.C.Int ) ;
+      pragma Import (C,SDL_Render_Get_Logical_Size,"SDL_RenderGetLogicalSize");
       We,He : aliased Interfaces.C.Int ;
    begin
       SDL_Render_Get_Logical_Size (Self.Pointer, We'access, He'access);

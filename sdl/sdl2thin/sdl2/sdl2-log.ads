@@ -50,8 +50,9 @@ package SDL2.Log is
    --  Custom categories.
    subtype Custom_Categories is Categories range Reserved_Last .. Categories'Last;
 
-   type Priorities is (Verbose, Debug, Info, Warn, Error, Critical) with
-     Convention => C;
+   type Priorities is (Verbose, Debug, Info, Warn, Error, Critical) ;
+   pragma Convention(C,Priorities);
+   
 
    for Priorities use
      (Verbose  => 1,
