@@ -1,5 +1,6 @@
 
 with Ada.Finalization;
+with SDL2.Video.Rectangles;
 
 package SDL2.Video.Windows is
 
@@ -32,7 +33,16 @@ package SDL2.Video.Windows is
 
   function Create (Title : String; X,Y,W,H : Int; Flags : Window_Flags := 0)
         return Window_Type;
-  
+        
+
+  function Create (Title : String; X,Y: Int; S: SDL2.Video.Rectangles.Size ; Flags : Window_Flags := 0)
+        return Window_Type;  
+        
+  function Create (Title : String; R: SDL2.Video.Rectangles.Rectangle ; Flags : Window_Flags := 0)
+        return Window_Type;  
+
+
+        
   function Get_Pointer (Self : Window_Type) return SDL2.Window_Pointer;
   
   

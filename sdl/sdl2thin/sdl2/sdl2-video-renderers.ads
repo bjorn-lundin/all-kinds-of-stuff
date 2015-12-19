@@ -28,11 +28,8 @@ package SDL2.Video.Renderers is
 
    --  SDL_GetRenderDriverInfo
 
-   type Renderer is new Ada.Finalization.Controlled with
-      record
-         Pointer : SDL2.Renderer_Pointer := null;
-         Owner   : Boolean                   := True;  --  Does this Window type own the Internal data?
-      end record;
+   type Renderer is new Ada.Finalization.Controlled with private;
+
 
    overriding
    procedure Finalize (Self : in out Renderer);
@@ -129,11 +126,26 @@ package SDL2.Video.Renderers is
       Surface : in out SDL2.Video.Surfaces.Surface);
     --  with Post => Self.Pointer /= null
   
+
+   procedure Create
+     (Self    : in out Renderer;
+      Pointer : SDL2.Renderer_Pointer;
+      Owner   : Boolean);
+    --  with Post => Self.Pointer /= null
+    
   
+   Null_Renderer : constant Renderer;
   
-   Null_Renderer : constant Renderer := (Ada.Finalization.Controlled with
-                                         Pointer => null,
-                                         Owner   => True);
+private
+   type Renderer is new Ada.Finalization.Controlled with
+      record
+         Pointer : SDL2.Renderer_Pointer := null;
+         Owner   : Boolean                   := True;  --  Does this Window type own the Internal data?
+      end record;
+
+  Null_Renderer : constant Renderer := (Ada.Finalization.Controlled with
+                                        Pointer => null,
+                                        Owner   => True);
   
 end SDL2.Video.Renderers;
 

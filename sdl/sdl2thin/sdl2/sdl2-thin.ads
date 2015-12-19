@@ -2,7 +2,7 @@
 with Interfaces.C;          use Interfaces.C;
 with Interfaces.C.Strings;  use Interfaces.C.Strings;
 with SDL2.Video.Rectangles; use SDL2.Video.Rectangles;
-with SDL2.Video.Colors;     use SDL2.Video.Colors;
+with SDL2.Video.Palettes;   use  SDL2.Video.Palettes;
 with SDL2.Video.Windows;   
 with SDL2.Video.Renderers;  
 

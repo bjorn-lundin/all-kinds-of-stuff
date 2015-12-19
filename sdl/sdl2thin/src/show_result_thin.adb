@@ -10,7 +10,7 @@ with SDL2.Thin ;
 use SDL2.Thin;
 
 with SDL2.Error ; 
-with SDL2.Video.Colors ; 
+with SDL2.Video.Palettes;
 with SDL2.Video.Rectangles ; 
 with SDL2.Video.Windows;
 
@@ -26,8 +26,8 @@ procedure Show_Result_Thin is
   
 -- Setup
 --  Blue            :  Colour := (Red =>   0, Green =>   0, Blue => 255, Alpha => 255);
-  Blue  :  SDL2.Video.Colors.RGB_Color := (Red =>   0, Green =>   0, Blue => 255);
-  Green :  SDL2.Video.Colors.RGB_Color := (Red =>   0, Green => 255, Blue =>   0);
+  Blue  :  SDL2.Video.Palettes.RGB_Color := (Red =>   0, Green =>   0, Blue => 255);
+  Green :  SDL2.Video.Palettes.RGB_Color := (Red =>   0, Green => 255, Blue =>   0);
   
   Font_Ptr           :  Font_Pointer := null;
   solidTexture_Ptr   :  Texture_Pointer := null;
