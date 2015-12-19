@@ -1,5 +1,6 @@
 with Ada.Command_Line;
 with Ada.Exceptions;
+with Ada.Directories;
 with Interfaces.C;
 with Text_Io; use Text_Io;
 with Stacktrace;
@@ -17,6 +18,7 @@ with SDL2.Log;
 
 procedure Show_Result_Test is
   use type Interfaces.C.Int;
+  package AD renames Ada.Directories;
 
 -- Setup
   RGB_Blue  :  SDL2.Video.Palettes.RGB_Color := (Red =>   0, Green =>   0, Blue => 255);
@@ -179,7 +181,12 @@ procedure Show_Result_Test is
     SDL2.Log.Put_Debug("6");
     SDL2.TTF.Init;
     SDL2.Log.Put_Debug("7");
-    Font.Open("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 90);
+    
+    if AD.Exists("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf") then
+      Font.Open("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 90);
+    elsif  AD.Exists("/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf") then
+      Font.Open("/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf", 90);
+    end if;    
     SDL2.Log.Put_Debug("8");
     CreateTextTextures;
     SDL2.Log.Put_Debug("9");
