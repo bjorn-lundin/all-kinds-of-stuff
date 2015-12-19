@@ -24,23 +24,16 @@ package SDL2.Video.Windows is
    Mouse_Focus         : constant Window_Flags := 16#0000_0400#;
    Full_Screen_Desktop : constant Window_Flags := Full_Screen or 16#0000_1000#;
   
-  
-
-  type Window_Type is new Ada.Finalization.Controlled with record
-    Pointer : SDL2.Window_Pointer := null;
-    Owner   : Boolean := True;
-  end record;
+  type Window_Type is new Ada.Finalization.Controlled with private;
 
   function Create (Title : String; X,Y,W,H : Int; Flags : Window_Flags := 0)
         return Window_Type;
-        
 
   function Create (Title : String; X,Y: Int; S: SDL2.Video.Rectangles.Size ; Flags : Window_Flags := 0)
         return Window_Type;  
         
   function Create (Title : String; R: SDL2.Video.Rectangles.Rectangle ; Flags : Window_Flags := 0)
         return Window_Type;  
-
 
         
   function Get_Pointer (Self : Window_Type) return SDL2.Window_Pointer;
@@ -57,6 +50,15 @@ package SDL2.Video.Windows is
   type Sizes is record
      Width  : Positive;
      Height : Positive;
+  end record;
+  
+private
+
+
+
+  type Window_Type is new Ada.Finalization.Controlled with record
+    Pointer : SDL2.Window_Pointer := null;
+    Owner   : Boolean := True;
   end record;
   
   

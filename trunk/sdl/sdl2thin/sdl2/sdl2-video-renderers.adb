@@ -138,7 +138,7 @@ package body SDL2.Video.Renderers is
         (R         : in Renderer_Pointer;
          T         : in SDL2.Texture_Pointer;
          Src       : access SDL2.Video.Rectangles.Rectangle;
-         Dest      : access SDL2.Video.Rectangles.Rectangle) return C.int ;         
+         Dest      : access SDL2.Video.Rectangles.Rectangle) return C.int ;
       pragma Import (C,SDL_Render_Copy,"SDL_RenderCopy");
       Result : C.int := SDL_Render_Copy (Self.Pointer,
                                          Copy_From.Get_Pointer,
@@ -161,7 +161,7 @@ package body SDL2.Video.Renderers is
         (R         : in Renderer_Pointer;
          T         : in SDL2.Texture_Pointer;
          Src       : access SDL2.Video.Rectangles.Rectangle;
-         Dest      : access SDL2.Video.Rectangles.Rectangle) return C.int ;         
+         Dest      : access SDL2.Video.Rectangles.Rectangle) return C.int ;
       pragma Import (C,SDL_Render_Copy,"SDL_RenderCopy");
       Tmp_From : aliased SDL2.Video.Rectangles.Rectangle := From;
       Tmp_To : aliased SDL2.Video.Rectangles.Rectangle := To;
@@ -175,7 +175,7 @@ package body SDL2.Video.Renderers is
          raise SDL_Error with SDL2.Error.Get;
       end if;
    end Copy;
-   
+
    --bnl
    procedure Copy
      (Self      : in out Renderer;
@@ -186,7 +186,7 @@ package body SDL2.Video.Renderers is
         (R         : in Renderer_Pointer;
          T         : in SDL2.Texture_Pointer;
          Src       : access SDL2.Video.Rectangles.Rectangle;
-         Dest      : access SDL2.Video.Rectangles.Rectangle) return C.int ;         
+         Dest      : access SDL2.Video.Rectangles.Rectangle) return C.int ;
       pragma Import (C,SDL_Render_Copy,"SDL_RenderCopy");
       Tmp_To : aliased SDL2.Video.Rectangles.Rectangle := To;
       Result : C.int := SDL_Render_Copy (Self.Pointer,
@@ -312,7 +312,7 @@ package body SDL2.Video.Renderers is
         Import        => True,
         Convention    => C,
         External_Name => "SDL_RenderDrawRects";
-        
+
       Result : C.int := SDL_Render_Draw_Rects (Self.Pointer, Rectangles'address, C.int (Rectangles'Length));
    begin
       if Result /= Success then
@@ -337,7 +337,7 @@ package body SDL2.Video.Renderers is
 
    procedure Fill (Self : in out Renderer; Rectangles : in SDL2.Video.Rectangles.Rectangle_Arrays) is
       function SDL_Render_Fill_Rects (R     : in Renderer_Pointer;
-                                      Rect  : in System.Address;                                      
+                                      Rect  : in System.Address;
                                       Count : in C.int) return C.int with
         Import        => True,
         Convention    => C,
@@ -402,12 +402,10 @@ package body SDL2.Video.Renderers is
    end Set_Logical_Size;
 
    procedure Get_Scale (Self : in Renderer; X, Y : out Float) is
-      procedure SDL_Render_Get_Scale (R : in Renderer_Pointer; 
-                                      X : access  C.C_Float;
-                                      Y : access  C.C_Float) with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_RenderGetScale";
+      procedure SDL_Render_Get_Scale (R : in Renderer_Pointer;
+                                      X : access C.C_Float;
+                                      Y : access C.C_Float) ;
+      pragma Import (C, SDL_Render_Get_Scale,"SDL_RenderGetScale");
       Xa : aliased C.C_float;
       Ya : aliased C.C_float;
    begin
@@ -417,10 +415,8 @@ package body SDL2.Video.Renderers is
    end Get_Scale;
 
    procedure Set_Scale (Self : in out Renderer; X, Y : in Float) is
-      function SDL_Render_Set_Scale (R : in Renderer_Pointer; X, Y : in C.C_float) return C.int with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_RenderSetScale";
+      function SDL_Render_Set_Scale (R : in Renderer_Pointer; X, Y : in C.C_float) return C.int ;
+      pragma Import (C, SDL_Render_Set_Scale,"SDL_RenderSetScale");
       Result : C.int := SDL_Render_Set_Scale (Self.Pointer, C.C_float (X), C.C_float (Y));
    begin
       if Result /= Success then
@@ -430,11 +426,9 @@ package body SDL2.Video.Renderers is
 
    procedure Get_Viewport (Self : in Renderer; Rectangle : out SDL2.Video.Rectangles.Rectangle) is
       procedure SDL_Render_Get_Viewport (R    : in Renderer_Pointer;
-                                         Rect : access SDL2.Video.Rectangles.Rectangle) with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_RenderGetViewport";
-      Tmp_R : aliased  SDL2.Video.Rectangles.Rectangle := SDL2.Video.Rectangles.Null_Rectangle;
+                                         Rect : access SDL2.Video.Rectangles.Rectangle) ;
+      pragma Import (C, SDL_Render_Get_Viewport,"SDL_RenderGetViewport");
+      Tmp_R : aliased SDL2.Video.Rectangles.Rectangle := SDL2.Video.Rectangles.Null_Rectangle;
    begin
       SDL_Render_Get_Viewport (Self.Pointer, Tmp_R'access);
       Rectangle := Tmp_R;
@@ -442,12 +436,10 @@ package body SDL2.Video.Renderers is
 
    procedure Set_Viewport (Self : in out Renderer; Rectangle : in SDL2.Video.Rectangles.Rectangle) is
       function SDL_Render_Set_Viewport (R    : in Renderer_Pointer;
-                                        Rect : access SDL2.Video.Rectangles.Rectangle) return C.int with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_RenderSetViewport";
+                                        Rect : access SDL2.Video.Rectangles.Rectangle) return C.int ;
+      pragma Import (C, SDL_Render_Set_Viewport,"SDL_RenderSetViewport");
 
-      Tmp_R : aliased  SDL2.Video.Rectangles.Rectangle := Rectangle;
+      Tmp_R : aliased SDL2.Video.Rectangles.Rectangle := Rectangle;
       Result : C.int := SDL_Render_Set_Viewport (Self.Pointer, Tmp_R'access);
    begin
       if Result /= Success then
@@ -456,30 +448,23 @@ package body SDL2.Video.Renderers is
    end Set_Viewport;
 
    procedure Present (Self : in Renderer) is
-      procedure SDL_Render_Present (R : in Renderer_Pointer) with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_RenderPresent";
+      procedure SDL_Render_Present (R : in Renderer_Pointer) ;
+      pragma Import (C, SDL_Render_Present,"SDL_RenderPresent");
    begin
       SDL_Render_Present (Self.Pointer);
    end Present;
 
    function Supports_Targets (Self : in Renderer) return Boolean is
-      function SDL_Render_Target_Supported (R : in Renderer_Pointer) return SDL_Bool with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_RenderTargetSupported";
+      function SDL_Render_Target_Supported (R : in Renderer_Pointer) return SDL_Bool ;
+      pragma Import (C, SDL_Render_Target_Supported,"SDL_RenderTargetSupported");
    begin
       return SDL_Render_Target_Supported (Self.Pointer) = SDL_True ;
    end Supports_Targets;
 
    procedure Set_Target (Self : in out Renderer; Target : in SDL2.Video.Textures.Texture) is
       function SDL_Set_Render_Target (R : in Renderer_Pointer;
-                                      T : in SDL2.Texture_Pointer) return C.int with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_SetRenderTarget";
-
+                                      T : in SDL2.Texture_Pointer) return C.int ;
+      pragma Import (C, SDL_Set_Render_Target,"SDL_SetRenderTarget");
       Result : C.int := SDL_Set_Render_Target (Self.Pointer, Target.Get_Pointer);
    begin
       if Result /= Success then
@@ -490,47 +475,42 @@ package body SDL2.Video.Renderers is
    function Get_Renderer (Window : in SDL2.Video.Windows.Window_Type) return Renderer is
      function SDL_Get_Renderer (W : in SDL2.Window_Pointer) return Renderer_Pointer ;
      pragma Import(C, SDL_Get_Renderer, "SDL_GetRenderer");
-     
-     tmp : Renderer_Pointer  := null;
+     Tmp : Renderer_Pointer  := null;
    begin
       Tmp := SDL_Get_Renderer (Window.Get_Pointer);
       if Tmp = null then
-         SDL2.Log.Put_Debug("why ? " & SDL2.Error.Get);
-         raise SDL_Error with SDL2.Error.Get;
+        raise SDL_Error with SDL2.Error.Get;
       end if;
-      
-      
+
       return Result : constant Renderer :=
         (Ada.Finalization.Controlled with
-           Pointer => Tmp, --SDL_Get_Renderer (Window.Get_Pointer), 
+           Pointer => Tmp, --SDL_Get_Renderer (Window.Get_Pointer),
            Owner => False) do
          null;
       end return;
    end Get_Renderer;
 
-   
+
    function Get_Pointer (Self : in Renderer) return Renderer_Pointer is
    begin
       return Self.Pointer;
    end Get_Pointer;
-   
+
    procedure Create
      (Self   : in out Renderer;
       Window : in out SDL2.Video.Windows.Window_Type;
       Driver : in Positive;
-      Flags  : in Renderer_Flags := Default_Renderer_Flags) 
+      Flags  : in Renderer_Flags := Default_Renderer_Flags)
 --            with Post => Self.Pointer /= null
 
       is
 
       function SDL_Create_Renderer (W : in SDL2.Window_Pointer; Index : in C.int; Flags : in Renderer_Flags)
-                                    return Renderer_Pointer with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_CreateRenderer";
+                                    return Renderer_Pointer ;
+     pragma Import(C, SDL_Create_Renderer, "SDL_CreateRenderer");
    begin
       Self.Pointer := SDL_Create_Renderer (Window.Get_Pointer, C.int (Driver), Flags);
-      Self.Owner     := True; --?
+      Self.Owner     := True;
    end Create;
 
    procedure Create
@@ -541,10 +521,8 @@ package body SDL2.Video.Renderers is
       is
 
       function SDL_Create_Renderer (W : in SDL2.Window_Pointer; Index : in C.int; Flags : in Renderer_Flags)
-                                    return Renderer_Pointer with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_CreateRenderer";
+                                    return Renderer_Pointer ;
+      pragma Import(C, SDL_Create_Renderer, "SDL_CreateRenderer");
    begin
       Self.Pointer := SDL_Create_Renderer (Window.Get_Pointer, -1, Flags);
       Self.Owner     := True;
@@ -572,5 +550,5 @@ package body SDL2.Video.Renderers is
       Self.Owner   := Owner;
    end Create;
 
-   
+
 end SDL2.Video.Renderers;

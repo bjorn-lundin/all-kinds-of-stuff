@@ -39,17 +39,10 @@ package SDL2.TTF is
   for Style_Type'Size use Unsigned_8'Size;  
   function Font_Style is new Unchecked_Conversion(Style_Type,  Unsigned_8);
   function Font_Style is new Unchecked_Conversion(Unsigned_8, Style_Type);
-    
-    
+        
   type Style_Array_Type is array (Style_Type'range) of Boolean ;
-
---  type Font_Access ;
   
-  -- TTF_Font *TTF_OpenFont( const char *file, int ptsize)
-  type Font is new Ada.Finalization.Controlled with record
-         Pointer : Font_Pointer := null;
-         Owner   : Boolean      := True;
-   end record;
+  type Font is new Ada.Finalization.Controlled with private;
     
   -- TTF_Font *TTF_OpenFont( const char *file, int ptsize)
   procedure Open(Self : in out Font; Filename : in String; Point_Size : in Integer);
@@ -76,9 +69,13 @@ package SDL2.TTF is
   procedure Close(Self : in out Font);
  
   function Get_Pointer(Self : Font) return Font_Pointer;
-  
-  type Font_Access is access Font;
 
+
+private
+  type Font is new Ada.Finalization.Controlled with record
+         Pointer : Font_Pointer := null;
+         Owner   : Boolean      := True;
+   end record;
 
 
   
