@@ -21,7 +21,7 @@
 --     distribution.
 --------------------------------------------------------------------------------------------------------------------
 with Interfaces.C;
-with Interfaces.C.Strings;
+with Interfaces.C.Strings; use Interfaces.C.Strings;
 
 package body SDL2.Log is
    package C renames Interfaces.C;
@@ -44,17 +44,21 @@ package body SDL2.Log is
    end Put;
 
    procedure Put_Critical (Message : in String; Category : in Categories := Application) is
-      procedure SDL_Log_Critical (Category : in Categories; Message  : in C.char_array) ;
+      procedure SDL_Log_Critical (Category : in Categories; Message  : in Chars_Ptr) ;
       pragma Import(C, SDL_Log_Critical, "SDL_LogCritical");
+      C_Message : Chars_Ptr := New_String(Message);
    begin
-      SDL_Log_Critical (Category, C.To_C (Message));
+      SDL_Log_Critical (Category, C_Message);
+      Free(C_Message);
    end Put_Critical;
 
    procedure Put_Debug (Message : in String; Category : in Categories := Application) is
-      procedure SDL_Log_Debug (Category : in Categories; Message  : in C.char_array) ;
+      procedure SDL_Log_Debug (Category : in Categories; Message  : in Chars_Ptr) ;
       pragma Import(C, SDL_Log_Debug, "SDL_LogDebug");
+      C_Message : Chars_Ptr := New_String(Message);
    begin
-      SDL_Log_Debug (Category, C.To_C (Message));
+      SDL_Log_Debug (Category, C_Message);
+      Free(C_Message);
    end Put_Debug;
 
    procedure Put_Error (Message : in String; Category : in Categories := Application) is
