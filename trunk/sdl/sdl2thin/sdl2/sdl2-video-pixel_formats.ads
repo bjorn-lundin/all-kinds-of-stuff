@@ -32,6 +32,9 @@ with SDL2.Video.Palettes;
 
 package SDL2.Video.Pixel_Formats is
    package C renames Interfaces.C;
+   
+   procedure Dummy ;
+   
 
    type Pixel_Types is
      (Unknown,
@@ -45,12 +48,14 @@ package SDL2.Video.Pixel_Formats is
       Array_U16,
       Array_U32,
       Array_F16,
-      Array_F32) with
-     Convention => C;
+      Array_F32) ;
+   pragma Convention(C,Pixel_Types);
+     
+     
 
    --  Bitmap pixel order, high bit -> low bit.
-   type Bitmap_Pixel_Order is (None, Little_Endian, Big_Endian) with
-     Convention => C;
+   type Bitmap_Pixel_Order is (None, Little_Endian, Big_Endian) ;
+   pragma Convention(C,Bitmap_Pixel_Order);
 
    --  Packed component order, high bit -> low bit.
    type Packed_Component_Order is
@@ -62,8 +67,8 @@ package SDL2.Video.Pixel_Formats is
       XBGR,
       BGRX,
       ABGR,
-      BGRA) with
-     Convention => C;
+      BGRA) ;
+   pragma Convention(C,Packed_Component_Order);
 
    --  Array component order, low byte -> high byte.
    type Array_Component_Order is (None, RGB, RGBA, ARGB, BGR, BGRA, ABGR);
@@ -78,17 +83,17 @@ package SDL2.Video.Pixel_Formats is
       Bits_565,
       Bits_8888,
       Bits_2101010,
-      Bits_1010102) with
-     Convention => C;
+      Bits_1010102);
+   pragma Convention(C,Packed_Component_Layout);
 
    type Bits_Per_Pixels is range 0 .. 32 with
-     Static_Predicate => Bits_Per_Pixels in 0 | 1 | 4 | 8 | 12 | 15 | 16 | 24 | 32,
-     Convention       => C;
+     Predicate => Bits_Per_Pixels in 0 | 1 | 4 | 8 | 12 | 15 | 16 | 24 | 32;
+   pragma Convention(C,Bits_Per_Pixels);
 
    Bits_Per_Pixel_Error : constant Bits_Per_Pixels := 0;
 
-   type Bytes_Per_Pixels is range 0 .. 4 with
-     Convention => C;
+   type Bytes_Per_Pixels is range 0 .. 4 ;
+   pragma Convention(C,Bytes_Per_Pixels);
 
    Bytes_Per_Pixel_Error : constant Bytes_Per_Pixels := Bytes_Per_Pixels'First;
 
@@ -100,8 +105,8 @@ package SDL2.Video.Pixel_Formats is
    --        24       16        8        0
    --  DDDDDDDD CCCCCCCC BBBBBBBB AAAAAAAA
 
-   type Index_Order_Padding is range 0 .. 1 with
-     Convention => C;
+   type Index_Order_Padding is range 0 .. 1 ;
+   pragma Convention(C,Index_Order_Padding);
 
    type Pixel_Orders (Pixel_Type : Pixel_Types := Unknown) is
       record
@@ -119,10 +124,7 @@ package SDL2.Video.Pixel_Formats is
             when others =>
                null;
          end case;
-      end record with
-     Unchecked_Union => True,
-     Convention      => C,
-     Size            => 4;
+      end record ;
 
    for Pixel_Orders use
       record
@@ -131,6 +133,10 @@ package SDL2.Video.Pixel_Formats is
          Packed_Order  at 0 range 0 .. 3;
          Array_Order   at 0 range 0 .. 3;
       end record;
+--    for Pixel_Orders'size use 4;     
+ -- pragma Convention(C,Pixel_Orders);
+    pragma Convention(Unchecked_Union,Pixel_Orders);
+
 
    type Planar_Pixels is
       record
@@ -138,9 +144,7 @@ package SDL2.Video.Pixel_Formats is
          B : Character;
          C : Character;
          D : Character;
-      end record with
-     Size            => 32,
-     Convention      => C;
+      end record;
 
    for Planar_Pixels use
       record
@@ -149,9 +153,13 @@ package SDL2.Video.Pixel_Formats is
          C at 0 range 16 .. 23;
          D at 0 range 24 .. 31;
       end record;
+      
+    for Planar_Pixels'size use 32;     
+    pragma Convention(C,Planar_Pixels);
+      
 
-   type Non_Planar_Pixel_Padding is range 0 .. 7 with
-     Convention => C;
+   type Non_Planar_Pixel_Padding is range 0 .. 7 ;
+    pragma Convention(C,Non_Planar_Pixel_Padding);
 
    type Non_Planar_Pixels is
       record
@@ -162,20 +170,24 @@ package SDL2.Video.Pixel_Formats is
          Pixel_Type      : Pixel_Types;
          Flag            : Boolean;
          Padding         : Non_Planar_Pixel_Padding;
-      end record with
-     Size            => 32,
-     Convention      => C;
+      end record ;
 
-   for Non_Planar_Pixels use
-      record
-         Bytes_Per_Pixel at 0 range  0 ..  7;
-         Bits_Per_Pixel  at 0 range  8 .. 15;
-         Layout          at 0 range 16 .. 19;
-         Pixel_Order     at 0 range 20 .. 23;
-         Pixel_Type      at 0 range 24 .. 27;
-         Flag            at 0 range 28 .. 28;
-         Padding         at 0 range 29 .. 31;
-      end record;
+--   for Non_Planar_Pixels use
+--      record
+--         Bytes_Per_Pixel at 0 range  0 ..  7;
+--         Bits_Per_Pixel  at 0 range  8 .. 15;
+--         Layout          at 0 range 16 .. 19;
+--         Pixel_Order     at 0 range 20 .. 23;
+--         Pixel_Type      at 0 range 24 .. 27;
+--         Flag            at 0 range 28 .. 28;
+--         Padding         at 0 range 29 .. 31;
+--
+--      end record;
+--      
+--    for Non_Planar_Pixels'size use 32;     
+    pragma Convention(C,Non_Planar_Pixels);
+     
+      
 
    type Pixel_Format_Names (Planar : Boolean := False) is
       record
@@ -185,10 +197,15 @@ package SDL2.Video.Pixel_Formats is
             when False =>
                Non_Planar_Format : Non_Planar_Pixels;
          end case;
-      end record with
-     Unchecked_Union => True,
-     Size            => 32,
-     Convention      => C;
+      end record;
+      
+--    for Pixel_Format_Names'size use 32;     
+--   pragma Convention(C,Pixel_Format_Names);
+    pragma Convention(Unchecked_Union,Pixel_Format_Names);
+     
+     
+     
+     
 
    Pixel_Format_Unknown     : constant Pixel_Format_Names :=
      Pixel_Format_Names'(Planar        => True,
@@ -630,131 +647,116 @@ package SDL2.Video.Pixel_Formats is
                             C => 'Y',
                             D => 'U'));
 
-   type Color_Mask is mod 2 ** 32 with
-     Convention => C;
+   type Color_Mask is mod 2 ** 32 ;
+    pragma Convention(C,Color_Mask);
 
-   type Private_Pixel_Format is private;
-
-   type Pixel_Format is
-      record
-         Format       : Pixel_Format_Names;
-         Palette      : Palettes.Palette_Access;
-         Bits         : Bits_Per_Pixels;
-         Bytes        : Bytes_Per_Pixels;
-         Padding      : Interfaces.Unsigned_16;
-         Red_Mask     : Color_Mask;
-         Green_Mask   : Color_Mask;
-         Blue_Mask    : Color_Mask;
-         Alpha_Mask   : Color_Mask;
-
-         --  This is mainly padding to make sure the record size matches what is expected from C.
-         Private_Part : Private_Pixel_Format;
-      end record with
-     Convention => C;
-
-   --  TODO: Possibly change this to a controlled type.
-   type Pixel_Format_Access is access all Pixel_Format with
-     Convention => C;
-
-   function Create (Format : in Pixel_Format_Names) return Pixel_Format_Access with
-     Import        => True,
-     Convention    => C,
-     External_Name => "SDL_AllocFormat";
-
-   procedure Free (Format : in Pixel_Format_Access) with
-     Import        => True,
-     Convention    => C,
-     External_Name => "SDL_FreeFormat";
-
-   function Image (Format : in Pixel_Format_Names) return String;
-   --  Import        => True,
-   --  Convention    => C,
-   --  External_Name => "SDL_GetPixelFormatName";
-
-   procedure To_Components
-     (Pixel  : in  Interfaces.Unsigned_32;
-      Format : in  Pixel_Format_Access;
-      Red    : out Palettes.Color_Component;
-      Green  : out Palettes.Color_Component;
-      Blue   : out Palettes.Color_Component) with
-     Import        => True,
-     Convention    => C,
-     External_Name => "SDL_GetRGB";
-
-   procedure To_Components
-     (Pixel  : in  Interfaces.Unsigned_32;
-      Format : in  Pixel_Format_Access;
-      Red    : out Palettes.Color_Component;
-      Green  : out Palettes.Color_Component;
-      Blue   : out Palettes.Color_Component;
-      Alpha  : out Palettes.Color_Component) with
-     Import        => True,
-     Convention    => C,
-     External_Name => "SDL_GetRGBA";
-
-   function To_Pixel
-     (Format : in Pixel_Format_Access;
-      Red    : in Palettes.Color_Component;
-      Green  : in Palettes.Color_Component;
-      Blue   : in Palettes.Color_Component) return Interfaces.Unsigned_32 with
-     Import        => True,
-     Convention    => C,
-     External_Name => "SDL_MapRGB";
-
-   function To_Pixel
-     (Format : in Pixel_Format_Access;
-      Red    : in Palettes.Color_Component;
-      Green  : in Palettes.Color_Component;
-      Blue   : in Palettes.Color_Component;
-      Alpha  : in Palettes.Color_Component) return Interfaces.Unsigned_32 with
-     Import        => True,
-     Convention    => C,
-     External_Name => "SDL_MapRGBA";
-
-   function To_Name
-     (Bits       : in Bits_Per_Pixels;
-      Red_Mask   : in Color_Mask;
-      Green_Mask : in Color_Mask;
-      Blue_Mask  : in Color_Mask;
-      Alpha_Mask : in Color_Mask) return Pixel_Format_Names with
-     Import        => True,
-     Convention    => C,
-     External_Name => "SDL_MasksToPixelFormatEnum";
-
-   function To_Masks
-     (Format     : in  Pixel_Format_Names;
-      Bits       : out Bits_Per_Pixels;
-      Red_Mask   : out Color_Mask;
-      Green_Mask : out Color_Mask;
-      Blue_Mask  : out Color_Mask;
-      Alpha_Mask : out Color_Mask) return Boolean with
-     Inline => True;
-
-   --  Gamma
-   type Gamma_Value is mod 2 ** 16 with
-     Convention => C;
-
-   type Gamma_Ramp is array (Integer range 1 .. 256) of Gamma_Value with
-     Convention => C;
-
-   procedure Calculate (Gamma : in Float; Ramp : out Gamma_Ramp) with
-     Import        => True,
-     Convention    => C,
-     External_Name => "SDL_CalculateGammaRamp";
-private
-   --  The following fields are defined as "internal use" in the SDL docs.
-   type Private_Pixel_Format is
-      record
-         Rred_Loss   : Interfaces.Unsigned_8;
-         Green_Loss  : Interfaces.Unsigned_8;
-         Blue_Loss   : Interfaces.Unsigned_8;
-         Alpha_Loss  : Interfaces.Unsigned_8;
-         Red_Shift   : Interfaces.Unsigned_8;
-         Green_Shift : Interfaces.Unsigned_8;
-         Blue_Shift  : Interfaces.Unsigned_8;
-         Alpha_Shift : Interfaces.Unsigned_8;
-         Ref_Count   : C.int;
-         Next        : Pixel_Format_Access;
-      end record with
-     Convention => C;
+--   type Private_Pixel_Format is private;
+--
+--   type Pixel_Format is
+--      record
+--         Format       : Pixel_Format_Names;
+--         Palette      : Palettes.Palette_Access;
+--         Bits         : Bits_Per_Pixels;
+--         Bytes        : Bytes_Per_Pixels;
+--         Padding      : Interfaces.Unsigned_16;
+--         Red_Mask     : Color_Mask;
+--         Green_Mask   : Color_Mask;
+--         Blue_Mask    : Color_Mask;
+--         Alpha_Mask   : Color_Mask;
+--
+--         --  This is mainly padding to make sure the record size matches what is expected from C.
+--         Private_Part : Private_Pixel_Format;
+--      end record ;
+--    pragma Convention(C,Pixel_Format);
+--      
+--
+--   --  TODO: Possibly change this to a controlled type.
+--   type Pixel_Format_Access is access all Pixel_Format ;
+--    pragma Convention(C,Pixel_Format_Access);
+--
+--   function Create (Format : in Pixel_Format_Names) return Pixel_Format_Access ;
+--   pragma Import(C, Create, "SDL_AllocFormat");  
+--
+--   procedure Free (Format : in Pixel_Format_Access) ;
+--   pragma Import(C, Free, "SDL_FreeFormat");  
+--
+--   function Image (Format : in Pixel_Format_Names) return String;
+--   --  Import        => True,
+--   --  Convention    => C,
+--   --  External_Name => "SDL_GetPixelFormatName";
+--
+--   procedure To_Components
+--     (Pixel  : in  Interfaces.Unsigned_32;
+--      Format : in  Pixel_Format_Access;
+--      Red    : out Palettes.Color_Component;
+--      Green  : out Palettes.Color_Component;
+--      Blue   : out Palettes.Color_Component) ;
+--   pragma Import(C, To_Components, "SDL_GetRGB");  
+--
+--   procedure To_Components
+--     (Pixel  : in  Interfaces.Unsigned_32;
+--      Format : in  Pixel_Format_Access;
+--      Red    : out Palettes.Color_Component;
+--      Green  : out Palettes.Color_Component;
+--      Blue   : out Palettes.Color_Component;
+--      Alpha  : out Palettes.Color_Component) ;
+--   pragma Import(C, To_Components, "SDL_GetRGBA");  
+--
+--   function To_Pixel
+--     (Format : in Pixel_Format_Access;
+--      Red    : in Palettes.Color_Component;
+--      Green  : in Palettes.Color_Component;
+--      Blue   : in Palettes.Color_Component) return Interfaces.Unsigned_32 ;
+--   pragma Import(C, To_Pixel, "SDL_MapRGB");  
+--
+--   function To_Pixel
+--     (Format : in Pixel_Format_Access;
+--      Red    : in Palettes.Color_Component;
+--      Green  : in Palettes.Color_Component;
+--      Blue   : in Palettes.Color_Component;
+--      Alpha  : in Palettes.Color_Component) return Interfaces.Unsigned_32 ;
+--   pragma Import(C, To_Pixel, "SDL_MapRGBA");  
+--
+--   function To_Name
+--     (Bits       : in Bits_Per_Pixels;
+--      Red_Mask   : in Color_Mask;
+--      Green_Mask : in Color_Mask;
+--      Blue_Mask  : in Color_Mask;
+--      Alpha_Mask : in Color_Mask) return Pixel_Format_Names ;
+--   pragma Import(C, To_Name, "SDL_MasksToPixelFormatEnum");  
+--
+--   function To_Masks
+--     (Format     : in  Pixel_Format_Names;
+--      Bits       : out Bits_Per_Pixels;
+--      Red_Mask   : out Color_Mask;
+--      Green_Mask : out Color_Mask;
+--      Blue_Mask  : out Color_Mask;
+--      Alpha_Mask : out Color_Mask) return Boolean with
+--     Inline => True;
+--
+--   --  Gamma
+--   type Gamma_Value is mod 2 ** 16 ;
+--   pragma Convention(C,Gamma_Value);
+--
+--   type Gamma_Ramp is array (Integer range 1 .. 256) of Gamma_Value ;
+--   pragma Convention(C,Gamma_Ramp);
+--
+--   procedure Calculate (Gamma : in Float; Ramp : out Gamma_Ramp) ;
+--   pragma Import(C, Calculate, "SDL_CalculateGammaRamp");  
+--private
+--   --  The following fields are defined as "internal use" in the SDL docs.
+--   type Private_Pixel_Format is
+--      record
+--         Rred_Loss   : Interfaces.Unsigned_8;
+--         Green_Loss  : Interfaces.Unsigned_8;
+--         Blue_Loss   : Interfaces.Unsigned_8;
+--         Alpha_Loss  : Interfaces.Unsigned_8;
+--         Red_Shift   : Interfaces.Unsigned_8;
+--         Green_Shift : Interfaces.Unsigned_8;
+--         Blue_Shift  : Interfaces.Unsigned_8;
+--         Alpha_Shift : Interfaces.Unsigned_8;
+--         Ref_Count   : C.int;
+--         Next        : Pixel_Format_Access;
+--      end record ;
+--   pragma Convention(C,Private_Pixel_Format);
 end SDL2.Video.Pixel_Formats;

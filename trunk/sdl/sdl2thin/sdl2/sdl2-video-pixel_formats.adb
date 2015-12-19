@@ -26,6 +26,11 @@ with Interfaces.C.Strings;
 package body SDL2.Video.Pixel_Formats is
    use type C.int;
 
+   procedure Dummy is
+   begin
+     null;
+   end Dummy;
+   
    function Image (Format : in Pixel_Format_Names) return String is
       function SDL_Get_Pixel_Format_Name (Format : in Pixel_Format_Names) return C.Strings.Chars_Ptr ;
       pragma Import(C,SDL_Get_Pixel_Format_Name, "SDL_GetPixelFormatName");

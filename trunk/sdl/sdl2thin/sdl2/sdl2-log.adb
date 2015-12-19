@@ -113,15 +113,15 @@ package body SDL2.Log is
       record
          Callback : Output_Callback;
          Data     : Root_User_Data;
-      end record with
-        Convention => C;
+      end record ;
+    pragma Convention(C,Local_User_Data);
 
    procedure Local_Callback
      (User_Data : in Local_User_Data;
       Category  : in Categories;
       Priority  : in Priorities;
-      Message   : in C.Strings.chars_ptr) with
-     Convention => C;
+      Message   : in C.Strings.chars_ptr) ;
+    pragma Convention(C,Local_Callback);
 
    procedure Local_Callback
      (User_Data : in Local_User_Data;
