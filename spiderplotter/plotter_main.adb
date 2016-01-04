@@ -31,7 +31,7 @@ begin
     Put_Line("Pen_Controller.Pen_Up");
     Pen_Controller.Pen_Up;
 
-    exit when X >= 1_000;
+    exit when X >= 300;
 
     Motor_Controller.Goto_XY(X,Y);
     Put_Line("Pen_Controller.Pen_Down");
