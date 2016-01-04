@@ -1,0 +1,64 @@
+
+
+project plotter is
+
+-- Root
+   Plotter_Root := ".";
+
+-- -gnatwalK -  w - Activate warnings (w)
+--              a - activate all warnings  (a)
+--              l - for missing elaboration pragmas too
+--              K - but no warnings like '...is not modified, could be declared constant'
+-- -gnatvoUN    v - verbose
+--              o - Activate runtime overflow checks
+--              U - Tag all error messages with the unique string "error:"
+-- -gnat05      No warnings when Ada05 featues are used                 9.6-10368
+-- -gnatwW - Do not warn if we assume a string to start at index 1
+
+
+
+   Platform_Independent_Compiler_Switches := ("-g",
+                                              "-gnat05",
+                                              "-fstack-check",
+                                              "-gnata",
+                                              "-gnatvoU",
+                                              "-gnatwlaKW");
+
+   for Object_Dir use Plotter_Root & "/objects";
+   for Exec_Dir use Plotter_Root & "/bin"  ;
+   for Source_Dirs use (Plotter_Root);
+
+   for Main use (
+                 --"test_motor.adb",
+                 "plotter_main.adb");
+   
+   package Compiler is
+     for Default_Switches ("ada") use Platform_Independent_Compiler_Switches & ("-O0");
+     --for Default_Switches ("c") use ("-g", "-Wall");
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("ada") use ("-E");
+   end Binder;
+
+   package Linker is
+    for Default_Switches ("ada") use (--"-lrt",
+                                    --  "-lm",
+                                      "-L/usr/local/lib", 
+                                      "-lwiringPi");
+                                      --,
+                                    --  "-L/usr/local/lib -lwiringPiDev");
+   end Linker;
+
+   package Builder is
+      for Default_Switches ("ada") use ("-k", "-s", "-j1"); -- use 1 cpu 
+   end Builder;
+
+
+--   package Ide is
+--      for Compiler_Command ("ada") use "gnatmake";
+--      --for Compiler_Command ("c") use "gcc";
+--   end Ide;
+
+
+end plotter;
