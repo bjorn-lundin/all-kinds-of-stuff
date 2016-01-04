@@ -155,9 +155,9 @@ package body Plotter.Definitions is
           if Tics = Local_Tics then
             Local_Direction := None;
           elsif Tics > Local_Tics then
-            Local_Direction := Clock_Wise;
-          elsif Tics < Local_Tics then
             Local_Direction := Counter_Clock_Wise;
+          elsif Tics < Local_Tics then
+            Local_Direction := Clock_Wise;
           else
             Put_Line(Local_Id'Img & "tics=" & tics'Img & " Local_Tics" & Local_Tics'Img);
           end if;
@@ -269,8 +269,9 @@ package body Plotter.Definitions is
           T1 := Interfaces.C.Int(L12 * Tics_Per_Millimeter);
           T2 := Interfaces.C.Int(L22 * Tics_Per_Millimeter);
 
-          Put_Line("Goto_XY Data(1).Get_Tics=" & Data(1).Get_Tics'Img & " T1=" & T1'Img );
-          Put_Line("Goto_XY Data(2).Get_Tics=" & Data(2).Get_Tics'Img & " T2=" & T2'Img );
+          Put_Line("Start Goto_XY X=" & X'Img & " Y=" & Y'Img );
+          Put_Line("Start Goto_XY Data(1).Get_Tics=" & Data(1).Get_Tics'Img & " T1=" & T1'Img );
+          Put_Line("Start Goto_XY Data(2).Get_Tics=" & Data(2).Get_Tics'Img & " T2=" & T2'Img );
 
           M1.Turn_To(T1);
           M2.Turn_To(T2);
@@ -299,7 +300,12 @@ package body Plotter.Definitions is
               delay Delay_Time/2.0;
             end loop;
           end if;
+          
+          Put_Line("Stop  Goto_XY X=" & X'Img & " Y=" & Y'Img );
+          Put_Line("Stop  Goto_XY Data(1).Get_Tics=" & Data(1).Get_Tics'Img & " T1=" & T1'Img );
+          Put_Line("Stop  Goto_XY Data(2).Get_Tics=" & Data(2).Get_Tics'Img & " T2=" & T2'Img );
         end Goto_XY;
+
 
       or -----------------------------
         accept Stop do
