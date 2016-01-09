@@ -25,6 +25,11 @@ package Plotter.Definitions is
  -- procedure Pen_Up;
  -- procedure Pen_Down;
   
+  procedure Delta_L(X  : in     X_Coordinate_Type;
+                    Y  : in     Y_Coordinate_Type;
+                    d  : in     Float;
+                    L1 : in out Float;
+                    L2 : in out Float) ;
   
                                                 
 end Plotter.Definitions;

@@ -36,14 +36,15 @@ package body Plotter.Definitions is
                                                 (0,0,1,1),
                                                 (0,0,0,1));
 
-  Delay_Time                 : Duration                  := 10.0/1000.0;
+  Delay_Time                 : Duration                  := 2.0/1000.0;
   Tics_Per_Revolution        : constant Interfaces.C.Int := 4096; -- tics/rev
-  Millimeters_Per_Revolution : constant Float            := 85.666667; -- mm/rev
+  Millimeters_Per_Revolution : constant Float            := 17.2; -- mm/rev -- bara axeln
+--  Millimeters_Per_Revolution : constant Float            := 85.666667; -- mm/rev -- vitt hjul
   Tics_Per_Millimeter        : constant Float := Float(Tics_Per_Revolution)/Millimeters_Per_Revolution; -- ~47,8 tic/mm
   --Millimeters_Per_Tic        : constant Float := Millimeters_Per_Revolution/Float(Tics_Per_Revolution); -- ~0,020915 mm/tic
-  Global_Distance            : Float := 500.0; --mm
+  Global_Distance            : Float := 390.0; --mm
   Global_L1_Start            : Float := 200.0; --mm,
-  Global_L2_Start            : Float := 200.0; --mm,
+  Global_L2_Start            : Float := 220.0; --mm,
 
     -- 1 revolution is 4096 tics
     -- 1 revolution is 85,666667 mm
@@ -155,22 +156,18 @@ package body Plotter.Definitions is
           if Tics = Local_Tics then
             Local_Direction := None;
           elsif Tics > Local_Tics then
-            Local_Direction := Counter_Clock_Wise;
-          elsif Tics < Local_Tics then
             Local_Direction := Clock_Wise;
+          elsif Tics < Local_Tics then
+            Local_Direction := Counter_Clock_Wise;
           else
             Put_Line(Local_Id'Img & "tics=" & tics'Img & " Local_Tics" & Local_Tics'Img);
           end if;
-          Put_Line(Local_Id'Img &
-                   " Local_Tics=" & Local_Tics'Img &
-                   " Wanted_Tics=" & Wanted_Tics'Img &
-                   " " & Local_Direction'Img);
+--          Put_Line(Local_Id'Img &
+--                   " Local_Tics=" & Local_Tics'Img &
+--                   " Wanted_Tics=" & Wanted_Tics'Img &
+--                   " " & Local_Direction'Img);
         end Turn_To;
-
-        Put_Line("start " & Local_Id'Img &
-                 " Local_Tics=" & Local_Tics'Img &
-                 " Wanted_Tics=" & Wanted_Tics'Img &
-                 " " & Local_Direction'Img & " in loop");
+        
         Motor_Loop_Start : loop
           case Local_Direction is
             when None =>
@@ -208,12 +205,9 @@ package body Plotter.Definitions is
               exit Motor_Loop_Start when Data(Local_Id).Get_Stop;
 
           end case;
+          
           delay Delay_Time;
         end loop Motor_Loop_Start;
-        Put_Line("stop  " & Local_Id'Img &
-                 " Local_Tics=" & Local_Tics'Img &
-                 " Wanted_Tics=" & Wanted_Tics'Img &
-                 " " & Local_Direction'Img & " in loop");
 
         ----------------------------------------------------------
       or
@@ -246,7 +240,7 @@ package body Plotter.Definitions is
                     L1 : in out Float;
                     L2 : in out Float) is
   begin
-    L2 := Float_Math.Sqrt(d*d -2.0*d*Float(x) + Float(x*x) + Float(y*y));
+    L2 := Float_Math.Sqrt(d*d - 2.0*d*Float(x) + Float(x*x) + Float(y*y));
     L1 := Float_Math.Sqrt(Float(x*x) + Float(y*y));
   end Delta_L;
   --------------------------------------------------------
@@ -269,9 +263,7 @@ package body Plotter.Definitions is
           T1 := Interfaces.C.Int(L12 * Tics_Per_Millimeter);
           T2 := Interfaces.C.Int(L22 * Tics_Per_Millimeter);
 
-          Put_Line("Start Goto_XY X=" & X'Img & " Y=" & Y'Img );
-          Put_Line("Start Goto_XY Data(1).Get_Tics=" & Data(1).Get_Tics'Img & " T1=" & T1'Img );
-          Put_Line("Start Goto_XY Data(2).Get_Tics=" & Data(2).Get_Tics'Img & " T2=" & T2'Img );
+          Put_Line(" Goto_XY X=" & X'Img & " Y=" & Y'Img );
 
           M1.Turn_To(T1);
           M2.Turn_To(T2);
@@ -300,10 +292,6 @@ package body Plotter.Definitions is
               delay Delay_Time/2.0;
             end loop;
           end if;
-          
-          Put_Line("Stop  Goto_XY X=" & X'Img & " Y=" & Y'Img );
-          Put_Line("Stop  Goto_XY Data(1).Get_Tics=" & Data(1).Get_Tics'Img & " T1=" & T1'Img );
-          Put_Line("Stop  Goto_XY Data(2).Get_Tics=" & Data(2).Get_Tics'Img & " T2=" & T2'Img );
         end Goto_XY;
 
 
@@ -335,8 +323,8 @@ package body Plotter.Definitions is
   -----------------------------------------------------------
 
   task body Pen_Controller is
-    Tics_Pen_Up   : Interfaces.C.Int := 500;
-    Tics_Pen_Down : Interfaces.C.Int :=   0;
+    Tics_Pen_Up   : Interfaces.C.Int :=   0;
+    Tics_Pen_Down : Interfaces.C.Int := 500;
   begin
     ----------------------------------------------------------
     accept Init do
@@ -352,7 +340,7 @@ package body Plotter.Definitions is
             M3.Turn_To(Tics_Pen_Up);
             -- loop to wait for pen
             loop
-              exit when Data(3).Get_Tics >= Tics_Pen_Up;
+              exit when Data(3).Get_Tics <= Tics_Pen_Up;
               delay Delay_Time;
             end loop;
           else
@@ -365,7 +353,7 @@ package body Plotter.Definitions is
             M3.Turn_To(Tics_Pen_Down);
             -- loop to wait for pen
             loop
-              exit when Data(3).Get_Tics <= Tics_Pen_Down;
+              exit when Data(3).Get_Tics >= Tics_Pen_Down;
               delay Delay_Time;
             end loop;
           else
