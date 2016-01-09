@@ -3,8 +3,6 @@
 with Ada.Text_IO; use Ada.Text_IO;
 --with Interfaces.C;
 
-with Ser_Com;
-
 with Plotter.Definitions; use Plotter.Definitions;
 with Gpio;
 

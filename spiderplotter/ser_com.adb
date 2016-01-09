@@ -33,7 +33,7 @@
 with Ada.Streams;                use Ada.Streams;
 with Ada;                        use Ada;
 with Ada.Unchecked_Deallocation;
-
+with Ada.Unchecked_Conversion;
 with System;               use System;
 pragma Warnings(Off);
 with System.Communication; use System.Communication;
@@ -175,6 +175,56 @@ package body Ser_Com is
       Last := Last_Index (Buffer'First, size_t (Res));
    end Read;
 
+   ------------------------------------------------------
+
+   procedure Read
+     (Port   : in out Serial_Port;
+      Buffer : out String;
+      Last   : out Natural) is
+
+    Local_Buffer : Stream_Element_Array(Stream_Element_Offset(Buffer'First) .. Stream_Element_Offset(Buffer'Last));
+    Local_Last   : Stream_Element_Offset;
+   begin
+     Port.Read(Local_Buffer,Local_Last);
+     Buffer := To_String(Local_Buffer);
+     Last   := Natural(Local_Last);
+   end Read;
+
+   ------------------------------------------------------
+   procedure Read
+     (Port   : in out Serial_Port;
+      Buffer : out Character;
+      Last   : out Natural) is
+    S_Buffer : String(1..1) := " ";
+    Local_Buffer : Stream_Element_Array(1..1);
+    Local_Last   : Stream_Element_Offset := 0;
+   begin
+     Port.Read(Local_Buffer,Local_Last);
+     S_Buffer := To_String(Local_Buffer);
+     Buffer := S_Buffer(1);
+     Last   := Natural(Local_Last);
+   end Read;
+
+   ------------------------------------------------------
+   
+   procedure Write
+     (Port   : in out Serial_Port;
+      Buffer : String) is
+   begin
+     for i in Buffer'range loop
+       Character'Write (Port'access, Buffer(i));
+     end loop;  
+   end Write;
+
+   ------------------------------------------------------
+   
+   procedure Write
+     (Port   : in out Serial_Port;
+      Buffer : Character) is
+   begin
+      Character'Write (Port'access, Buffer);
+   end Write;
+
    ---------
    -- Set --
    ---------
@@ -192,7 +242,7 @@ package body Ser_Com is
       Timeout   : Duration         := 10.0;
       Flow      : Flow_Control     := Active) --jsa
    is
-      type termios is record
+      type Termios is record
          c_iflag  : unsigned;
          c_oflag  : unsigned;
          c_cflag  : unsigned;
@@ -202,7 +252,7 @@ package body Ser_Com is
          c_ispeed : unsigned;
          c_ospeed : unsigned;
       end record;
-      pragma Convention (C, termios);
+      pragma Convention (C, Termios);
 
       function tcgetattr (fd : int; termios_p : Address) return int;
       pragma Import (C, tcgetattr, "tcgetattr");
@@ -214,7 +264,7 @@ package body Ser_Com is
       function tcflush (fd : int; queue_selector : int) return int;
       pragma Import (C, tcflush, "tcflush");
 
-      Current : termios;
+      Current : Termios;
 
       Res : int;
       pragma Warnings (Off, Res);
@@ -253,14 +303,10 @@ package body Ser_Com is
       Res := tcsetattr (int (Port.H.all), TCSANOW, Current'Address);
 
       --  Block
-      if Block then
-        Res := fcntl (int (Port.H.all), F_SETFL, 0);
-      else
+      -- open set blocking mode
+      if not Block then
         Res := fcntl (int (Port.H.all), F_SETFL, FNDELAY);
       end if;
-      
-      
-    --  Res := fcntl (int (Port.H.all), F_SETFL, (if Block then 0 else FNDELAY));
 
       if Res = -1 then
          Raise_Error ("set: fcntl failed");
@@ -273,8 +319,8 @@ package body Ser_Com is
 
    overriding procedure Write
      (Port   : in out Serial_Port;
-      Buffer : Stream_Element_Array)
-   is
+      Buffer : Stream_Element_Array) is
+
       Len : constant size_t := Buffer'Length;
       Res : ssize_t;
 
@@ -309,4 +355,36 @@ package body Ser_Com is
          Unchecked_Free (Port.H);
       end if;
    end Close;
+
+
+   -----------------------------
+   -- To_Stream_Element_Array --
+   -----------------------------
+   function To_Stream_Element_Array (Self : in String)
+                                     return Ada.Streams.Stream_Element_Array is
+      subtype StringX is String (1 .. Self'Length);
+      subtype ArrayX  is Stream_Element_Array (1 .. Self'Length);
+      function To_Array is new Ada.Unchecked_Conversion (StringX, ArrayX);
+   begin
+      return To_Array (Self);
+   end To_Stream_Element_Array;
+   pragma Unreferenced(To_Stream_Element_Array);
+   ------------------------------------------------------------------------
+
+   ---------------
+   -- To_String --
+   ---------------
+   function To_String (Self : in Ada.Streams.Stream_Element_Array)
+      return String
+   is
+      subtype StringX is String (1 .. Self'Length);
+      subtype ArrayX  is Stream_Element_Array (1 .. Self'Length);
+      function To_String is new Ada.Unchecked_Conversion (ArrayX, StringX);
+   begin
+      return To_String (Self);
+   end To_String;
+   ------------------------------------------------------------------------
+
+
+
 end Ser_Com;
