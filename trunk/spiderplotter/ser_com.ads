@@ -98,13 +98,46 @@ package Ser_Com is
    --  Buffer'First = Stream_Element_Offset'First, in which case the exception
    --  Constraint_Error is raised instead.
 
+   procedure Read
+     (Port   : in out Serial_Port;
+      Buffer : out String;
+      Last   : out Natural);
+      
+   procedure Read
+     (Port   : in out Serial_Port;
+      Buffer : out Character;
+      Last   : out Natural);
+
    overriding procedure Write
      (Port   : in out Serial_Port;
       Buffer : Ada.Streams.Stream_Element_Array);
    --  Write buffer into the port
 
+   procedure Write
+     (Port   : in out Serial_Port;
+      Buffer : String);
+   --  Write buffer into the port
+   procedure Write
+     (Port   : in out Serial_Port;
+      Buffer : Character);
+   --  Write buffer into the port
+
+
    procedure Close (Port : in out Serial_Port);
    --  Close port
+
+
+   -----------------------------
+   -- To_Stream_Element_Array --
+   -----------------------------
+   function To_Stream_Element_Array (Self : in String)
+                                     return Ada.Streams.Stream_Element_Array ;
+
+   ---------------
+   -- To_String --
+   ---------------
+   function To_String (Self : in Ada.Streams.Stream_Element_Array) return String;
+
 
 private
 
