@@ -31,6 +31,7 @@ project plotter is
    for Main use (
                  --"test_motor.adb",
                  "close_ports.adb",
+                 "ser_test.adb",
                  "plotter_main.adb");
    
    package Compiler is
