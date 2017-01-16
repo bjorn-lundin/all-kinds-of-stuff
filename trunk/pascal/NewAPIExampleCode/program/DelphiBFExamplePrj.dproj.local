@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2014/10/22 08:02:50.000.446,=F:\Documents and Settings\Carl Nielsen\My Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2014/10/22 08:18:47.000.493,F:\Documents and Settings\Carl Nielsen\My Documents\Embarcadero\Studio\Projects\Unit1.pas=H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\untMain.pas</Transaction>
+    <Transaction>2014/10/22 08:18:47.000.493,F:\Documents and Settings\Carl Nielsen\My Documents\Embarcadero\Studio\Projects\Unit1.dfm=H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\untMain.dfm</Transaction>
+    <Transaction>2014/10/22 08:19:15.000.180,F:\Documents and Settings\Carl Nielsen\My Documents\Embarcadero\Studio\Projects\Project1.dproj=H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\DelphiBFExamplePrj.dproj</Transaction>
+    <Transaction>2014/10/22 08:21:06.000.555,=H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\untLogin.pas</Transaction>
+    <Transaction>2014/10/22 10:43:57.000.055,=H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\Unit1.pas</Transaction>
+    <Transaction>2014/10/22 10:47:24.000.274,H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\untlistCompetitions.dfm=H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\Unit1.dfm</Transaction>
+    <Transaction>2014/10/22 10:47:24.000.274,H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\untlistCompetitions.pas=H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\Unit1.pas</Transaction>
+    <Transaction>2014/10/22 11:45:13.000.024,=H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\Unit1.pas</Transaction>
+    <Transaction>2014/10/22 11:46:35.000.290,H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\untListCountries.dfm=H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\Unit1.dfm</Transaction>
+    <Transaction>2014/10/22 11:46:35.000.290,H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\untListCountries.pas=H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\Unit1.pas</Transaction>
+    <Transaction>2014/10/24 16:35:27.000.593,=H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\Unit1.pas</Transaction>
+    <Transaction>2014/10/24 16:38:32.000.687,H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\untListEvents.pas=H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\Unit1.pas</Transaction>
+    <Transaction>2014/10/24 16:38:32.000.687,H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\untListEvents.dfm=H:\DelphiXE6Projects\___ApiNg Projects\NewAPIExampleCode\program\Unit1.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

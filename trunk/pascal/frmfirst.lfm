@@ -1,0 +1,90 @@
+object frmDataview: TfrmDataview
+  Left = -954
+  Height = 671
+  Top = -4
+  Width = 876
+  Caption = 'Björns första fönster'
+  ClientHeight = 671
+  ClientWidth = 876
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
+  LCLVersion = '1.6.0.4'
+  object btnDataset: TButton
+    Left = 0
+    Height = 32
+    Top = 0
+    Width = 92
+    Anchors = [akRight, akBottom]
+    Caption = 'dataset'
+    OnClick = btnDatasetClick
+    TabOrder = 0
+  end
+  object Statusbar: TStatusBar
+    Left = 0
+    Height = 23
+    Top = 648
+    Width = 876
+    AutoSize = False
+    Panels = <    
+      item
+        Width = 50
+      end>
+    SimplePanel = False
+  end
+  object Tree: TTreeView
+    Left = 16
+    Height = 556
+    Top = 40
+    Width = 152
+    Anchors = [akTop, akLeft, akBottom]
+    DefaultItemHeight = 18
+    TabOrder = 2
+    OnClick = TreeClick
+    OnSelectionChanged = TreeClick
+  end
+  object Chart: TChart
+    Left = 189
+    Height = 593
+    Top = 40
+    Width = 643
+    AxisList = <    
+      item
+        Grid.Color = clSilver
+        Minors = <>
+        Title.LabelFont.Orientation = 900
+      end    
+      item
+        Grid.Color = clSilver
+        Grid.Visible = False
+        Alignment = calBottom
+        Minors = <>
+      end>
+    Foot.Brush.Color = clBtnFace
+    Foot.Font.Color = clBlue
+    Title.Brush.Color = clBtnFace
+    Title.Font.Color = clBlue
+    Title.Text.Strings = (
+      'TAChart'
+    )
+    Anchors = [akTop, akLeft, akRight, akBottom]
+  end
+  object Label1: TLabel
+    Left = 16
+    Height = 15
+    Top = 606
+    Width = 67
+    Anchors = [akLeft, akBottom]
+    Caption = 'num records'
+    ParentColor = False
+  end
+  object lblNumRecords: TLabel
+    Left = 89
+    Height = 15
+    Top = 607
+    Width = 82
+    Anchors = [akLeft, akBottom]
+    Caption = 'lblNumRecords'
+    ParentColor = False
+  end
+end

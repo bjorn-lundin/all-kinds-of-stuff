@@ -1,0 +1,271 @@
+object MainForm: TMainForm
+  Left = 456
+  Height = 349
+  Top = 423
+  Width = 468
+  Caption = 'Kinect demo program'
+  ClientHeight = 349
+  ClientWidth = 468
+  Color = clBtnFace
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '1.6.0.4'
+  object PControls: TPanel
+    Left = 0
+    Height = 349
+    Top = 0
+    Width = 192
+    Align = alLeft
+    BevelOuter = bvLowered
+    ClientHeight = 349
+    ClientWidth = 192
+    TabOrder = 0
+    object LLImageFrames: TLabel
+      Left = 16
+      Height = 13
+      Top = 11
+      Width = 66
+      Caption = 'Image frames'
+      ParentColor = False
+    end
+    object LLSkeletonFrames: TLabel
+      Left = 7
+      Height = 13
+      Top = 32
+      Width = 77
+      Caption = 'Skeleton frames'
+      ParentColor = False
+    end
+    object LImageFrames: TLabel
+      Left = 104
+      Height = 13
+      Top = 11
+      Width = 6
+      Caption = '0'
+      ParentColor = False
+    end
+    object LSkeletonFrames: TLabel
+      Left = 104
+      Height = 13
+      Top = 32
+      Width = 6
+      Caption = '0'
+      ParentColor = False
+    end
+    object TBAngle: TTrackBar
+      Left = 96
+      Height = 124
+      Top = 56
+      Width = 33
+      Frequency = 3
+      Max = 27
+      Min = -27
+      OnChange = TBAngleChange
+      Orientation = trVertical
+      PageSize = 5
+      Position = 0
+      TickStyle = tsManual
+      TabOrder = 0
+    end
+    object LElevation: TLabel
+      Left = 16
+      Height = 13
+      Top = 56
+      Width = 66
+      Caption = 'Camera angle'
+      ParentColor = False
+    end
+    object CBPlayer1: TColorButton
+      Tag = 1
+      Left = 61
+      Height = 25
+      Top = 184
+      Width = 26
+      BorderWidth = 2
+      ButtonColorSize = 16
+      ButtonColor = clWhite
+      OnColorChanged = CBPlayer1ColorChanged
+    end
+    object LPlayer1: TLabel
+      Left = 10
+      Height = 13
+      Top = 188
+      Width = 39
+      Caption = 'Player &1'
+      ParentColor = False
+    end
+    object CBPlayer2: TColorButton
+      Tag = 2
+      Left = 61
+      Height = 25
+      Top = 212
+      Width = 27
+      BorderWidth = 2
+      ButtonColorSize = 16
+      ButtonColor = clWhite
+      OnColorChanged = CBPlayer1ColorChanged
+    end
+    object LPlayer2: TLabel
+      Left = 7
+      Height = 13
+      Top = 216
+      Width = 39
+      Caption = 'Player &2'
+      ParentColor = False
+    end
+    object CBPlayer3: TColorButton
+      Tag = 3
+      Left = 61
+      Height = 25
+      Top = 240
+      Width = 27
+      BorderWidth = 2
+      ButtonColorSize = 16
+      ButtonColor = clWhite
+      OnColorChanged = CBPlayer1ColorChanged
+    end
+    object LPlayer3: TLabel
+      Left = 10
+      Height = 13
+      Top = 244
+      Width = 39
+      Caption = 'Player &3'
+      ParentColor = False
+    end
+    object CBPlayer4: TColorButton
+      Tag = 4
+      Left = 145
+      Height = 25
+      Top = 184
+      Width = 27
+      BorderWidth = 2
+      ButtonColorSize = 16
+      ButtonColor = clWhite
+      OnColorChanged = CBPlayer1ColorChanged
+    end
+    object LPlayer4: TLabel
+      Left = 96
+      Height = 13
+      Top = 188
+      Width = 39
+      Caption = 'Player &4'
+      ParentColor = False
+    end
+    object LPlayer5: TLabel
+      Left = 96
+      Height = 13
+      Top = 216
+      Width = 39
+      Caption = 'Player &5'
+      ParentColor = False
+    end
+    object CBPlayer5: TColorButton
+      Tag = 5
+      Left = 145
+      Height = 25
+      Top = 212
+      Width = 27
+      BorderWidth = 2
+      ButtonColorSize = 16
+      ButtonColor = clWhite
+      OnColorChanged = CBPlayer1ColorChanged
+    end
+    object LPlayer6: TLabel
+      Left = 96
+      Height = 13
+      Top = 244
+      Width = 39
+      Caption = 'Player &6'
+      ParentColor = False
+    end
+    object CBPlayer6: TColorButton
+      Tag = 6
+      Left = 145
+      Height = 25
+      Top = 240
+      Width = 27
+      BorderWidth = 2
+      ButtonColorSize = 16
+      ButtonColor = clWhite
+      OnColorChanged = CBPlayer1ColorChanged
+    end
+    object lD1: TLabel
+      Left = 13
+      Height = 13
+      Top = 277
+      Width = 15
+      Caption = 'lD1'
+      ParentColor = False
+    end
+    object lD2: TLabel
+      Left = 50
+      Height = 13
+      Top = 277
+      Width = 15
+      Caption = 'lD2'
+      ParentColor = False
+    end
+    object lbl1: TLabel
+      Left = 16
+      Height = 13
+      Top = 309
+      Width = 16
+      Caption = 'lbl1'
+      ParentColor = False
+    end
+    object lbl2: TLabel
+      Left = 56
+      Height = 13
+      Top = 309
+      Width = 16
+      Caption = 'lbl2'
+      ParentColor = False
+    end
+    object lbl3: TLabel
+      Left = 97
+      Height = 13
+      Top = 310
+      Width = 16
+      Caption = 'lbl3'
+      ParentColor = False
+    end
+  end
+  object PIMage: TPanel
+    Left = 192
+    Height = 349
+    Top = 0
+    Width = 276
+    Align = alClient
+    BevelOuter = bvNone
+    ClientHeight = 349
+    ClientWidth = 276
+    TabOrder = 1
+    object SLeft: TShape
+      Left = 80
+      Height = 16
+      Top = 96
+      Width = 16
+      Brush.Color = 16711808
+      Shape = stDiamond
+    end
+    object SRight: TShape
+      Left = 112
+      Height = 16
+      Top = 96
+      Width = 16
+      Brush.Color = clLime
+      Shape = stDiamond
+    end
+    object SHead: TShape
+      Left = 100
+      Height = 48
+      Top = 38
+      Width = 48
+      Brush.Color = clYellow
+      Shape = stCircle
+    end
+  end
+end
