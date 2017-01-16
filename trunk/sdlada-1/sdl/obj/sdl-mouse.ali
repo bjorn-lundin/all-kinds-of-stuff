@@ -1,0 +1,174 @@
+V "GNAT Lib v7.1"
+A -g
+A -gnat05
+A -gnatwa
+A -gnatwK
+A -gnatwM
+A -gnatA
+P SS ZX
+
+RN
+RV NO_IMPLICIT_LOOPS
+RV NO_STANDARD_STORAGE_POOLS
+RV NO_IMPLEMENTATION_PRAGMAS
+RV SPARK
+
+U sdl.mouse%b		sdl-mouse.adb		dc887efa NE OO PK IU
+W sdl%s			sdl.ads			sdl.ali
+
+U sdl.mouse%s		sdl-mouse.ads		be56787b BN EE NE OO PK IU
+W interfaces%s		interfac.ads		interfac.ali
+W interfaces.c%s	i-c.adb			i-c.ali
+W sdl%s			sdl.ads			sdl.ali
+W sdl.types%s		sdl-types.adb		sdl-types.ali
+W sdl.video%s		sdl-video.adb		sdl-video.ali
+W system%s		system.ads		system.ali
+
+D ada.ads		20060709122604 3ffc8e18
+D a-charac.ads		20070910122414 2d3ec45b
+D a-chlat1.ads		20070910142508 2825df20
+D a-except.ads		20120612125712 10fcae55
+D a-finali.ads		20111103145730 52ecdc1b
+D a-stream.ads		20101026134802 2ca4ee37
+D a-string.ads		20060709122604 90ac6797
+D a-strmap.ads		20101026134802 9cb836fb
+D a-strunb.ads		20120405105632 3f91d4c5
+D a-tags.ads		20111201172144 6c0509d0
+D a-unccon.ads		20060709122604 f9eb8f06
+D interfac.ads		20110826210744 129923ea
+D i-c.ads		20101110140308 5421119b
+D i-cexten.ads		20101128102232 6fa32d98
+D i-cpoint.ads		20101110140308 ee8a93ec
+D i-cstrin.ads		20101125020518 341d0ddf
+D i-cstrea.ads		20120925124156 cdb6fa2f
+D sdl.ads		20120716195234 7d09e326
+D sdl-mouse.ads		20120711133326 084650d3
+D sdl-mouse.adb		20120711133316 d4ce2e29
+D sdl-mutex.ads		20120711133350 c93c8de3
+D sdl-rwops.ads		20120711133432 7412c2c2
+D sdl-types.ads		20120718220818 c0291e7d
+D sdl-video.ads		20120718220818 00d96a3e
+D system.ads		20120806180456 5fc8ae56
+D s-atacco.ads		20120408201644 4c36d12f
+D s-atocou.ads		20111020135720 4a9c6cb4
+D s-atocou.adb		20110927090910 c864ec10
+D s-crtl.ads		20120925124156 7d07ef98
+D s-exctab.ads		20101026134802 66e51330
+D s-finmas.ads		20111011182004 b95bb341
+D s-finroo.ads		20120402200032 4ff27390
+D s-maccod.ads		20110826210744 0fbb7bce
+D s-parame.ads		20110802094036 b6e20cc0
+D s-secsta.ads		20110608115308 eea35a36
+D s-soflin.ads		20120413115406 24c8153c
+D s-stache.ads		20101026134802 596fc1b4
+D s-stalib.ads		20101227000412 f78bcf95
+D s-stoele.ads		20101026134802 facd7d98
+D s-stoele.adb		20101026134802 afc5dc80
+D s-stopoo.ads		20110928214702 7b8fbeee
+D s-stposu.ads		20120919162900 ffeba1c5
+D s-stratt.ads		20101026134802 aedef97e
+D s-traent.ads		20101026134802 5221ee41
+D s-unstyp.ads		20101026134802 6ae15c76
+D uintn_ptrops.ads	20120711133634 ccf84010
+X 12 interfac.ads
+36K9*Interfaces 175e15 19|45r6 50r22
+61M9*Unsigned_32 19|170r25 174r25 178r25
+107V13*Shift_Left{61M9} 19|169s22 173s22 177s22
+X 13 i-c.ads
+18K20*C 230e17 19|45w17
+35I9*int<integer> 19|89r20 90r20 96r20 101r20 130r16 131r24 153r36 153r50
+. 154r37 158r28 20|49r20 53r23 65r20 70r23
+36I9*short<short_integer>
+44M9*unsigned_short
+47M9*unsigned_char
+X 18 sdl.ads
+44K9*SDL 103e8 19|46r6 46r21 47r6 48r9 57r17 193r5 20|44r14 78r5
+48K12*C=48:33 19|89r18 90r18 96r18 101r18 130r14 131r22 153r34 153r48 154r35
+. 158r26 20|49r18 53r21 65r18 70r21
+X 19 sdl-mouse.ads
+48K13*Mouse 18|44k9 19|193l9 193e14 20|44b18 78l9 78t14
+50K12*I=50:22 169r20 170r23 173r20 174r23 177r20 178r23
+52M9*WMcursor 62r22 191c9
+53A9*Save_Cursor_Array(23|53P9)<integer> 54r26 61r17
+55R9*Cursor 63e17 64r26 66r34
+57r10*area{24|64R9}
+58i10*hot_x{23|143I9}
+58i17*hot_y{23|143I9}
+59p10*data{23|53P9}
+60p10*mask{23|53P9}
+61a10*save{53A9}
+62m10*wm_cursor{52M9}
+66P9*Cursor_ptr(55R9) 67r26 132r14 138r38 142r30 146r39
+74M9*Mouse_State 75r8 76r26 83r51 88r19 95r19 100r19 108r59 20|48r19 52r22
+. 64r19 68r22
+83V13*GetMouseState{74M9} 83>28 83>31 85b<c,SDL_GetMouseState>22
+83p28 x{23|222P9}
+83p31 y{23|222P9}
+87U14*Get_Mouse_State 88<7 89=7 90=7 91b<c,SDL_GetMouseState>22 92r36
+88m7 state{74M9}
+89i7 x{13|35I9}
+90i7 y{13|35I9}
+94U14*Get_Mouse_State_X 95<7 96=7 97r19 20|47b14 59l8 59t25
+95m7 state{74M9} 20|48b7 58m23
+96i7 x{13|35I9} 20|49b7 58m30
+99U14*Get_Mouse_State_Y 100<7 101=7 102r19 20|63b14 75l8 75t25
+100m7 state{74M9} 20|64b7 74m23
+101i7 y{13|35I9} 20|65b7 74m36
+108V13*GetRelativeMouseState{74M9} 108>36 108>39 109b<c,SDL_GetRelativeMouseState>22
+108p36 x{23|222P9}
+108p39 y{23|222P9}
+112U14*WarpMouse 112>25 112>28 113b<c,SDL_WarpMouse>22
+112m25 x{23|104M9}
+112m28 y{23|104M9}
+127V13*CreateCursor{66P9} 128>7 129>7 130>7 130>10 131>7 131>14 133b<c,SDL_CreateCursor>22
+128p7 data{23|53P9}
+129p7 mask{23|53P9}
+130i7 w{13|35I9}
+130i10 h{13|35I9}
+131i7 hot_x{13|35I9}
+131i14 hot_y{13|35I9}
+138U14*SetCursor 138>25 139b<c,SDL_SetCursor2>22
+138p25 the_cursor{66P9}
+142V13*GetCursor{66P9} 143b<c,SDL_GetCursor>22
+146U14*FreeCursor 146>26 147b<c,SDL_FreeCursor>22
+146p26 the_cursor{66P9}
+153V13*ShowCursor{13|35I9} 153>25 155b<c,SDL_ShowCursor>22
+153i25 toggle{13|35I9}
+154U14*ShowCursor 154>26 155b<c,SDL_ShowCursor>22
+154i26 toggle{13|35I9}
+158I9*Button_ID<13|35I9> 159r26 164r29 165r29 166r29
+161M9*Button_Mask 162r26 168r29 169r7 172r29 173r7 176r29 177r7
+164i4*BUTTON_LEFT{158I9} 171r32
+165i4*BUTTON_MIDDLE{158I9} 175r32
+166i4*BUTTON_RIGHT{158I9} 179r32
+168m4*BUTTON_LAMSK{161M9}
+172m4*BUTTON_MMASK{161M9}
+176m4*BUTTON_RMASK{161M9}
+181M9*Mouse_Button_State 182r8 183r26 185r23 186r7 187r24 188r7
+185m4*PRESSED{181M9}
+187m4*RELEASED{181M9}
+X 20 sdl-mouse.adb
+51U17*GetMouseStateX 52<10 53=10 54>10 55b<c,SDL_GetMouseState>25 56r39 58s7
+52m10 state{19|74M9}
+53i10 x{13|35I9}
+54p10 y{23|222P9}
+67U17*GetMouseStateY 68<10 69>10 70=10 71b<c,SDL_GetMouseState>25 72r39 74s7
+68m10 state{19|74M9}
+69p10 x{23|222P9}
+70i10 y{13|35I9}
+X 23 sdl-types.ads
+41K13*Types 19|46w10 46r25 23|228e14
+52M9*Uint8<13|47M9>
+53P9*Uint8_ptr(52M9) 19|53r48 59r17 60r17 128r14 129r14
+104M9*Uint16<13|44M9> 19|112r32
+143I9*Sint16<13|36I9> 19|58r25
+222P9*int_ptr(13|35I9) 19|83r35 108r43 20|54r14 69r14
+225N4*SDL_PRESSED 19|170r38 174r38 178r38 186r27
+226N4*SDL_RELEASED 19|188r27
+X 24 sdl-video.ads
+53K13*Video 19|47w10 57r21 24|1533e14
+64R9*Rect 19|57r27 24|68e16
+X 25 system.ads
+37K9*System 19|44w6 191r25 25|196e11
+64M9*Address 19|191r32
+

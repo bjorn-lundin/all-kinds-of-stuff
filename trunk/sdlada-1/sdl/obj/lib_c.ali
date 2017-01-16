@@ -1,0 +1,68 @@
+V "GNAT Lib v7.1"
+A -g
+A -gnat05
+A -gnatwa
+A -gnatwK
+A -gnatwM
+A -gnatA
+P ZX
+
+RN
+RV NO_ACCESS_SUBPROGRAMS
+RV NO_IMPLEMENTATION_PRAGMAS
+RV SPARK
+
+U lib_c%s		lib_c.ads		3b6f747d NE OO PK
+W interfaces%s		interfac.ads		interfac.ali
+W interfaces.c%s	i-c.adb			i-c.ali
+W system%s		system.ads		system.ali
+
+D ada.ads		20060709122604 3ffc8e18
+D a-unccon.ads		20060709122604 f9eb8f06
+D interfac.ads		20110826210744 129923ea
+D i-c.ads		20101110140308 5421119b
+D lib_c.ads		20120711132632 3086cbb0
+D system.ads		20120806180456 5fc8ae56
+D s-exctab.ads		20101026134802 66e51330
+D s-parame.ads		20110802094036 b6e20cc0
+D s-stalib.ads		20101227000412 f78bcf95
+X 3 interfac.ads
+36K9*Interfaces 175e15 5|36r6 40r23
+X 4 i-c.ads
+18K20*C 230e17 5|36w17 40r34
+35I9*int<integer> 5|44r14 50r14 56r14 69r54 73r18 79r18 83r35 83r49 86r40
+60M9*size_t 5|45r16 51r16 57r16
+X 5 lib_c.ads
+38K9*Lib_C 89l5 89e10
+40K12*C=40:34 44r12 45r14 50r12 51r14 56r12 57r14 69r52 73r16 79r16 83r33
+. 83r47 86r38
+42V13*memset{6|64M9} 43>7 44>7 45>7 52b<c,memset>22
+43m7 BLOCK{6|64M9}
+44i7 Ch{4|35I9}
+45m7 SIZE{4|60M9}
+48U14*memset 49>7 50>7 51>7 52b<c,memset>22
+49m7 BLOCK{6|64M9}
+50i7 Ch{4|35I9}
+51m7 SIZE{4|60M9}
+54U14*Mem_Set 55>7 56>7 57>7 58b<c,memset>22
+55m7 BLOCK{6|64M9}
+56i7 Ch{4|35I9}
+57m7 SIZE{4|60M9}
+66U14*free 66>20 67b<c,free>22
+66m20 PTR{6|64M9}
+69P9*sighandler_t 70r26 74r17 75r14 80r17
+69i43 signum{4|35I9}
+72V13*signal{69P9} 73>7 74>7 76b<c,signal>22
+73i7 signum{4|35I9}
+74p7 handler{69P9}
+78U14*Set_Signal 79>7 80>7 81b<c,signal>22
+79i7 signum{4|35I9}
+80p7 handler{69P9}
+83V13*Raise_Signal{4|35I9} 83>27 84b<c,raise>22
+83i27 sig{4|35I9}
+86U14*Raise_The_Signal 86>32 87b<c,raise>22
+86i32 sig{4|35I9}
+X 6 system.ads
+37K9*System 5|35w6 43r15 46r14 49r15 55r15 66r26 6|196e11
+64M9*Address 5|43r22 46r21 49r22 55r22 66r33
+

@@ -1,0 +1,121 @@
+V "GNAT Lib v7.1"
+A -g
+A -gnat05
+A -gnatwa
+A -gnatwK
+A -gnatwM
+A -gnatA
+P SS ZX
+
+RN
+RV NO_DIRECT_BOOLEAN_OPERATORS
+RV NO_IO
+RV NO_DEFAULT_INITIALIZATION
+RV NO_IMPLEMENTATION_PRAGMAS
+RV SPARK
+
+U utils%b		utils.adb		c8e49805 NE OO PK
+W ada.tags%s		a-tags.adb		a-tags.ali
+W sdl%s			sdl.ads			sdl.ali
+W sdl.types%s		sdl-types.adb		sdl-types.ali
+W system.concat_3%s	s-conca3.adb		s-conca3.ali
+W text_io%s		text_io.ads		text_io.ali
+
+U utils%s		utils.ads		5e17e554 EE NE OO PK
+W sdl%s			sdl.ads			sdl.ali
+W sdl.video%s		sdl-video.adb		sdl-video.ali
+
+D ada.ads		20060709122604 3ffc8e18
+D a-charac.ads		20070910122414 2d3ec45b
+D a-chlat1.ads		20070910142508 2825df20
+D a-except.ads		20120612125712 10fcae55
+D a-finali.ads		20111103145730 52ecdc1b
+D a-ioexce.ads		20090919133920 8b9de6cd
+D a-stream.ads		20101026134802 2ca4ee37
+D a-string.ads		20060709122604 90ac6797
+D a-strmap.ads		20101026134802 9cb836fb
+D a-strunb.ads		20120405105632 3f91d4c5
+D a-tags.ads		20111201172144 6c0509d0
+D a-textio.ads		20101028210204 386df5d4
+D a-unccon.ads		20060709122604 f9eb8f06
+D interfac.ads		20110826210744 129923ea
+D i-c.ads		20101110140308 5421119b
+D i-cexten.ads		20101128102232 6fa32d98
+D i-cpoint.ads		20101110140308 ee8a93ec
+D i-cstrin.ads		20101125020518 341d0ddf
+D i-cstrea.ads		20120925124156 cdb6fa2f
+D sdl.ads		20120716195234 7d09e326
+D sdl-mutex.ads		20120711133350 c93c8de3
+D sdl-rwops.ads		20120711133432 7412c2c2
+D sdl-types.ads		20120718220818 c0291e7d
+D sdl-video.ads		20120718220818 00d96a3e
+D system.ads		20120806180456 5fc8ae56
+D s-atacco.ads		20120408201644 4c36d12f
+D s-atocou.ads		20111020135720 4a9c6cb4
+D s-atocou.adb		20110927090910 c864ec10
+D s-conca3.ads		20101026134802 762a026a
+D s-crtl.ads		20120925124156 7d07ef98
+D s-exctab.ads		20101026134802 66e51330
+D s-ficobl.ads		20120526014244 55a71d43
+D s-finmas.ads		20111011182004 b95bb341
+D s-finroo.ads		20120402200032 4ff27390
+D s-maccod.ads		20110826210744 0fbb7bce
+D s-parame.ads		20110802094036 b6e20cc0
+D s-pooglo.ads		20110224134916 542f33d0
+D s-secsta.ads		20110608115308 eea35a36
+D s-soflin.ads		20120413115406 24c8153c
+D s-stache.ads		20101026134802 596fc1b4
+D s-stalib.ads		20101227000412 f78bcf95
+D s-stoele.ads		20101026134802 facd7d98
+D s-stoele.adb		20101026134802 afc5dc80
+D s-stopoo.ads		20110928214702 7b8fbeee
+D s-stposu.ads		20120919162900 ffeba1c5
+D s-stratt.ads		20101026134802 aedef97e
+D s-traent.ads		20101026134802 5221ee41
+D s-unstyp.ads		20101026134802 6ae15c76
+D s-wchcon.ads		20101026134802 bfeb2e3d
+D text_io.ads		20060709122604 45d626c9
+D uintn_ptrops.ads	20120711133634 ccf84010
+D utils.ads		20140301174424 5ece8f6a
+D utils.adb		20140301174408 13d52fdb
+X 12 a-textio.ads
+263U14*Put_Line 53|14s13
+X 15 i-c.ads
+43M9*unsigned
+X 20 sdl.ads
+44K9*SDL 103e8 52|2r6 7r35 7r67 53|3r6 3r21 7r12 8r12 9r12 17r36 17r68 18r15
+. 19r20 24r34 27r16 30r37 34r26 34r49 38r40 40r45
+X 23 sdl-types.ads
+41K13*Types 228e14 53|3w10 3r25
+149M9*Uint32<15|43M9>
+205M9*bits1
+X 24 sdl-video.ads
+53K13*Video 1533e14 52|2w10 7r39 7r71 53|7r16 8r16 9r16 17r40 17r72 18r19
+. 19r24 24r38 27r20 30r41 34r30 34r53 38r44 40r49
+110P9*Palette_ptr(103R9) 53|8r22
+149M9*Surface_Flags 52|7r45 7r77 53|9r22 17r46 17r78 19r30
+184P9*Surface_ptr(153R9) 53|7r22
+199m4*HWSURFACE{149M9} 53|30r47 34r36 34r59 40r55
+214m4*DOUBLEBUF{149M9} 53|38r50
+217m4*FULLSCREEN{149M9} 53|24r44
+267m10*blit_hw_CC{23|205M9} 53|28r17
+272m10*blit_fill{23|205M9} 53|28r44
+274m10*video_mem{23|149M9} 53|37r19
+313P9*VideoInfo_ConstPtr(260R9) 53|18r25
+446V13*GetVideoInfo{313P9} 53|27s26
+X 50 text_io.ads
+24K9*Text_IO=24:29 53|1w6 14r5
+X 52 utils.ads
+4K9*Utils 9l5 9e10 53|5b14 49l5 49t10
+6U13*Log 6>17 6>21 53|12b13 15l7 15t10
+6s17 Who{string} 53|12b17 14r22
+6s21 What{string} 53|12b21 14r34
+7V12*Fastest_Flags{24|149M9} 7>26 53|17b14 45l9 45t22
+7m26 Flags{24|149M9} 53|17b28 19r47
+X 53 utils.adb
+18p8 Info{24|313P9} 27m8 28r12 28r39 37r14
+19m8 New_Flags{24|149M9} 24m8 24r21 30m11 30r24 34r12 38m14 38r27 40m14 40r27
+. 44r15
+20N8 Screen_Width 37r31
+21N8 Screen_Height 37r46
+
