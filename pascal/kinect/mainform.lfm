@@ -1,0 +1,37 @@
+object MainForm: TMainForm
+  Left = -1167
+  Height = 498
+  Top = 230
+  Width = 996
+  Caption = 'MainForm'
+  ClientHeight = 498
+  ClientWidth = 996
+  OnCreate = FormCreate
+  LCLVersion = '1.6.0.4'
+  object Panel1: TPanel
+    Left = 16
+    Height = 411
+    Top = 32
+    Width = 344
+    Caption = 'Panel1'
+    ClientHeight = 411
+    ClientWidth = 344
+    TabOrder = 0
+    object TBAngle: TScrollBar
+      Left = 48
+      Height = 24
+      Top = 360
+      Width = 256
+      PageSize = 0
+      TabOrder = 0
+    end
+  end
+  object Panel2: TPanel
+    Left = 395
+    Height = 411
+    Top = 33
+    Width = 567
+    Caption = 'Panel2'
+    TabOrder = 1
+  end
+end

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="2">
+      <Unit0>
+        <Filename Value="pacman.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <TopLine Value="13"/>
+        <CursorPos X="28" Y="46"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="game.pas"/>
+        <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="60"/>
+        <CursorPos X="21" Y="72"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit1>
+    </Units>
+    <JumpHistory Count="24" HistoryIndex="23">
+      <Position1>
+        <Filename Value="game.pas"/>
+        <Caret Line="17" Column="20"/>
+      </Position1>
+      <Position2>
+        <Filename Value="game.pas"/>
+        <Caret Line="12"/>
+      </Position2>
+      <Position3>
+        <Filename Value="game.pas"/>
+        <Caret Line="19"/>
+      </Position3>
+      <Position4>
+        <Filename Value="game.pas"/>
+        <Caret Line="45" Column="18" TopLine="18"/>
+      </Position4>
+      <Position5>
+        <Filename Value="game.pas"/>
+        <Caret Line="26" Column="4" TopLine="11"/>
+      </Position5>
+      <Position6>
+        <Filename Value="game.pas"/>
+        <Caret Line="61" Column="10" TopLine="35"/>
+      </Position6>
+      <Position7>
+        <Filename Value="game.pas"/>
+        <Caret Line="23" Column="7" TopLine="8"/>
+      </Position7>
+      <Position8>
+        <Filename Value="game.pas"/>
+        <Caret Line="30" Column="17" TopLine="17"/>
+      </Position8>
+      <Position9>
+        <Filename Value="game.pas"/>
+        <Caret Line="59" Column="17" TopLine="35"/>
+      </Position9>
+      <Position10>
+        <Filename Value="game.pas"/>
+        <Caret Line="55" Column="31" TopLine="32"/>
+      </Position10>
+      <Position11>
+        <Filename Value="game.pas"/>
+        <Caret Line="57" Column="21" TopLine="51"/>
+      </Position11>
+      <Position12>
+        <Filename Value="game.pas"/>
+        <Caret Line="30" Column="37" TopLine="7"/>
+      </Position12>
+      <Position13>
+        <Filename Value="game.pas"/>
+        <Caret Line="31" Column="12" TopLine="12"/>
+      </Position13>
+      <Position14>
+        <Filename Value="game.pas"/>
+        <Caret Line="23" Column="7" TopLine="12"/>
+      </Position14>
+      <Position15>
+        <Filename Value="game.pas"/>
+        <Caret Line="55" Column="40" TopLine="34"/>
+      </Position15>
+      <Position16>
+        <Filename Value="game.pas"/>
+        <Caret Line="34" Column="23" TopLine="16"/>
+      </Position16>
+      <Position17>
+        <Filename Value="game.pas"/>
+        <Caret Line="73" Column="21" TopLine="27"/>
+      </Position17>
+      <Position18>
+        <Filename Value="game.pas"/>
+        <Caret Line="9" Column="51" TopLine="8"/>
+      </Position18>
+      <Position19>
+        <Filename Value="game.pas"/>
+        <Caret Line="69" TopLine="53"/>
+      </Position19>
+      <Position20>
+        <Filename Value="game.pas"/>
+        <Caret Line="83" TopLine="57"/>
+      </Position20>
+      <Position21>
+        <Filename Value="game.pas"/>
+        <Caret Line="84" TopLine="58"/>
+      </Position21>
+      <Position22>
+        <Filename Value="pacman.lpr"/>
+        <Caret Line="48" TopLine="22"/>
+      </Position22>
+      <Position23>
+        <Filename Value="game.pas"/>
+        <Caret Line="73" Column="19" TopLine="61"/>
+      </Position23>
+      <Position24>
+        <Filename Value="game.pas"/>
+        <Caret Line="70" Column="16" TopLine="54"/>
+      </Position24>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>

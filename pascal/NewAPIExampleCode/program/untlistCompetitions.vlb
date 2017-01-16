@@ -1,0 +1,9 @@
+﻿[Panel1]
+Coordinates=0,0,47,51
+
+[Button1]
+Coordinates=66,1,53,51
+
+[ListView1]
+Coordinates=138,1,97,231
+

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="9"/>
+    <BuildModes Active="Default"/>
+    <Units Count="3">
+      <Unit0>
+        <Filename Value="kinect.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="21"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="mainform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainForm"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <IsVisibleTab Value="True"/>
+        <CursorPos X="3" Y="26"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="..\..\..\..\..\tools\lazarus\fpc\3.0.0\source\packages\winunits-base\src\libkinect10.pp"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="13"/>
+        <CursorPos X="17" Y="25"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit2>
+    </Units>
+    <JumpHistory Count="4" HistoryIndex="3">
+      <Position1>
+        <Filename Value="..\..\..\..\..\tools\lazarus\fpc\3.0.0\source\packages\winunits-base\src\libkinect10.pp"/>
+        <Caret Line="565" TopLine="541"/>
+      </Position1>
+      <Position2>
+        <Filename Value="mainform.pas"/>
+      </Position2>
+      <Position3>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="27" Column="3" TopLine="6"/>
+      </Position3>
+      <Position4>
+        <Filename Value="mainform.pas"/>
+        <Caret Line="31" Column="15"/>
+      </Position4>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>
