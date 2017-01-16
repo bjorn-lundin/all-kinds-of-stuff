@@ -1,0 +1,56 @@
+V "GNAT Lib v7.1"
+A -g
+A -gnat05
+A -gnatwa
+A -gnatwK
+A -gnatwM
+A -gnatA
+P ZX
+
+RN
+RV NO_IMPLEMENTATION_PRAGMAS
+RV SPARK
+
+U sdl%s			sdl.ads			2928f2bd NE OO PK IU
+W interfaces%s		interfac.ads		interfac.ali
+W interfaces.c%s	i-c.adb			i-c.ali
+
+D ada.ads		20060709122604 3ffc8e18
+D a-unccon.ads		20060709122604 f9eb8f06
+D interfac.ads		20110826210744 129923ea
+D i-c.ads		20101110140308 5421119b
+D sdl.ads		20120716195234 7d09e326
+D system.ads		20120806180456 5fc8ae56
+D s-exctab.ads		20101026134802 66e51330
+D s-parame.ads		20110802094036 b6e20cc0
+D s-stalib.ads		20101227000412 f78bcf95
+X 3 interfac.ads
+36K9*Interfaces 175e15 5|43r6 48r22
+X 4 i-c.ads
+18K20*C 230e17 5|43w17 48r33
+35I9*int<integer> 5|77r49 82r57
+X 5 sdl.ads
+44K9*SDL 103l5 103e8
+48K12*C=48:33 77r47 82r55
+55M9*Init_Flags 56r26 60r32 61r32 62r32 63r32 64r32 66r32 68r32 69r32 77r28
+. 78r28 82r36 86r37 92r30 92r49
+60m4*INIT_TIMER{55M9}
+61m4*INIT_AUDIO{55M9}
+62m4*INIT_VIDEO{55M9}
+63m4*INIT_CDROM{55M9}
+64m4*INIT_JOYSTICK{55M9}
+66m4*INIT_NOPARACHUTE{55M9}
+68m4*INIT_EVENTTHREAD{55M9}
+69m4*INIT_EVERYTHING{55M9}
+77V13*Init{4|35I9} 77>19 79b<c,SDL_Init>22
+77m19 flags{55M9}
+78U14*Init 78>20 79b<c,SDL_Init>22
+78m20 flags{55M9}
+82V13*InitSubSystem{4|35I9} 82>28 83b<c,SDL_InitSubSystem>22
+82m28 flags{55M9}
+86U14*QuitSubSystem 86>29 87b<c,SDL_QuitSubSystem>22
+86m29 flags{55M9}
+92V13*WasInit{55M9} 92>22 93b<c,SDL_WasInit>22
+92m22 flags{55M9}
+98U14*SDL_Quit 99b<c,SDL_Quit>22
+

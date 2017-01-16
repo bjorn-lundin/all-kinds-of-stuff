@@ -1,0 +1,35 @@
+V "GNAT Lib v7.1"
+A -g
+A -gnat05
+A -gnatwa
+A -gnatwK
+A -gnatwM
+A -gnatA
+P ZX
+
+RN
+RV NO_ACCESS_SUBPROGRAMS
+RV NO_IMPLEMENTATION_PRAGMAS
+RV SPARK
+
+U sdl.quit%s		sdl-quit.ads		980f94fb NE OO PK IU
+W sdl%s			sdl.ads			sdl.ali
+
+D ada.ads		20060709122604 3ffc8e18
+D a-unccon.ads		20060709122604 f9eb8f06
+D interfac.ads		20110826210744 129923ea
+D i-c.ads		20101110140308 5421119b
+D sdl.ads		20120716195234 7d09e326
+D sdl-quit.ads		20120711133358 e50677dd
+D system.ads		20120806180456 5fc8ae56
+D s-exctab.ads		20101026134802 66e51330
+D s-parame.ads		20110802094036 b6e20cc0
+D s-stalib.ads		20101227000412 f78bcf95
+X 5 sdl.ads
+44K9*SDL 103e8 6|44r9 70r5
+X 6 sdl-quit.ads
+44K13*Quit 5|44k9 6|70l9 70e13
+65P9*exit_proc_ptr 66r26 67r34
+67U14*atexit 67>22 68b<c,atexit>22
+67p22 exit_proc{65P9}
+
