@@ -7,15 +7,15 @@
 project SDL is
 
    for Source_Dirs use ("adasdl",
-                        "crane");
+                        "telescope");
    
    for Object_Dir use "obj";
    for Exec_Dir use "exe";
    
-   for Main use ("crane_emulator.adb");
+   for Main use ("tele.adb");
    
    package Compiler is   
-      for Default_Switches ("ada") use ( "-g", "-gnat05", "-gnatwaKM");
+      for Default_Switches ("ada") use ( "-g", "-gnat12", "-gnatwaKM");
    end Compiler;
 
    package Builder is
@@ -23,13 +23,7 @@ project SDL is
    end Builder;
    
    package Linker is
-     for Default_Switches ("ada") use ("-Llib/runtime/bin",
-                                       "-lopengl32",
-                                       "-lglu32",
-                                       "-lSDL",
-                                       "-lSDL_mixer",
-                                       "-lSDL_image",
-                                       "-lSDL_ttf" );
+     for Default_Switches ("ada") use ("-lSDL");
    end Linker;
    
    

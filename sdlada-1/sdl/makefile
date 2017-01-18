@@ -2,8 +2,10 @@
 
 
 
-.PHONYE :all
+.PHONYE :all clean test
 all:
 	gnatmake -p -P sdl.gpr
+clean:
+	gnatclean -P sdl.gpr
 test:
-	cd exe && crane_emulator.exe
+	cd exe && ./tele
