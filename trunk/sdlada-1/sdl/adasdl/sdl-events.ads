@@ -42,7 +42,7 @@
 --  **************************************************************** --
 
 with System;
-with Interfaces.C;
+--with Interfaces.C;
 with SDL.Types; use SDL.Types;
 with SDL.Keyboard;
 with SDL.Active;
