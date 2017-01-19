@@ -35,7 +35,7 @@
 with System.Address_To_Access_Conversions;
 with Interfaces.C;
 with Interfaces.C.Strings;
-with Interfaces.C.Pointers;
+--with Interfaces.C.Pointers;
 with Interfaces.C.Extensions;
 with UintN_PtrOps;
 package SDL.Types is

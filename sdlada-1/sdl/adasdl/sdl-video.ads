@@ -47,7 +47,7 @@ with Interfaces.C.Pointers;
 with Ada.Unchecked_Conversion;
 with Ada.Strings.Unbounded;
 with SDL.Types; use SDL.Types;
-with SDL.Mutex;
+--with SDL.Mutex;
 with SDL.RWops;
 use type Interfaces.C.int;
 package SDL.Video is

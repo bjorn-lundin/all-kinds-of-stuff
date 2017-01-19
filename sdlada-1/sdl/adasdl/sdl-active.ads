@@ -41,7 +41,7 @@
 --  SDL header files.                                                --
 --  **************************************************************** --
 
-with SDL.Types; use SDL.Types;
+--with SDL.Types; use SDL.Types;
 
 --  SDL application focus event handling
 package SDL.Active is

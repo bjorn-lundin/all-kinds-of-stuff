@@ -40,7 +40,7 @@
 --  are, in great extent, a direct copy of the original text in the  --
 --  SDL header files.                                                --
 --  **************************************************************** --
-with Lib_C;
+--with Lib_C;
 package body SDL.Video is
    use type CS.chars_ptr;
 
