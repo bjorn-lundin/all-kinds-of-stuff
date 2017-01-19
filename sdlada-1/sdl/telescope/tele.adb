@@ -124,11 +124,12 @@ procedure Tele is
   Number_Of_Joysticks : C.Int := 0;
   Quit : Boolean := False;
   Joy_Ptr  : array (0..1) of SDL.Joystick.Joystick_Ptr := (others => SDL.Joystick.Null_Joystick_Ptr);
+  Result : C.Int := 0;
 
 begin
     Log("main","Hello");
     if SDL.Init (SDL.INIT_JOYSTICK ) < 0 then
-       Log ("Game.Init","Couldn't initialize SDL: " &
+       Log ("main.Init","Couldn't initialize SDL: " &
                  C.Strings.Value (SDL.Error.GetError));
        GNAT.OS_Lib.OS_Exit (1);
     end if;  
@@ -136,11 +137,19 @@ begin
     SDL.Quit.Atexit (SDL.SDL_Quit'Access);
 
     Number_Of_Joysticks := SDL.Joystick.NumJoysticks;
-    Log("Game.Init","NumJoysticks:" & Number_Of_Joysticks'Img);
+    Log("main.Init","NumJoysticks:" & Number_Of_Joysticks'Img);
     for i in 0 .. Number_Of_Joysticks -1 loop
      Joy_Ptr(integer(i)) := SDL.Joystick.JoystickOpen(i);
-     Log("Game.Init","opened: " & Interfaces.C.Strings.Value(SDL.Joystick.JoystickName(i))); 
+     Log("main.Init","opened: " & Interfaces.C.Strings.Value(SDL.Joystick.JoystickName(i))); 
     end loop;    
+    
+    --enable joy events
+    if SDL.Joystick.JoystickEventState (SDL.Events.Enable) < 0 then
+       Log ("main.Init","Couldn't enable joystick events: " &
+                 C.Strings.Value (SDL.Error.GetError));
+       GNAT.OS_Lib.OS_Exit (1);
+    end if;
+    
     
     loop
       Handle_Events(Quit);
