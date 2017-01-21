@@ -12,8 +12,8 @@ pragma Elaborate_All(Gpio);
 package body Steppers is
   use Interfaces.C;
 
-  type Id_Type is new Integer range 1 .. 3 ;
-  type Direction_Type is (Clock_Wise, Counter_Clock_Wise, None);
+  type Id_Type is new Integer range 1 .. 2 ;
+  type Direction_Type is (Clock_Wise, Counter_Clock_Wise, None, Stop);
 
 
   --package Float_Math is new Ada.Numerics.Generic_Elementary_Functions (Float);
@@ -24,9 +24,11 @@ package body Steppers is
 
   type Stepper_Pins_Array_Type is array (Pin_Range_Type'Range) of Interfaces.C.Int;
 
-  Step_Pins : array (Id_Type'Range) of Stepper_Pins_Array_Type := ( 1 => (22,10, 9,11),
-                                                                    2 => (23,18,17,27),
-                                                                    3 => ( 7, 8,25,24));
+--    Step_Pins : array (Id_Type'Range) of Stepper_Pins_Array_Type := ( 1 => (22,10, 9,11),
+--                                                                      2 => (23,18,17,27),
+--                                                                      3 => ( 7, 8,25,24));
+    Step_Pins : array (Id_Type'Range) of Stepper_Pins_Array_Type := ( 1 => (22,10, 9,11),
+                                                                      2 => (23,18,17,27));
   -- stepper sequence
   type Stepper_Sequence_Type is array (Sequence_Range_Type'Range, Pin_Range_Type'Range) of Interfaces.C.Int;
 
@@ -45,19 +47,13 @@ package body Steppers is
   protected type Data_Type is
     procedure Set_Direction(Direction : Direction_Type);
     function Get_Direction return Direction_Type;
-    procedure Set_Is_Running(Is_Running : Boolean);
-    function Get_Is_Running return Boolean;
-
   private
-    Running: Boolean := False;
     D : Direction_Type := None;
   end Data_Type;
   -----------------------------------------------
 
   task type Motor_Type is
-    entry Init(Id : Id_Type);
-    entry Run;
-    entry Stop;
+    entry Init(Identity : Id_Type);
   end Motor_Type;
 
   -----------------------------------------------
@@ -74,15 +70,6 @@ package body Steppers is
     begin
       return D;
     end Get_Direction;
-    procedure Set_Is_Running(Is_Running : Boolean) is
-    begin
-      Running := Is_Running;
-    end Set_Is_Running;
-    ------------------------------
-    function Get_Is_Running return Boolean is
-    begin
-      return Running;
-    end Get_Is_Running;
   end Data_Type;
   -----------------------------------------------
 
@@ -107,47 +94,30 @@ package body Steppers is
 
   procedure Up is
   begin
-    null;
-    --Data(1).Set_Direction(Direction => Clock_Wise);
-    --if not Data(1).Get_Is_Running then
-    --  Motor(1).Run;
-    --end if;
+    Data(1).Set_Direction(Direction => Clock_Wise);
   end Up;
   -----------------------------------------------
   procedure Down is
   begin
     null;
-    --Data(1).Set_Direction(Direction => Counter_Clock_Wise);
-    --if not Data(1).Get_Is_Running then
-    --  Motor(1).Run;
-    --end if;
+    Data(1).Set_Direction(Direction => Counter_Clock_Wise);
   end Down;
   -----------------------------------------------
   procedure Right is
   begin
     Data(2).Set_Direction(Direction => Clock_Wise);
-    if not Data(2).Get_Is_Running then
-      Motor(2).Run;
-    end if;
   end Right;
   -----------------------------------------------
   procedure Left is
   begin
     Data(2).Set_Direction(Direction => Counter_Clock_Wise);
-    if not Data(2).Get_Is_Running then
-      Motor(2).Run;
-    end if;
   end Left;
   -----------------------------------------------
   procedure Stop is
   begin
-   -- Data(1).Set_Direction(Direction => None);
-    Data(2).Set_Direction(Direction => None);
-
     for I in Id_Type'Range loop
-      Motor(I).Stop;
+      Data(I).Set_Direction(Direction => Stop);
     end loop;
-
   end Stop;
 
   -----------------------------------------------
@@ -162,87 +132,63 @@ package body Steppers is
 
 
   task body Motor_Type is
-    Local_Pins         : Stepper_Pins_Array_Type;
-    Local_Id           : Id_Type;    -- 1 revolution is 4096 tics
-    Local_Step_Counter : Sequence_Range_Type := 1;
+    Pins         : Stepper_Pins_Array_Type;
+    Id           : Id_Type;    -- 1 revolution is 4096 tics
+    Sequence_Index : Sequence_Range_Type := 1;
   begin
     ----------------------------------------------------------
-    accept Init(Id : Id_Type) do
-      Local_Pins := Step_Pins(Id);
-      Local_Id   := Id;
+    accept Init(Identity : Id_Type) do
+      Pins := Step_Pins(Identity);
+      Id   := Identity;
       -- set pins output, and turn them off
       for Pin in Pin_Range_Type'Range loop
-        Gpio.Pin_Mode(Local_Pins(Pin), Gpio.Output);
-        Gpio.Digital_Write(Local_Pins(Pin), False);
+        Gpio.Pin_Mode(Pins(Pin), Gpio.Output);
+        Gpio.Digital_Write(Pins(Pin), False);
       end loop;
     end Init;
     ----------------------------------------------------------
 
-    Task_Loop : loop
-      select
-        ----------------------------------------------------------
-        accept Stop do
-          -- turn the pins off
+    Motor_Loop : loop
+      case Data(Id).Get_Direction is
+        when Stop => exit Motor_Loop;
+        when None => null;
+        when Clock_Wise =>
           for Pin in Pin_Range_Type'Range loop
-            Gpio.Digital_Write(Local_Pins(Pin), False);
+            if Sequence(Sequence_Index, Pin) /= 0 then
+              Gpio.Digital_Write(Pins(Pin), True);
+            else
+              Gpio.Digital_Write(Pins(Pin), False);
+            end if;
           end loop;
-        end Stop;
-      or
-          ----------------------------------------------------------
-        accept Run do
-           Data(Local_Id).Set_Is_Running(True);
-        end Run;
+          if Sequence_Index = Sequence_Range_Type'Last then
+            Sequence_Index := Sequence_Range_Type'First;
+          else
+            Sequence_Index := Sequence_Index + 1;
+          end if;
 
-        Motor_Loop_Start : loop
-          Log("Steppers.Run" & Local_Id'Img,"start loop" );
+        when Counter_Clock_Wise =>
+          for Pin in Pin_Range_Type'Range loop
+            if Sequence(Sequence_Index, Pin) /= 0 then
+              Gpio.Digital_Write(Pins(Pin), True);
+            else
+              Gpio.Digital_Write(Pins(Pin), False);
+            end if;
+          end loop;
+          if Sequence_Index = Sequence_Range_Type'First then
+            Sequence_Index := Sequence_Range_Type'Last;
+          else
+            Sequence_Index := Sequence_Index - 1;
+          end if;
 
-          case Data(Local_Id).Get_Direction is
-            when None =>
-              exit Motor_Loop_Start;
+      end case;
+      delay Delay_Time;
+    end loop Motor_Loop;
 
-            when Clock_Wise =>
-              for Pin in Pin_Range_Type'Range loop
-                if Sequence(Local_Step_Counter, Pin) /= 0 then
-                  Gpio.Digital_Write(Local_Pins(Pin), True);
-                else
-                  Gpio.Digital_Write(Local_Pins(Pin), False);
-                end if;
-              end loop;
-              if Local_Step_Counter = Sequence_Range_Type'Last then
-                Local_Step_Counter := Sequence_Range_Type'First;
-              else
-                Local_Step_Counter := Local_Step_Counter + 1;
-              end if;
-              delay Delay_Time;
+    -- turn the pins off at exit
+    for Pin in Pin_Range_Type'Range loop
+      Gpio.Digital_Write(Pins(Pin), False);
+    end loop;
 
-           when Counter_Clock_Wise =>
-              for Pin in Pin_Range_Type'Range loop
-                if Sequence(Local_Step_Counter, Pin) /= 0 then
-                  Gpio.Digital_Write(Local_Pins(Pin), True);
-                else
-                  Gpio.Digital_Write(Local_Pins(Pin), False);
-                end if;
-              end loop;
-              if Local_Step_Counter = Sequence_Range_Type'First then
-                Local_Step_Counter := Sequence_Range_Type'Last;
-              else
-                Local_Step_Counter := Local_Step_Counter - 1;
-              end if;
-              delay Delay_Time;
-
-          end case;
-        end loop Motor_Loop_Start;
-        Data(Local_Id).Set_Is_Running(False);
-        Log("Steppers.Run" & Local_Id'Img,"stop  loop" );
-
-        ----------------------------------------------------------
-      or
-        terminate;
-
-        ----------------------------------------------------------
-      end select;
-
-    end loop Task_Loop;
   exception
     when E: others =>
       declare

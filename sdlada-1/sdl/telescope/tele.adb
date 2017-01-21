@@ -145,7 +145,9 @@ begin
   Steppers.Test;
   Log("main","test stop");
 
-  Steppers.Init;
+  Steppers.Stop;
+
+--  Steppers.Init;
 
   Log("main","Hello");
   if Sdl.Init (Sdl.Init_Joystick + Sdl.Init_Video) < 0 then
