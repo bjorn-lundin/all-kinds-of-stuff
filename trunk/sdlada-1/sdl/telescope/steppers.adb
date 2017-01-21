@@ -263,16 +263,21 @@ package body Steppers is
   procedure Test is
   begin
     Log("Steppers.Test", "Running Test");
+    delay 2.0;
     Gpio.Setup;
+    delay 2.0;
     for I in Id_Type'Range loop
       Log("Steppers.Test", "start Init Motor" & i'img);
+      delay 2.0;
       Motor(I).Init(I);
       Log("Steppers.Test", "start Running Motor" & i'img);
       Data(I).Set_Direction(Clock_Wise);
+      delay 2.0;
       Motor(I).Run;
       delay 10.0;
       Data(I).Set_Direction(None);
       Log("Steppers.Test", "stop Running Motor" & i'img);
+      delay 2.0;
     end loop;
     Log("Steppers.Test", "Test done");
 
