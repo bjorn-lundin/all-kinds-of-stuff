@@ -12,4 +12,7 @@ package Steppers is
   procedure Stop;
   procedure Init;
 
+
+  procedure Test;
+
 end Steppers;
