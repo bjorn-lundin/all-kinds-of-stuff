@@ -114,7 +114,7 @@ procedure Tele is
 
           case Event.Jhat.Value is
             when Sdl.Joystick.Hat_Centered => Log("Handle_Events","HAT_CENTERED");
-              Steppers.Stop;
+              Steppers.No_Direction;
             when Sdl.Joystick.Hat_Up       => Log("Handle_Events","HAT_UP");
               Steppers.Up;
             when Sdl.Joystick.Hat_Right    => Log("Handle_Events","HAT_RIGHT");
@@ -141,13 +141,12 @@ procedure Tele is
   --Result : C.Int := 0;
 
 begin
+  --Log("main","init steppers");
+  --Steppers.Init;
   Log("main","test start");
   Steppers.Test;
   Log("main","test stop");
 
-  Steppers.Stop;
-
---  Steppers.Init;
 
   Log("main","Hello");
   if Sdl.Init (Sdl.Init_Joystick + Sdl.Init_Video) < 0 then

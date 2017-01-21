@@ -9,9 +9,10 @@ package Steppers is
   procedure Down;
   procedure Right;
   procedure Left;
+  procedure No_Direction;
+
   procedure Stop;
   procedure Init;
-
 
   procedure Test;
 
