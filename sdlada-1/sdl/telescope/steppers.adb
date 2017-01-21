@@ -12,7 +12,7 @@ pragma Elaborate_All(Gpio);
 package body Steppers is
   use Interfaces.C;
 
-  type Id_Type is new Integer range 2 .. 2 ;
+  type Id_Type is new Integer range 1 .. 3 ;
   type Direction_Type is (Clock_Wise, Counter_Clock_Wise, None);
 
 
@@ -24,10 +24,9 @@ package body Steppers is
 
   type Stepper_Pins_Array_Type is array (Pin_Range_Type'Range) of Interfaces.C.Int;
 
-  --Step_Pins : array (Id_Type'Range) of Stepper_Pins_Array_Type := ( 1 => (22,10, 9,11),
-  --                                                                  2 => (23,18,17,27),
-  --                                                                  3 => ( 7, 8,25,24));
-  Step_Pins : array (Id_Type'Range) of Stepper_Pins_Array_Type := ( 2 => (23,18,17,27));
+  Step_Pins : array (Id_Type'Range) of Stepper_Pins_Array_Type := ( 1 => (22,10, 9,11),
+                                                                    2 => (23,18,17,27),
+                                                                    3 => ( 7, 8,25,24));
 
   -- stepper sequence
   type Stepper_Sequence_Type is array (Sequence_Range_Type'Range, Pin_Range_Type'Range) of Interfaces.C.Int;
@@ -260,5 +259,23 @@ package body Steppers is
       end ;
   end Motor_Type;
   --------------------------------------------------------
+
+  procedure Test is
+  begin
+    Log("Steppers.Test", "Running Test");
+    Gpio.Setup;
+    for I in Id_Type'Range loop
+      Log("Steppers.Test", "start Init Motor" & i'img);
+      Motor(I).Init(I);
+      Log("Steppers.Test", "start Running Motor" & i'img);
+      Data(I).Set_Direction(Clock_Wise);
+      Motor(I).Run;
+      delay 10.0;
+      Data(I).Set_Direction(None);
+      Log("Steppers.Test", "stop Running Motor" & i'img);
+    end loop;
+    Log("Steppers.Test", "Test done");
+
+  end Test;
 
 end Steppers;

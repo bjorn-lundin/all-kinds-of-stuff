@@ -141,6 +141,10 @@ procedure Tele is
   --Result : C.Int := 0;
 
 begin
+  Log("main","test start");
+  Steppers.Test;
+  Log("main","test stop");
+
   Steppers.Init;
 
   Log("main","Hello");
