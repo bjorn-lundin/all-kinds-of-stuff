@@ -36,27 +36,27 @@ begin
   Y := Start_Y - 2;
   X := Start_X - 2;
 
-  Open(File, In_File, "dat/bird_positive_1.dat");
-  begin
-    loop
-      Y:= Y + 2;
-      Get_Line(File, Buffer, Len);
-      for i in 1 .. Len loop
-        X:= X + 2;
-        if Buffer(i) = 'X' then
-          Put_Line("Pen_Controller.Pen_Up");
-          Pen_Controller.Pen_Up;
-          Motor_Controller.Goto_XY(X,Y);
-          Put_Line("Pen_Controller.Pen_Down");
-          Pen_Controller.Pen_Down;
-        end if;
-      end loop;
-      X:= Start_X - 2;
-    end loop;
-  exception
-    when End_Error => Close(File);
-  end ;
-  
+  --Open(File, In_File, "dat/bird_positive_1.dat");
+  --begin
+  --  loop
+  --    Y:= Y + 2;
+  --    Get_Line(File, Buffer, Len);
+  --    for i in 1 .. Len loop
+  --      X:= X + 2;
+  --      if Buffer(i) = 'X' then
+  --        Put_Line("Pen_Controller.Pen_Up");
+  --        Pen_Controller.Pen_Up;
+  --        Motor_Controller.Goto_XY(X,Y);
+  --        Put_Line("Pen_Controller.Pen_Down");
+  --        Pen_Controller.Pen_Down;
+  --      end if;
+  --    end loop;
+  --    X:= Start_X - 2;
+  --  end loop;
+  --exception
+  --  when End_Error => Close(File);
+  --end ;
+
 --  Y_Loop : loop
 --    Y:= Y + 2;
 --    exit Y_Loop when Y > 300;
@@ -84,4 +84,3 @@ begin
   Put_Line("Pen_Controller.Stopped");
 
 end Plotter_Main;
-
