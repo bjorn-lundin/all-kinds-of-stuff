@@ -152,6 +152,7 @@ package body Steppers is
   -----------------------------------------------
   procedure Init is
   begin
+    Gpio.Setup;
     for I in Id_Type'Range loop
       Motor(I).Init(I);
     end loop;
@@ -192,6 +193,8 @@ package body Steppers is
         end Run;
 
         Motor_Loop_Start : loop
+          Log("Steppers.Run" & Local_Id'Img,"start loop" );
+
           case Data(Local_Id).Get_Direction is
             when None =>
               exit Motor_Loop_Start;
@@ -229,6 +232,7 @@ package body Steppers is
           end case;
         end loop Motor_Loop_Start;
         Data(Local_Id).Set_Is_Running(False);
+        Log("Steppers.Run" & Local_Id'Img,"stop  loop" );
 
         ----------------------------------------------------------
       or
