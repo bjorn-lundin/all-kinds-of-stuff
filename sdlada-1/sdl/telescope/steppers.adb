@@ -12,7 +12,7 @@ pragma Elaborate_All(Gpio);
 package body Steppers is
   use Interfaces.C;
 
-  type Id_Type is new Integer range 1 .. 3 ;
+  type Id_Type is new Integer range 2 .. 2 ;
   type Direction_Type is (Clock_Wise, Counter_Clock_Wise, None);
 
 
@@ -24,9 +24,10 @@ package body Steppers is
 
   type Stepper_Pins_Array_Type is array (Pin_Range_Type'Range) of Interfaces.C.Int;
 
-  Step_Pins : array (Id_Type'Range) of Stepper_Pins_Array_Type := ( 1 => (22,10, 9,11),
-                                                                    2 => (23,18,17,27),
-                                                                    3 => ( 7, 8,25,24));
+  --Step_Pins : array (Id_Type'Range) of Stepper_Pins_Array_Type := ( 1 => (22,10, 9,11),
+  --                                                                  2 => (23,18,17,27),
+  --                                                                  3 => ( 7, 8,25,24));
+  Step_Pins : array (Id_Type'Range) of Stepper_Pins_Array_Type := ( 2 => (23,18,17,27));
 
   -- stepper sequence
   type Stepper_Sequence_Type is array (Sequence_Range_Type'Range, Pin_Range_Type'Range) of Interfaces.C.Int;
@@ -108,18 +109,20 @@ package body Steppers is
 
   procedure Up is
   begin
-    Data(1).Set_Direction(Direction => Clock_Wise);
-    if not Data(1).Get_Is_Running then
-      Motor(1).Run;
-    end if;
+    null;
+    --Data(1).Set_Direction(Direction => Clock_Wise);
+    --if not Data(1).Get_Is_Running then
+    --  Motor(1).Run;
+    --end if;
   end Up;
   -----------------------------------------------
   procedure Down is
   begin
-    Data(1).Set_Direction(Direction => Counter_Clock_Wise);
-    if not Data(1).Get_Is_Running then
-      Motor(1).Run;
-    end if;
+    null;
+    --Data(1).Set_Direction(Direction => Counter_Clock_Wise);
+    --if not Data(1).Get_Is_Running then
+    --  Motor(1).Run;
+    --end if;
   end Down;
   -----------------------------------------------
   procedure Right is
@@ -140,7 +143,7 @@ package body Steppers is
   -----------------------------------------------
   procedure Stop is
   begin
-    Data(1).Set_Direction(Direction => None);
+   -- Data(1).Set_Direction(Direction => None);
     Data(2).Set_Direction(Direction => None);
 
     for I in Id_Type'Range loop
