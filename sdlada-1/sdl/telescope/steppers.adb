@@ -42,6 +42,8 @@ package body Steppers is
   Delay_Time                 : Duration                  := 2.0/1000.0;
   --Tics_Per_Revolution        : constant Interfaces.C.Int := 4096; -- tics/rev
 
+  Global_Is_Initiated : Boolean := False;
+
   protected type Data_Type is
     procedure Set_Direction(Direction : Direction_Type);
     function Get_Direction return Direction_Type;
@@ -111,6 +113,12 @@ package body Steppers is
     Data(2).Set_Direction(Direction => Counter_Clock_Wise);
   end Left;
   -----------------------------------------------
+  procedure No_Direction is
+  begin
+    Data(1).Set_Direction(Direction => None);
+    Data(2).Set_Direction(Direction => None);
+  end No_Direction;
+  -----------------------------------------------
   procedure Stop is
   begin
     for I in Id_Type'Range loop
@@ -121,10 +129,13 @@ package body Steppers is
   -----------------------------------------------
   procedure Init is
   begin
-    Gpio.Setup;
-    for I in Id_Type'Range loop
-      Motor(I).Init(I);
-    end loop;
+    if not Global_Is_Initiated then
+      Gpio.Setup;
+      for I in Id_Type'Range loop
+        Motor(I).Init(I);
+      end loop;
+      Global_Is_Initiated := True;
+    end if;
   end Init;
   -----------------------------------------------
 

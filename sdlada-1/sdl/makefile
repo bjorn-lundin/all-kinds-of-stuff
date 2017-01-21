@@ -8,4 +8,4 @@ all:
 clean:
 	gprclean -P sdl.gpr
 test:
-	cd exe && ./tele
+	cd exe && sudo ./tele
