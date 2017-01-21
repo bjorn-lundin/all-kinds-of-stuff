@@ -141,6 +141,8 @@ procedure Tele is
   --Result : C.Int := 0;
 
 begin
+  Steppers.Init;
+
   Log("main","Hello");
   if Sdl.Init (Sdl.Init_Joystick + Sdl.Init_Video) < 0 then
     Log ("main.Init","Couldn't initialize SDL: " &
@@ -164,7 +166,6 @@ begin
     Gnat.Os_Lib.Os_Exit (1);
   end if;
 
-  Steppers.Init;
   loop
     Handle_Events(Quit);
     exit when Quit;
