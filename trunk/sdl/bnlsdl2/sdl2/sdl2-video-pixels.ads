@@ -40,12 +40,11 @@ package SDL2.Video.Pixels is
    Pixels_Error : exception;
 
    --  These give access to the pitch data returned by locking a texture.
-   type Pitch is new C.int with
-     Size       => 32,
-     Convention => C;
+   type Pitch is new C.int ;
+   pragma Convention (C,Pitch);
 
-   type Pitch_Ptr is access all Pitch with
-     Convention => C;
+   type Pitch_Ptr is access all Pitch ;
+   pragma Convention (C,Pitch_Ptr);
 
    type Pitch_Array is array (Positive range <>) of aliased Pitch;
 
@@ -56,23 +55,21 @@ package SDL2.Video.Pixels is
 
    --  ARGB8888 pixels.
    --  These give access to a texture's/surface's (TODO??) pixel data in the above format.
-   type ARGB_8888 is
-      record
+   type ARGB_8888 is record
          Alpha : SDL2.Video.Palettes.Colour_Component;
          Red   : SDL2.Video.Palettes.Colour_Component;
          Green : SDL2.Video.Palettes.Colour_Component;
          Blue  : SDL2.Video.Palettes.Colour_Component;
-      end record with
-     Size       => 32,
-     Convention => C;
+   end record with
 
-   for ARGB_8888 use
-      record
+   for ARGB_8888 use record
          Blue  at 0 range  0 ..  7;
          Green at 0 range  8 .. 15;
          Red   at 0 range 16 .. 23;
          Alpha at 0 range 24 .. 31;
       end record;
+   for ARGB_8888'size use 32;
+   pragma Convention (C,ARGB_8888);
 
    type ARGB_8888_Array is array (Positive range <>) of aliased ARGB_8888;
 

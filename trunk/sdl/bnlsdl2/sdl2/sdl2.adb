@@ -26,31 +26,23 @@ package body SDL2 is
    use type C.int;
 
    function Initialise (Flags : in Init_Flags := Enable_Everything) return Boolean is
-      function SDL_Init (Flags : in Init_Flags := Enable_Everything) return C.int with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_Init";
-
+      function SDL_Init (Flags : in Init_Flags := Enable_Everything) return C.int ;
+      pragma Import(C, SDL_Init, "SDL_Init");
       Result : C.int := SDL_Init (Flags);
    begin
       return (Result = Success);
    end Initialise;
 
    function Initialise_Sub_System (Flags : in Init_Flags) return Boolean is
-      function SDL_Init_Sub_System (Flags : in Init_Flags) return C.int with
-        Import        => True,
-        Convention    => C,
-        External_Name => "SDL_InitSubSystem";
-
+      function SDL_Init_Sub_System (Flags : in Init_Flags) return C.int ;
+      pragma Import(C, SDL_Init_Sub_System, "SDL_InitSubSystem");
       Result : C.int := SDL_Init_Sub_System (Flags);
    begin
       return (Result = Success);
    end Initialise_Sub_System;
 
-   function SDL_Was_Initialised (Flags : in Init_Flags := Null_Init_Flags) return Init_Flags with
-     Import        => True,
-     Convention    => C,
-     External_Name => "SDL_WasInit";
+   function SDL_Was_Initialised (Flags : in Init_Flags := Null_Init_Flags) return Init_Flags ;
+      pragma Import(C, SDL_Was_Initialised, "SDL_WasInit");
 
    function Was_Initialised return Init_Flags is
    begin

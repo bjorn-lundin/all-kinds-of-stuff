@@ -33,8 +33,9 @@ procedure Show_Result_Test is
   solidRect   :  aliased SDL2.Video.Rectangles.Rectangle := (0,0,0,0);
   blendedRect :  aliased SDL2.Video.Rectangles.Rectangle := (0,0,0,0);
   shadedRect  :  aliased SDL2.Video.Rectangles.Rectangle := (0,0,0,0);
+  Fill_Rect   :  aliased SDL2.Video.Rectangles.Rectangle := (20,500,100,20);
 
-  windowRect     : SDL2.Video.Rectangles.Rectangle := (1, 1, 1200, 700);
+  windowRect     : SDL2.Video.Rectangles.Rectangle := (1, 1, 1100, 480);
   Window         : SDL2.Video.Windows.Window_Type;
   Renderer       : SDL2.Video.Renderers.Renderer;
   solidTexture   : SDL2.Video.Textures.Texture;
@@ -59,6 +60,10 @@ procedure Show_Result_Test is
     SDL2.Log.Put_Debug("37");
     Renderer.Draw(solidRect);
     SDL2.Log.Put_Debug("38");
+    
+    Renderer.Fill(Fill_Rect);
+    SDL2.Log.Put_Debug("38.5");
+    
     Renderer.Present;
     SDL2.Log.Put_Debug("39");
   end Render;
@@ -183,9 +188,9 @@ procedure Show_Result_Test is
     SDL2.Log.Put_Debug("7");
     
     if AD.Exists("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf") then
-      Font.Open("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 90);
+      Font.Open("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 50);
     elsif  AD.Exists("/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf") then
-      Font.Open("/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf", 90);
+      Font.Open("/usr/share/fonts/truetype/ttf-dejavu/DejaVuSans.ttf", 50);
     end if;    
     SDL2.Log.Put_Debug("8");
     CreateTextTextures;
