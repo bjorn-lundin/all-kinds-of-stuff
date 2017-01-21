@@ -214,11 +214,9 @@ package body Steppers is
     for I in Id_Type'Range loop
       Log("Steppers.Test", "start Init Motor" & i'img);
       delay 2.0;
+      Data(I).Set_Direction(Clock_Wise);
       Motor(I).Init(I);
       Log("Steppers.Test", "start Running Motor" & i'img);
-      Data(I).Set_Direction(Clock_Wise);
-      delay 2.0;
-      Motor(I).Run;
       delay 10.0;
       Data(I).Set_Direction(None);
       Log("Steppers.Test", "stop Running Motor" & i'img);
