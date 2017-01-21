@@ -6,6 +6,26 @@
 
 project SDL is
 
+-- -gnatwalK -  w - Activate warnings (w)
+--              a - activate all warnings  (a)
+--              l - for missing elaboration pragmas too
+--              K - but no warnings like '...is not modified, could be declared constant'
+-- -gnatvoUN    v - verbose
+--              o - Activate runtime overflow checks
+--              U - Tag all error messages with the unique string "error:"
+-- -gnat12      No warnings when Ada05 featues are used                 9.6-10368
+-- -gnatwW - Do not warn if we assume a string to start at index 1
+
+
+
+   Platform_Independent_Compiler_Switches := ("-g",
+                                              "-gnat12",
+                                              "-fstack-check",
+                                              "-gnata",
+                                              "-gnatvoU",
+                                              "-gnatwlaKW");
+
+
    for Source_Dirs use ("adasdl",
                         "telescope");
    
@@ -14,19 +34,23 @@ project SDL is
    
    for Main use ("tele.adb");
    
-   package Compiler is   
-      for Default_Switches ("ada") use ( "-g", "-gnat12", "-gnatwaKM");
+   package Compiler is
+     for Default_Switches ("ada") use Platform_Independent_Compiler_Switches & ("-O0");
+     --for Default_Switches ("c") use ("-g", "-Wall");
    end Compiler;
 
-   package Builder is
-      for Default_Switches ("ada") use ("-j2");
-   end Builder;
-   
+   package Binder is
+      for Default_Switches ("ada") use ("-E");
+   end Binder;
+
    package Linker is
-     for Default_Switches ("ada") use ("-lSDL");
+    for Default_Switches ("ada") use ("-L/usr/local/lib", 
+                                      "-lwiringPi",
+                                      "-lSDL");
    end Linker;
-   
-   
-   
+
+   package Builder is
+      for Default_Switches ("ada") use ("-k", "-s", "-j1"); -- use 1 cpu 
+   end Builder;
    
 end SDL;
