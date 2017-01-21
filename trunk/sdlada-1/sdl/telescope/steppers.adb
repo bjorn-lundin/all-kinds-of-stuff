@@ -12,7 +12,7 @@ pragma Elaborate_All(Gpio);
 package body Steppers is
   use Interfaces.C;
 
-  type Id_Type is new Integer range 1 .. 2 ;
+  type Id_Type is new Integer range 1 .. 3 ;
   type Direction_Type is (Clock_Wise, Counter_Clock_Wise, None, Stop);
 
 
@@ -24,11 +24,9 @@ package body Steppers is
 
   type Stepper_Pins_Array_Type is array (Pin_Range_Type'Range) of Interfaces.C.Int;
 
---    Step_Pins : array (Id_Type'Range) of Stepper_Pins_Array_Type := ( 1 => (22,10, 9,11),
---                                                                      2 => (23,18,17,27),
---                                                                      3 => ( 7, 8,25,24));
-    Step_Pins : array (Id_Type'Range) of Stepper_Pins_Array_Type := ( 1 => (22,10, 9,11),
-                                                                      2 => (23,18,17,27));
+  Step_Pins : array (Id_Type'Range) of Stepper_Pins_Array_Type := ( 1 => (22,10, 9,11),
+                                                                    2 => (23,18,17,27),
+                                                                    3 => ( 7, 8,25,24));
   -- stepper sequence
   type Stepper_Sequence_Type is array (Sequence_Range_Type'Range, Pin_Range_Type'Range) of Interfaces.C.Int;
 
