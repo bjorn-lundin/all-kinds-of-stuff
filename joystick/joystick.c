@@ -92,7 +92,6 @@ int main(int argc, char *argv[])
  int fd, rc;
  int done = 0;
 
-
   printf("const: O_RDONLY  %d,  O_NONBLOCK %d\n", 
           O_RDONLY,O_NONBLOCK);
 

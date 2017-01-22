@@ -9,4 +9,4 @@ all:
 clean:
 	gprclean -P joystick.gpr
 test:
-	cd bin && joystick_test
+	cd bin && ./joystick_test
