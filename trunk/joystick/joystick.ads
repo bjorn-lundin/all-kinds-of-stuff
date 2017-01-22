@@ -15,6 +15,7 @@ package Joystick is
       number : aliased unsigned_char;  -- joystick.h:36
    end record;
    pragma Convention (C_Pass_By_Copy, js_event);  -- joystick.h:32
+   for js_event'size use 64;
 
   -- value
   -- event type

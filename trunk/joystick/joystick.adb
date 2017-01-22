@@ -8,7 +8,7 @@ package body Joystick is
   type File_Id is new C.Int;
 
     JOYSTICK_DEVNAME : constant string := "/dev/input/js0" & Ascii.Nul;
-    JS_EVENT_BUTTON  : constant C.Int  := 16#01#; 
+    JS_EVENT_BUTTON  : constant C.Int  := 16#01#;
     JS_EVENT_AXIS    : constant C.Int  := 16#02#;
     JS_EVENT_INIT    : constant C.Int  := 16#80#;
     Joy_Fd           : File_Id := -1;
@@ -25,10 +25,13 @@ package body Joystick is
                    Flags : C.Int) return File_Id;
     pragma Import(C, cOpen, "open" );
   begin
+    Put_Line("Open - start");
     Joy_Fd := cOpen(My_Path'access, O_RDONLY);
+    Put_Line("Open - Joy_Fd" & Joy_Fd'Img);
     if Joy_Fd < 0 then
         raise Open_Failure with JOYSTICK_DEVNAME;
     end if;
+    Put_Line("Open - done");
   end Open_Joystick;
 
 
@@ -38,12 +41,15 @@ package body Joystick is
     pragma import( C, cClose ,"close" );
     Result : C.int := -1;
   begin
+    Put_Line("Close - start");
     Result := cClose(Joy_Fd);
+    Put_Line("Close - Result" & Result'Img);
     if Result < 0 then
         raise Close_Failure with JOYSTICK_DEVNAME;
     end if;
+    Put_Line("Close - done");
   end Close_Joystick;
--------------------------------------------------------
+------------------------------------------------------
 
   procedure Read_Joystick_Event(Reading_Ok : out Boolean; Jse : out Js_Event) is
     Message_Buffer : aliased Js_Event;
@@ -52,13 +58,18 @@ package body Joystick is
                    Count : Size_T ) return Ssize_T;
     pragma import( C, cRead , "read");
     Num_Bytes : Ssize_T := -1;
+    Num_Bytes_To_Read : constant Size_T := Size_T(Message_Buffer'Size/8);
   begin
     Reading_Ok := False;
-    Num_Bytes := cRead(Joy_Fd, Message_Buffer'access, Size_T(Message_Buffer'Size));
-    if Num_Bytes = Message_Buffer'Size then
-       Reading_Ok := True; 
+    Put_Line("read - start");
+
+    Num_Bytes := cRead(Joy_Fd, Message_Buffer'access, Num_Bytes_To_Read);
+    Put_Line("read - Num_Bytes" & Num_Bytes'Img);
+    if Num_Bytes = Num_Bytes_To_Read then
+       Reading_Ok := True;
        Jse := Message_Buffer;
     end if;
+    Put_Line("read - done");
   end Read_Joystick_Event;
   -------------------------------------------------------
 
@@ -67,17 +78,20 @@ package body Joystick is
     Jse : Js_Event;
   begin
      Open_Joystick;
-     for i in 1 ..30 loop 
+     loop
        Read_Joystick_Event (Ok, Jse);
-       put_line("reading " & i'img  & " " & Ok'Img); 
+       Put("reading " & Ok'Img & " ");
        if Ok then
-         Put_Line("time" & Jse.Time'img & 
+         Put_Line("time" & Jse.Time'img &
                   " value " & Jse.Value'Img &
                   " c_type " & Jse.C_Type'Img &
                   " number " & Jse.Number'Img);
-       end if; 
-     end loop; 
-     Close_Joystick; 
+       else
+         New_Line;
+       end if;
+       exit when Jse.Value=0 and Jse.Number=8 and Jse.C_Type=1;
+     end loop;
+     Close_Joystick;
   end Test;
   -------------------------------------------------------
 
