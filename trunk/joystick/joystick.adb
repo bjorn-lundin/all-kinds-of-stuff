@@ -7,7 +7,7 @@ package body Joystick is
   subtype Ssize_T is Size_T;
   type File_Id is new C.Int;
 
-    JOYSTICK_DEVNAME : constant string := "/dev/input/js0";
+    JOYSTICK_DEVNAME : constant string := "/dev/input/js0" & Ascii.Nul;
     JS_EVENT_BUTTON  : constant C.Int  := 16#01#; 
     JS_EVENT_AXIS    : constant C.Int  := 16#02#;
     JS_EVENT_INIT    : constant C.Int  := 16#80#;
@@ -19,7 +19,7 @@ package body Joystick is
 
 
   procedure Open_Joystick is
-    subtype Path_Name_Type is String(1..14);
+    subtype Path_Name_Type is String(1..15);
     My_Path : aliased Path_Name_Type := JOYSTICK_DEVNAME;
     function cOpen(Path  : access Path_Name_Type;
                    Flags : C.Int) return File_Id;
