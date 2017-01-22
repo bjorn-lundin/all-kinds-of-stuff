@@ -23,27 +23,27 @@ package Joystick is
   pragma Convention (C_Pass_By_Copy, Js_Event);  -- joystick.h:32
   for Js_Event'Size use 64;
 
-  -- value
-  -- event type
-  -- axis/button number
-  type Wwvi_Js_Event_Button_Array is array (0 .. 10) of aliased Int;
-  type Wwvi_Js_Event is record
-    Button   : aliased Wwvi_Js_Event_Button_Array;  -- joystick.h:40
-    Stick1_X : aliased Int;  -- joystick.h:41
-    Stick1_Y : aliased Int;  -- joystick.h:42
-    Stick2_X : aliased Int;  -- joystick.h:43
-    Stick2_Y : aliased Int;  -- joystick.h:44
-  end record;
-  pragma Convention (C_Pass_By_Copy, Wwvi_Js_Event);  -- joystick.h:39
+  ---- value
+  ---- event type
+  ---- axis/button number
+  --type Wwvi_Js_Event_Button_Array is array (0 .. 10) of aliased Int;
+  --type Wwvi_Js_Event is record
+  --  Button   : aliased Wwvi_Js_Event_Button_Array;  -- joystick.h:40
+  --  Stick1_X : aliased Int;  -- joystick.h:41
+  --  Stick1_Y : aliased Int;  -- joystick.h:42
+  --  Stick2_X : aliased Int;  -- joystick.h:43
+  --  Stick2_Y : aliased Int;  -- joystick.h:44
+  --end record;
+  --pragma Convention (C_Pass_By_Copy, Wwvi_Js_Event);  -- joystick.h:39
 
 
 --extern int open_joystick();
-  procedure Open_Joystick;
+  procedure Open;
   Open_Failure : exception;
 --extern int read_joystick_event(struct js_event *jse);
-  procedure Read_Joystick_Event(Reading_Ok : out Boolean; Jse : out Js_Event) ;
+  procedure Read_Event(Reading_Ok : out Boolean; Jse : out Js_Event) ;
 --extern void close_joystick();
-  procedure Close_Joystick;
+  procedure Close;
   Close_Failure : exception;
 --extern int get_joystick_status(struct wwvi_js_event *wjse);
 
