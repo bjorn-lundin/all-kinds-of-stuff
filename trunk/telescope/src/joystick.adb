@@ -22,29 +22,21 @@ package body Joystick is
                    Flags : C.Int) return File_Id;
     pragma Import(C, cOpen, "open" );
   begin
-    Put_Line("Open - start");
     Joy_Fd := cOpen(My_Path'access, O_RDONLY);
-    Put_Line("Open - Joy_Fd" & Joy_Fd'Img);
     if Joy_Fd < 0 then
         raise Open_Failure with Joystick_Devname;
     end if;
-    Put_Line("Open - done");
   end Open;
-
-
   ----------------------------------------------------
   procedure Close is
     function cClose( File : File_Id ) return C.Int;
     pragma import( C, cClose ,"close" );
     Result : C.int := -1;
   begin
-    Put_Line("Close - start");
     Result := cClose(Joy_Fd);
-    Put_Line("Close - Result" & Result'Img);
     if Result < 0 then
         raise Close_Failure with Joystick_Devname;
     end if;
-    Put_Line("Close - done");
   end Close;
 ------------------------------------------------------
 
@@ -58,18 +50,13 @@ package body Joystick is
     Num_Bytes_To_Read : constant Size_T := Size_T(Message_Buffer'Size/8);
   begin
     Reading_Ok := False;
-    Put_Line("read - start");
-
     Num_Bytes := cRead(Joy_Fd, Message_Buffer'access, Num_Bytes_To_Read);
-    Put_Line("read - Num_Bytes" & Num_Bytes'Img);
     if Num_Bytes = Num_Bytes_To_Read then
        Reading_Ok := True;
        Jse := Message_Buffer;
     end if;
-    Put_Line("read - done");
   end Read_Event;
   -------------------------------------------------------
-
   procedure Test is
     Ok  : Boolean := False;
     Jse : Js_Event;
