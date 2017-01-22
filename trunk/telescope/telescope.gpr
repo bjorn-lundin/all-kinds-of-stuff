@@ -42,11 +42,10 @@ project Telescope is
       for Default_Switches ("ada") use ("-E");
    end Binder;
 
-  -- package Linker is
-  --  for Default_Switches ("ada") use ("-L/usr/local/lib", 
-  --                                    "-lwiringPi",
-  --                                    "-lSDL");
-  -- end Linker;
+  package Linker is
+   for Default_Switches ("ada") use ("-L/usr/local/lib", 
+                                     "-lwiringPi");
+  end Linker;
 
    package Builder is
       for Default_Switches ("ada") use ("-k", "-s", "-j1"); -- use 1 cpu 
