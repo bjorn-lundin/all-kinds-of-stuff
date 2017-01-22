@@ -27,6 +27,10 @@ int read_joystick_event(struct js_event *jse)
 
         bytes = read(joystick_fd, jse, sizeof(*jse)); 
 
+        printf("bytes k : %d\n", bytes);
+        printf("sise jse: %d\n", sizeof(*jse));
+
+
         if (bytes == -1)
                 return 0;
 
@@ -85,24 +89,30 @@ int get_joystick_status(struct wwvi_js_event *wjse)
 /* a little test program */
 int main(int argc, char *argv[])
 {
-        int fd, rc;
-        int done = 0;
+ int fd, rc;
+ int done = 0;
 
-        struct js_event jse;
 
-        fd = open_joystick();
-        if (fd < 0) {
-                printf("open failed.\n");
-                exit(1);
-        }
+  printf("const: O_RDONLY  %d,  O_NONBLOCK %d\n", 
+          O_RDONLY,O_NONBLOCK);
 
-         while (!done) {
-                 rc = read_joystick_event(&jse);
-                 usleep(1000);
-                 if (rc == 1) {
-                         printf("Event: time %8u, value %8hd, type: %3u, axis/button: %u\n", 
-                                 jse.time, jse.value, jse.type, jse.number);
-                 }
-         }
+  return 0;
+
+ struct js_event jse;
+
+ fd = open_joystick();
+ if (fd < 0) {
+         printf("open failed.\n");
+         exit(1);
+ }
+
+  while (!done) {
+          rc = read_joystick_event(&jse);
+          usleep(1000);
+          if (rc == 1) {
+                  printf("Event: time %8u, value %8hd, type: %3u, axis/button: %u\n", 
+                          jse.time, jse.value, jse.type, jse.number);
+          }
+  }
   return 0;
  }
