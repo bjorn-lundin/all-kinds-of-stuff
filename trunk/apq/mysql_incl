@@ -1,7 +1,0 @@
-#
-
-if [ ! -f config.win32 ] ; then
-	echo $(mysql_config --cflags) | sed "s|^.*'\(.*\)'.*$|\1|"
-else
-	sed -n '/^MY_UINCL/p' <config.win32 | sed 's|^.*=||;s| *$||'
-fi
