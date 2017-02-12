@@ -9,6 +9,7 @@ import socket
 import errno
 import signal
 from pygame.locals import *
+import spritesheet
  
 #Set the framebuffer device to be the TFT
 #os.environ["SDL_FBDEV"] = "/dev/fb1"
@@ -39,6 +40,8 @@ def displayText(text, size, line, color, clearScreen):
  
 def main():
     global screen
+    
+    gray = (128,128,128)
 
     #set signal handler for ctrl-C
     signal.signal(signal.SIGINT, signal_handler)
@@ -79,7 +82,7 @@ def main():
 
     pygame.init()
     # Clear the screen to start
-    screen.fill((0, 0, 0))
+    screen.fill(gray)
     # Initialise font support
     pygame.font.init()
     # Render the screen
@@ -89,7 +92,8 @@ def main():
        
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    serversocket.bind((socket.gethostname(), 8080))
+#    serversocket.bind((socket.gethostname(), 8080))
+    serversocket.bind(('localhost', 8080))
     serversocket.listen(5)
     try :
       conn, addr = serversocket.accept()
@@ -99,12 +103,27 @@ def main():
         serversocket.close()
         return 0 
 
-    conn.settimeout(1.0)
     conn.setblocking(0)
-    sheet = pygame.image.load("sonic2.png").convert() ; # load only once
+
+    ss = spritesheet.spritesheet('sonic2.png')
+    images = []
+    images_flipped = []
+    # Load 10 images into an array, and the same but flipped to another array
+    for j in range(10):
+    #  print j
+      images.append(ss.image_at((((j*102)-1, 0, 102, 120),), colorkey=(0, 0, 0)))
+      img=ss.image_at((((j*102)-1, 0, 102, 120),), colorkey=(0, 0, 0))
+      img = pygame.transform.flip(img,True,False)
+      images_flipped.append(img)
+
+
+    i = 0
+
+#    msg = "RIGHT"
+    msg_last_animated = 'None'
+    backdrop = pygame.Rect(120, 60, 320, 240)
 
     while True:
-
         event = pygame.event.poll()
         if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
           conn.close()
@@ -115,11 +134,14 @@ def main():
           # recv can throw socket.timeout
           msg = conn.recv(1024)
           msg = msg.rstrip('\n\r ') ;# trim trailing cr/lf and spaces from msg
+#          print '1 msg=', msg, 'msg_last_animated',msg_last_animated
         except socket.error, e:
           err = e.args[0]
-          if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
+#          if err == errno.EAGAIN or err == errno.EWOULDBLOCK:
+          if err == errno.EAGAIN:
             msg = "None"
-            time.sleep(0.05)
+#            print 'got EXCEPTION msg', e
+            time.sleep(0.10)
           else:
             # a "real" error occurred
             print e
@@ -134,27 +156,40 @@ def main():
           break
 
         elif msg == 'LEFT':
-          #graph = pygame.transform.rotate(graph, 270)
-          ##graphrect = graph.get_rect(x=50,y=50,w=50,h=107)
-          #screen.blit(graph, graphrect)
-          #pygame.display.flip()
-
-          sheet.set_clip(pygame.Rect(120, 120, 120, 120))    ;#Locate the sprite you want
-          draw_me = sheet.subsurface(sheet.get_clip())     ;#Extract the sprite you want
-          backdrop = pygame.Rect(0, 0, 320, 240) ;#Create the whole screen so you can draw on it
-
-          screen.blit(draw_me,backdrop) ; #'Blit' on the backdrop
-          pygame.display.flip() ; #Draw the sprite on the screen
+#          print 'blitting i=',i, 'setting msg_last_animated =', msg
+          msg_last_animated = msg
         elif msg == 'RIGHT':
-          #graph = pygame.transform.rotate(graph, 270)
-          graphrect = graph.get_rect(x=103,y=0,w=102,h=107)
-          screen.blit(graph, graphrect)
-          pygame.display.flip()
+#          print 'blitting i=',i, 'setting msg_last_animated =', msg
+          msg_last_animated = msg
+        elif msg == 'STOP':
+#          print 'blitting i=',i, 'setting msg_last_animated =', msg
+          msg_last_animated = msg
         else :
           pass
 
+        if msg_last_animated == 'LEFT': 
+          screen.fill(gray)
+          screen.blit(images_flipped[i],backdrop) ; #'Blit' on the backdrop
+          pygame.display.flip() ; #Draw the sprite on the screen
+          i=i+1
+          if i == 10 : 
+            i=0
+
+        elif msg_last_animated == 'RIGHT': 
+          screen.fill(gray)
+          screen.blit(images[i],backdrop) ; #'Blit' on the backdrop
+          pygame.display.flip() ; #Draw the sprite on the screen
+          i=i+1
+          if i == 10 : 
+            i=0
+
+        elif msg_last_animated == 'STOP': 
+          screen.fill(gray)
+          screen.blit(images[0],backdrop) ; #'Blit' on the backdrop
+          pygame.display.flip() ; #Draw the sprite on the screen
 
 
+#        print '2 msg=', msg, 'msg_last_animated',msg_last_animated
 
  
 if __name__ == '__main__':
