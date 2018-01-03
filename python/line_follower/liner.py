@@ -125,8 +125,8 @@ while(True):
     #cv2.imshow('frame2',thresh)
     #break 
     # Find the contours of the frame
-    _ , contours,hierarchy = cv2.findContours(thresh.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
- 
+    #_ , contours,hierarchy = cv2.findContours(thresh.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+    contours,hierarchy = cv2.findContours(thresh.copy(), 1, cv2.CHAIN_APPROX_NONE)
     # Find the biggest contour (if detected)
     if len(contours) > 0:
         c = max(contours, key=cv2.contourArea)
@@ -156,8 +156,8 @@ while(True):
         print "I don't see the line"
  
     #Display the resulting frame
-    cv2.imshow('frame',crop_img)
-    if cv2.waitKey(100) & 0xFF == ord('q'):
+    #cv2.imshow('frame',crop_img)
+    if cv2.waitKey(10) & 0xFF == ord('q'):
         break
 
 #cv2.waitKey(10000)
