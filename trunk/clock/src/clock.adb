@@ -96,9 +96,11 @@ procedure Clock is
 begin
   Log("main","init steppers");
   Steppers.Init;
-  --Log("main","test start");
-  --Steppers.Test;
-  --Log("main","test stop");
+  Log("main","test start");
+  Steppers.Test;
+  Log("main","test stop");
+  return;
+  
   
   Joystick.Open;
 

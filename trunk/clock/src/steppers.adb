@@ -222,14 +222,22 @@ package body Steppers is
     delay 2.0;
     for I in Id_Type'Range loop
       Log("Steppers.Test", "start Init Motor" & i'img);
-      delay 2.0;
-      Data(I).Set_Direction(Clock_Wise);
       Motor(I).Init(I);
-      Log("Steppers.Test", "start Running Motor" & i'img);
+
+      Log("Steppers.Test", "direction Running Motor" & I'Img & " Clock_Wise");
+      Data(I).Set_Direction(Clock_Wise);
       delay 10.0;
       Data(I).Set_Direction(None);
       Log("Steppers.Test", "stop Running Motor" & i'img);
       delay 2.0;
+
+      Log("Steppers.Test", "direction Running Motor" & I'Img & " Counter_Clock_Wise");
+      Data(I).Set_Direction(Counter_Clock_Wise);
+      delay 10.0;
+      Data(I).Set_Direction(None);
+      Log("Steppers.Test", "stop Running Motor" & i'img);
+      delay 2.0;
+
     end loop;
     Log("Steppers.Test", "Test done");
 
