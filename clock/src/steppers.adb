@@ -158,7 +158,7 @@ package body Steppers is
     Pins           : Stepper_Pins_Array_Type;
     Id             : Id_Type;
     Sequence_Index : Sequence_Range_Type := 1;
-    Cnt : Natural := 0;
+    -- Cnt : Natural := 0;
   begin
     ----------------------------------------------------------
     accept Init(Identity : Id_Type) do
@@ -207,8 +207,8 @@ package body Steppers is
 
       delay Delay_Time(Id);
 
-      Cnt := Cnt +1;
-      Log("Steppers.Test", "id" & Id'Img & " cnt" & Cnt'Img);
+   --   Cnt := Cnt +1;
+   --   Log("Steppers.Test", "id" & Id'Img & " cnt" & Cnt'Img);
 
     end loop Motor_Loop;
 
