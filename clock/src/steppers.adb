@@ -41,10 +41,11 @@ package body Steppers is
                                                 (0,0,1,1),
                                                 (0,0,0,1));
 
-  Delay_Time                 : Duration                  := 2.0/1000.0;
+  Delay_Time : array(Id_Type(2) .. Id_Type(3)) of Duration  := (2 => 140.0/43200.0,  -- 140 koggs 12 hrs (86400/2 s) --2.0/1000.0;
+                                                                3 => 140.0/3600.0 ); -- 140 koggs 60 min (60*60 s)
   --Tics_Per_Revolution        : constant Interfaces.C.Int := 4096; -- tics/rev
 
-  Global_Is_Initiated : Boolean := False;
+  Global_Is_Initiated        : Boolean := False;
 
   protected type Data_Type is
     procedure Set_Direction(Direction : Direction_Type);
@@ -75,7 +76,7 @@ package body Steppers is
   end Data_Type;
   -----------------------------------------------
 
-  Data : array(Id_Type'Range) of Data_Type;
+  Data  : array(Id_Type'Range) of Data_Type;
 
 
   procedure Log(Who,What : in String) is
@@ -143,8 +144,8 @@ package body Steppers is
 
 
   task body Motor_Type is
-    Pins         : Stepper_Pins_Array_Type;
-    Id           : Id_Type;    -- 1 revolution is 4096 tics
+    Pins           : Stepper_Pins_Array_Type;
+    Id             : Id_Type;    -- 1 revolution is 4096 tics
     Sequence_Index : Sequence_Range_Type := 1;
   begin
     ----------------------------------------------------------
@@ -192,7 +193,7 @@ package body Steppers is
           end if;
 
       end case;
-      delay Delay_Time;
+      delay Delay_Time(Id);
     end loop Motor_Loop;
 
     -- turn the pins off at exit
@@ -230,14 +231,14 @@ package body Steppers is
       Data(I).Set_Direction(Clock_Wise);
       delay 2.0;
       Data(I).Set_Direction(None);
-      Log("Steppers.Test", "stop Running Motor" & i'img);
+      Log("Steppers.Test", "stop Running Motor" & I'Img);
       delay 2.0;
 
       Log("Steppers.Test", "direction Running Motor" & I'Img & " Counter_Clock_Wise");
       Data(I).Set_Direction(Counter_Clock_Wise);
       delay 2.0;
       Data(I).Set_Direction(None);
-      Log("Steppers.Test", "stop Running Motor" & i'img);
+      Log("Steppers.Test", "stop Running Motor" & I'Img);
       delay 2.0;
 
     end loop;
@@ -257,5 +258,40 @@ package body Steppers is
         --      Ada.Command_Line.Command_Name & " " & Stacktrace.Pure_Hexdump(Last_Exception_Info));
       end ;
   end Test;
+  ----------------------------
+  procedure Do_Clock is
+    Service : constant String := "Steppers.Do_Clock";
+    Hour   : Id_Type := 2;
+    Minute : Id_Type := 3;
+  begin
+    Log(Service, "Running Test");
+    Gpio.Setup;
+
+    Data(Hour).Set_Direction(Clock_Wise);
+    Data(Minute).Set_Direction(Clock_Wise);
+    -- the rest is in the tasks
+
+    Log(Service, "delay_time(hour): " & delay_time(hour)'img);
+    Log(Service, "delay_time(minute): " & delay_time(minute)'img);
+
+    loop
+      Log(Service, "is running");
+      delay 10.0;
+    end loop;
+
+  exception
+    when E: others =>
+      declare
+        Last_Exception_Name     : constant String := Ada.Exceptions.Exception_Name(E);
+        Last_Exception_Messsage : constant String := Ada.Exceptions.Exception_Message(E);
+        Last_Exception_Info     : constant String := Ada.Exceptions.Exception_Information(E);
+      begin
+        Put_Line(Last_Exception_Name);
+        Put_Line("Message : " & Last_Exception_Messsage);
+        Put_Line(Last_Exception_Info);
+        -- Put_Line("addr2line" & " --functions --basenames --exe=" &
+        --      Ada.Command_Line.Command_Name & " " & Stacktrace.Pure_Hexdump(Last_Exception_Info));
+      end ;
+  end Do_Clock;
 
 end Steppers;

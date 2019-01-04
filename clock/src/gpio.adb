@@ -3,6 +3,7 @@ with Ada.Environment_Variables;
 
 package body Gpio is
 
+  Is_Setup : Boolean := False;
   ---------------------------------------------------------
   procedure Setup is
     R : Int := 0;
@@ -13,10 +14,13 @@ package body Gpio is
   begin --http://wiringpi.com/reference/setup/
     -- If you want to restore the v1 behaviour, then you need to set the environment variable: WIRINGPI_CODES
     -- to any value
-    Ada.Environment_Variables.Set("WIRINGPI_CODES","1");
-    R := Wiring_Pi_Setup_Gpio;
-    if R /= 0 then
-      raise Bad_Gpio_Call with "Wiring_Pi_Setup_Gpio" & R'Img;
+    if not Is_Setup then
+      Ada.Environment_Variables.Set("WIRINGPI_CODES","1");
+      R := Wiring_Pi_Setup_Gpio;
+      if R /= 0 then
+        raise Bad_Gpio_Call with "Wiring_Pi_Setup_Gpio" & R'Img;
+      end if;
+      Is_Setup := True;
     end if;
   end Setup;
   ---------------------------------------------------------

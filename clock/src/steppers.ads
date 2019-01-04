@@ -13,6 +13,7 @@ package Steppers is
 
   procedure Stop;
   procedure Init;
+  procedure Do_Clock;
 
   procedure Test;
 
