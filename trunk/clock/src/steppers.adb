@@ -226,14 +226,14 @@ package body Steppers is
 
       Log("Steppers.Test", "direction Running Motor" & I'Img & " Clock_Wise");
       Data(I).Set_Direction(Clock_Wise);
-      delay 10.0;
+      delay 2.0;
       Data(I).Set_Direction(None);
       Log("Steppers.Test", "stop Running Motor" & i'img);
       delay 2.0;
 
       Log("Steppers.Test", "direction Running Motor" & I'Img & " Counter_Clock_Wise");
       Data(I).Set_Direction(Counter_Clock_Wise);
-      delay 10.0;
+      delay 2.0;
       Data(I).Set_Direction(None);
       Log("Steppers.Test", "stop Running Motor" & i'img);
       delay 2.0;
