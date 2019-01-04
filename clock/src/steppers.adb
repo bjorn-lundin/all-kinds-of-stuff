@@ -2,7 +2,7 @@
 with Interfaces.C;
 with Ada.Exceptions;
 with Text_Io; use Text_Io;
-
+with Calendar2;
 with Gpio;
 pragma Elaborate_All(Gpio);
 
@@ -81,8 +81,8 @@ package body Steppers is
 
   procedure Log(Who,What : in String) is
   begin
-    --Put_Line(Calendar2.Clock.To_String & " " & Who & " " & What);
-    Put_Line( Who & " " & What);
+    Put_Line(Calendar2.Clock.To_String & " " & Who & " " & What);
+    --Put_Line( Who & " " & What);
   end Log;
 
 
@@ -147,6 +147,7 @@ package body Steppers is
     Pins           : Stepper_Pins_Array_Type;
     Id             : Id_Type;    -- 1 revolution is 4096 tics
     Sequence_Index : Sequence_Range_Type := 1;
+    Cnt            : Natural := 0;
   begin
     ----------------------------------------------------------
     accept Init(Identity : Id_Type) do
@@ -193,6 +194,9 @@ package body Steppers is
           end if;
 
       end case;
+      Cnt := Cnt + 1;
+      Log("Motor_Type", Id'Img & " will delay " & Delay_Time(Id)'Img & " turn in loop:" & Cnt'Img);
+
       delay Delay_Time(Id);
     end loop Motor_Loop;
 
