@@ -42,13 +42,18 @@ package body Steppers is
                                                 (0,0,1,1),
                                                 (0,0,0,1));
 
-  Tics_Per_Revolution        : constant Positive :=    64; -- 4_096;
-  Koggs_Per_Revolution       : constant Positive :=   140;
+  Tics_Per_Revolution_Stepper : constant Positive := 4_096;
+  Koggs_Per_Revolution_Large  : constant Positive :=   140;
+  Koggs_Per_Revolution_Small  : constant Positive :=     8;
+  Gear_Ratio                  : constant Duration := Duration(Koggs_Per_Revolution_Large) / Duration(Koggs_Per_Revolution_Small);
+  Tics_Per_Revolution_Large   : constant Duration := Duration(Tics_Per_Revolution_Stepper) * Gear_Ratio;
+
+
 
   pragma Warnings(Off);
   Delay_Time : array(Id_Type'range) of Duration  := (1 =>      1.0, -- not Used
-                                                     2 => 43_200.0/(Duration(Koggs_Per_Revolution * Tics_Per_Revolution)),  -- 140 koggs 12 hrs (86400/2 s) --2.0/1000.0;
-                                                     3 =>  3_600.0/(Duration(Koggs_Per_Revolution * Tics_Per_Revolution))); -- 140 koggs 60 min (60*60 s)
+                                                     2 => 43_200.0/Tics_Per_Revolution_Large,  -- 140 koggs 12 hrs (86400/2 s) --2.0/1000.0;
+                                                     3 =>  3_600.0/Tics_Per_Revolution_Large); -- 140 koggs 60 min (60*60 s)
   pragma Warnings(On);
 
   Global_Is_Initiated        : Boolean := False;
