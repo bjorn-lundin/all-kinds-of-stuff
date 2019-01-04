@@ -3,6 +3,7 @@ with Interfaces.C;
 with Ada.Exceptions;
 with Text_Io; use Text_Io;
 with Calendar2;
+--with Types; use Types;
 with Gpio;
 pragma Elaborate_All(Gpio);
 
@@ -41,8 +42,11 @@ package body Steppers is
                                                 (0,0,1,1),
                                                 (0,0,0,1));
 
-  Delay_Time : array(Id_Type(2) .. Id_Type(3)) of Duration  := (2 => 43200.0/140.0,   -- 140 koggs 12 hrs (86400/2 s) --2.0/1000.0;
-                                                                3 =>  3600.0/140.0 ); -- 140 koggs 60 min (60*60 s)
+  Tics_Per_Revolution        : constant Positive := 4_096;
+  Koggs_Per_Revolution       : constant Positive :=   140;
+
+  Delay_Time : array(Id_Type(2) .. Id_Type(3)) of Duration  := (2 => 43_200.0/(Duration(Koggs_Per_Revolution * Tics_Per_Revolution)),  -- 140 koggs 12 hrs (86400/2 s) --2.0/1000.0;
+                                                                3 =>  3_600.0/(Duration(Koggs_Per_Revolution * Tics_Per_Revolution))); -- 140 koggs 60 min (60*60 s)
   --Tics_Per_Revolution        : constant Interfaces.C.Int := 4096; -- tics/rev
 
   Global_Is_Initiated        : Boolean := False;
@@ -195,7 +199,12 @@ package body Steppers is
 
       end case;
       Cnt := Cnt + 1;
-      Log("Motor_Type", Id'Img & " will delay " & Delay_Time(Id)'Img & " turn in loop:" & Cnt'Img);
+      begin
+        Log("Motor_Type", Id'Img & " will delay " & Delay_Time(Id)'Img & " turn in loop:" & Cnt'Img);
+      exception
+          when Constraint_Error =>
+        Log("Motor_Type","Constraint_Error while logging in Motor_Loop");
+      end;
 
       delay Delay_Time(Id);
     end loop Motor_Loop;
