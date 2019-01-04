@@ -99,6 +99,7 @@ begin
   Log("main","test start");
   Steppers.Test;
   Log("main","test stop");
+  Steppers.Stop;
   return;
   
   
