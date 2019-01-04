@@ -42,11 +42,12 @@ package body Steppers is
                                                 (0,0,1,1),
                                                 (0,0,0,1));
 
-  Tics_Per_Revolution        : constant Positive := 4_096;
+  Tics_Per_Revolution        : constant Positive :=    64; -- 4_096;
   Koggs_Per_Revolution       : constant Positive :=   140;
 
-  Delay_Time : array(Id_Type(2) .. Id_Type(3)) of Duration  := (2 => 43_200.0/(Duration(Koggs_Per_Revolution * Tics_Per_Revolution)),  -- 140 koggs 12 hrs (86400/2 s) --2.0/1000.0;
-                                                                3 =>  3_600.0/(Duration(Koggs_Per_Revolution * Tics_Per_Revolution))); -- 140 koggs 60 min (60*60 s)
+  Delay_Time : array(Id_Type'range) of Duration  := (1 =>      1.0, -- not Used
+                                                     2 => 43_200.0/(Duration(Koggs_Per_Revolution * Tics_Per_Revolution)),  -- 140 koggs 12 hrs (86400/2 s) --2.0/1000.0;
+                                                     3 =>  3_600.0/(Duration(Koggs_Per_Revolution * Tics_Per_Revolution))); -- 140 koggs 60 min (60*60 s)
   --Tics_Per_Revolution        : constant Interfaces.C.Int := 4096; -- tics/rev
 
   Global_Is_Initiated        : Boolean := False;
@@ -149,9 +150,8 @@ package body Steppers is
 
   task body Motor_Type is
     Pins           : Stepper_Pins_Array_Type;
-    Id             : Id_Type;    -- 1 revolution is 4096 tics
+    Id             : Id_Type;
     Sequence_Index : Sequence_Range_Type := 1;
-    Cnt            : Natural := 0;
   begin
     ----------------------------------------------------------
     accept Init(Identity : Id_Type) do
@@ -196,15 +196,7 @@ package body Steppers is
           else
             Sequence_Index := Sequence_Index - 1;
           end if;
-
       end case;
-      Cnt := Cnt + 1;
-      begin
-        Log("Motor_Type", Id'Img & " will delay " & Delay_Time(Id)'Img & " turn in loop:" & Cnt'Img);
-      exception
-          when Constraint_Error =>
-        Log("Motor_Type","Constraint_Error while logging in Motor_Loop");
-      end;
 
       delay Delay_Time(Id);
     end loop Motor_Loop;
@@ -273,13 +265,15 @@ package body Steppers is
   end Test;
   ----------------------------
   procedure Do_Clock is
-    Service : constant String := "Steppers.Do_Clock";
-    Hour   : Id_Type := 2;
-    Minute : Id_Type := 3;
+    Service  : constant String := "Steppers.Do_Clock";
+    Not_Used : Id_Type := 1;
+    Hour     : Id_Type := 2;
+    Minute   : Id_Type := 3;
   begin
     Log(Service, "Running Test");
     Gpio.Setup;
 
+    Data(Not_Used).Set_Direction(Stop);
     Data(Hour).Set_Direction(Clock_Wise);
     Data(Minute).Set_Direction(Clock_Wise);
     -- the rest is in the tasks
@@ -289,7 +283,7 @@ package body Steppers is
 
     loop
       Log(Service, "is running");
-      delay 10.0;
+      delay 30.0;
     end loop;
 
   exception
