@@ -20,7 +20,7 @@ package Types is
   type Integer_8 is range -9_223_372_036_854_775_808 .. 9_223_372_036_854_775_807;
   for  Integer_8'Size use 64;
 
-  -- type Float_8 is new Long_Float;
+  type Float_8 is new Long_Float;
   -- package F8 is new Ada.Text_IO.Float_IO (Fixed_Type);
 --  type Fixed_Type is delta 0.01 range -10_000_000.0 .. 10_000_000.0;
   type Fixed_Type is delta 0.001 digits 18;
