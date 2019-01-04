@@ -221,8 +221,8 @@ package body Steppers is
     Gpio.Setup;
     delay 2.0;
     for I in Id_Type'Range loop
-      Log("Steppers.Test", "start Init Motor" & i'img);
-      Motor(I).Init(I);
+     --  Log("Steppers.Test", "start Init Motor" & i'img);
+     --  Motor(I).Init(I);
 
       Log("Steppers.Test", "direction Running Motor" & I'Img & " Clock_Wise");
       Data(I).Set_Direction(Clock_Wise);
@@ -241,6 +241,19 @@ package body Steppers is
     end loop;
     Log("Steppers.Test", "Test done");
 
+  exception
+    when E: others =>
+      declare
+        Last_Exception_Name     : constant String := Ada.Exceptions.Exception_Name(E);
+        Last_Exception_Messsage : constant String := Ada.Exceptions.Exception_Message(E);
+        Last_Exception_Info     : constant String := Ada.Exceptions.Exception_Information(E);
+      begin
+        Put_Line(Last_Exception_Name);
+        Put_Line("Message : " & Last_Exception_Messsage);
+        Put_Line(Last_Exception_Info);
+        -- Put_Line("addr2line" & " --functions --basenames --exe=" &
+        --      Ada.Command_Line.Command_Name & " " & Stacktrace.Pure_Hexdump(Last_Exception_Info));
+      end ;
   end Test;
 
 end Steppers;
