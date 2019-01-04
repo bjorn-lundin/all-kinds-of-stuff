@@ -41,8 +41,8 @@ package body Steppers is
                                                 (0,0,1,1),
                                                 (0,0,0,1));
 
-  Delay_Time : array(Id_Type(2) .. Id_Type(3)) of Duration  := (2 => 140.0/43200.0,  -- 140 koggs 12 hrs (86400/2 s) --2.0/1000.0;
-                                                                3 => 140.0/3600.0 ); -- 140 koggs 60 min (60*60 s)
+  Delay_Time : array(Id_Type(2) .. Id_Type(3)) of Duration  := (2 => 43200.0/140.0,   -- 140 koggs 12 hrs (86400/2 s) --2.0/1000.0;
+                                                                3 =>  3600.0/140.0 ); -- 140 koggs 60 min (60*60 s)
   --Tics_Per_Revolution        : constant Interfaces.C.Int := 4096; -- tics/rev
 
   Global_Is_Initiated        : Boolean := False;
