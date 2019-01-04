@@ -45,10 +45,11 @@ package body Steppers is
   Tics_Per_Revolution        : constant Positive :=    64; -- 4_096;
   Koggs_Per_Revolution       : constant Positive :=   140;
 
+  pragma Warnings(Off);
   Delay_Time : array(Id_Type'range) of Duration  := (1 =>      1.0, -- not Used
                                                      2 => 43_200.0/(Duration(Koggs_Per_Revolution * Tics_Per_Revolution)),  -- 140 koggs 12 hrs (86400/2 s) --2.0/1000.0;
                                                      3 =>  3_600.0/(Duration(Koggs_Per_Revolution * Tics_Per_Revolution))); -- 140 koggs 60 min (60*60 s)
-  --Tics_Per_Revolution        : constant Interfaces.C.Int := 4096; -- tics/rev
+  pragma Warnings(On);
 
   Global_Is_Initiated        : Boolean := False;
 
@@ -152,6 +153,7 @@ package body Steppers is
     Pins           : Stepper_Pins_Array_Type;
     Id             : Id_Type;
     Sequence_Index : Sequence_Range_Type := 1;
+    Cnt : Natural := 0;
   begin
     ----------------------------------------------------------
     accept Init(Identity : Id_Type) do
@@ -199,6 +201,10 @@ package body Steppers is
       end case;
 
       delay Delay_Time(Id);
+
+      Cnt := Cnt +1;
+      Log("Steppers.Test", "id" & Id'Img & " cnt" & Cnt'Img);
+
     end loop Motor_Loop;
 
     -- turn the pins off at exit
