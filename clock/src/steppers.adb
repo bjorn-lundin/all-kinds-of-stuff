@@ -42,16 +42,22 @@ package body Steppers is
                                                 (0,0,1,1),
                                                 (0,0,0,1));
 
-  Tics_Per_Revolution_Stepper : constant Positive := 4_096;
-  Koggs_Per_Revolution_Large  : constant Positive :=   140;
-  Koggs_Per_Revolution_Small  : constant Positive :=     8;
-  Gear_Ratio                  : constant Duration := Duration(Koggs_Per_Revolution_Large) / Duration(Koggs_Per_Revolution_Small);
-  Tics_Per_Revolution_Large   : constant Duration := Duration(Tics_Per_Revolution_Stepper) * Gear_Ratio;
+  Tics_Per_Revolution_Stepper  : constant Positive := 4_096;
+  Koggs_Per_Revolution_LargeY  : constant Positive :=   140;
+  Koggs_Per_Revolution_LargeG  : constant Positive :=    40;
+  Koggs_Per_Revolution_MediumG : constant Positive :=    16;
+  Koggs_Per_Revolution_Small   : constant Positive :=     8;
 
+  Gear_Ratio_LargeY_Small      : constant Duration := Duration(Koggs_Per_Revolution_LargeY) / Duration(Koggs_Per_Revolution_Small);
+  Tics_Per_Revolution_Large    : constant Duration := Duration(Tics_Per_Revolution_Stepper) * Gear_Ratio_LargeY_Small;
+
+  Gear_Ratio_Second            : constant Duration := Duration(Duration(Koggs_Per_Revolution_MediumG) / Duration(Koggs_Per_Revolution_LargeG)) *
+                                                      Duration(Duration(Koggs_Per_Revolution_LargeY) / Duration(Koggs_Per_Revolution_LargeG));
+  Tics_Per_Revolution_Second    : constant Duration := Duration(Tics_Per_Revolution_Stepper) * Gear_Ratio_Second;
 
 
   pragma Warnings(Off);
-  Delay_Time : array(Id_Type'range) of Duration  := (1 =>  0.01, -- not Used
+  Delay_Time : array(Id_Type'range) of Duration  := (1 =>  60.0/Tics_Per_Revolution_Second, --  second
                                                      2 => 43_200.0/Tics_Per_Revolution_Large,  -- 140 koggs 12 hrs (86400/2 s) --2.0/1000.0;
                                                      3 =>  3_600.0/Tics_Per_Revolution_Large); -- 140 koggs 60 min (60*60 s)
   pragma Warnings(On);
