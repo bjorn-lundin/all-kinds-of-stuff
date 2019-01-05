@@ -51,7 +51,7 @@ package body Steppers is
 
 
   pragma Warnings(Off);
-  Delay_Time : array(Id_Type'range) of Duration  := (1 =>      1.0, -- not Used
+  Delay_Time : array(Id_Type'range) of Duration  := (1 =>  0.01, -- not Used
                                                      2 => 43_200.0/Tics_Per_Revolution_Large,  -- 140 koggs 12 hrs (86400/2 s) --2.0/1000.0;
                                                      3 =>  3_600.0/Tics_Per_Revolution_Large); -- 140 koggs 60 min (60*60 s)
   pragma Warnings(On);
@@ -277,20 +277,21 @@ package body Steppers is
   ----------------------------
   procedure Do_Clock is
     Service  : constant String := "Steppers.Do_Clock";
-    Not_Used : Id_Type := 1;
+    Second   : Id_Type := 1;
     Hour     : Id_Type := 2;
     Minute   : Id_Type := 3;
   begin
     Log(Service, "Running Test");
     Gpio.Setup;
 
-    Data(Not_Used).Set_Direction(Stop);
+    Data(Second).Set_Direction(Clock_Wise);
     Data(Hour).Set_Direction(Clock_Wise);
     Data(Minute).Set_Direction(Clock_Wise);
     -- the rest is in the tasks
 
-    Log(Service, "delay_time(hour): " & delay_time(hour)'img);
+    Log(Service, "delay_time(hour)  : " & delay_time(hour)'img);
     Log(Service, "delay_time(minute): " & delay_time(minute)'img);
+    Log(service, "delay_time(second): " & delay_time(second)'img);
 
     loop
       Log(Service, "is running");
