@@ -6,7 +6,7 @@ with Calendar2;
 --with Types; use Types;
 with Gpio;
 pragma Elaborate_All(Gpio);
-
+with Ada.Real_Time;
 --with Ada.Numerics.Generic_Elementary_Functions;
 
 
@@ -165,11 +165,15 @@ package body Steppers is
     Id             : Id_Type;
     Sequence_Index : Sequence_Range_Type := 1;
     -- Cnt : Natural := 0;
+    use Ada.Real_Time;
+    Next : Time;
+    Interval : Time_Span;
   begin
     ----------------------------------------------------------
     accept Init(Identity : Id_Type) do
       Pins := Step_Pins(Identity);
       Id   := Identity;
+      Interval := To_Time_Span(Delay_Time(Id));
       -- set pins output, and turn them off
       for Pin in Pin_Range_Type'Range loop
         Gpio.Pin_Mode(Pins(Pin), Gpio.Output);
@@ -178,7 +182,9 @@ package body Steppers is
     end Init;
     ----------------------------------------------------------
 
+    Next := Clock; -- start time
     Motor_Loop : loop
+
       case Data(Id).Get_Direction is
         when Stop => exit Motor_Loop;
         when None => null;
@@ -211,7 +217,8 @@ package body Steppers is
           end if;
       end case;
 
-      delay Delay_Time(Id);
+      Next := Next + Interval;
+      delay until Next;
 
    --   Cnt := Cnt +1;
    --   Log("Steppers.Test", "id" & Id'Img & " cnt" & Cnt'Img);
