@@ -41,26 +41,29 @@ def get_top_left(src):
                if b < cmin :
                  cmin = b
                  
-           print i[0],i[1],cmin,cmax
+           print "get_top_left",i[0],i[1],i[2],cmin,cmax
            keep_going = False
            break       
    
-   return (i[0],i[1],cmax)
+   return (i[0],i[1],i[2],cmax)
    
-def get_bottom_right(src):
+def get_bottom_right(src,r):
    # must have WHITE marker 
-   left = 640-1
-   top = 0
-   new_width = 10
-   height = 480-1
+   # Bottom right is x=(20~22) * r, y=(10~12)*r
+   x1tl = int(r*25)
+   y1tl = int(r*13)
+   x2tl = int(r*30) 
+   y2tl = int(r*18)
    cnt = 0
    keep_going = True
    while (keep_going) :
-     new_width += 10
+     keep_going = False
      cnt += 1
-     print "cnt", cnt,left-new_width,left,top,height
+     print "cnt", cnt,x1tl,y1tl,x2tl,y2tl
      # swap args x,y !!!
-     cropped = src[top:height,left-new_width:left]          
+     print "y1tl:y2tl,x1tl:x2tl", y1tl,y2tl,x1tl,x2tl
+     cropped = src[y1tl:y2tl,x1tl:x2tl]          
+     cv2.imwrite('/dev/shm/8.png',cropped)
      circles = cv2.HoughCircles(cropped,method=cv2.HOUGH_GRADIENT,dp=1,minDist=20,param1=50,param2=30,minRadius=0,maxRadius=40)
      if circles is not None:
        if len(circles) == 1:
@@ -68,20 +71,19 @@ def get_bottom_right(src):
          for i in circles [0,:]:
            print "0/1/2",i[0],i[1],i[2]
            cmin = 99999
-           cmax = 0
+           cmax = 0341
            for y in range(int(i[0]-5),int(i[0]+5)):
              for x in range(int(i[1]-5),int(i[1]+5)):
-               b=src[x,y]
+               b=cropped[x,y]
                if b > cmax :
                  cmax = b
                if b < cmin :
                  cmin = b
                  
-           print i[0],i[1],cmin,cmax
-           keep_going = False
+           print "get_bottom_right", x1tl+i[0],y1tl+i[1],i[2],cmin,cmax
            break       
    
-   return (i[0],i[1],cmin)
+   return (x1tl+i[0],y1tl+i[1],cmin)
 
    
 
@@ -100,6 +102,7 @@ def get_x_index(x,tl,br):
     ret = 3
   else:
     ret = 4000
+  #print "get_x_index", "tl", tl, "br", br
   print "get_x_index", x, "->", int(xpct), "->", ret
   return ret
   
@@ -151,7 +154,8 @@ while (True):
   cv2.imwrite('/dev/shm/3.png',blur)
   
   top_left=get_top_left(blur)
-  bottom_right=get_bottom_right(blur)
+  #add radius to call
+  bottom_right=get_bottom_right(blur,top_left[2])
   print "top_left",top_left
   print "bottom_right", bottom_right
   
@@ -174,7 +178,7 @@ while (True):
           #c=frame[x,y]
           #g=grey[x,y]
           b=blur[x,y]
-          if b > top_left[2] :
+          if b > top_left[3]*1.5 :
             cl = 'V'
             
           #print "color", x,y,"|",c,"|",g,"|",b           
