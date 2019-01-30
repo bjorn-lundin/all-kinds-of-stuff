@@ -120,7 +120,8 @@ else:
     #camera.resolution = (800, 608)
 
 font = cv2.FONT_HERSHEY_SIMPLEX
-while True:
+
+def main():
 
     print '-----START-------', datetime.datetime.now(), \
         '----------------'
@@ -307,40 +308,11 @@ while True:
     print '-------'
     print '-----STOP -------', datetime.datetime.now(), \
         '----------------'
-    time.sleep(5.0)
 
-  # break
 
-# print "-------------------"
-##print board[0][0]
-##print board[1][0]
-##print board[2][0]
-##print board[3][0]
-# print "-------------------"
-# print board[0][1]
-# print board[1][1]
-# print board[2][1]
-##print board[3][1]
-# print "-------------------"
-# print board[0][2]
-# print board[1][2]
-# print board[2][2]
-##print board[3][2]
-# print "-------------------"
-# print board[0][3]
-# print board[1][3]
-# print board[2][3]
-##print board[3][3]
-# print "-------------------"
-
-print '-------'
-print '|' + board[0][1] + '|' + board[0][2] + '|' + board[0][3] + '|'
-print '-------'
-print '|' + board[1][1] + '|' + board[1][2] + '|' + board[1][3] + '|'
-print '-------'
-print '|' + board[2][1] + '|' + board[2][2] + '|' + board[2][3] + '|'
-print '-------'
-print '|' + board[3][1] + '|' + board[3][2] + '|' + board[3][3] + '|'
-print '-------'
-print '|' + board[4][1] + '|' + board[4][2] + '|' + board[4][3] + '|'
-print '-------'
+while True:
+    try:
+        main()
+        time.sleep(5.0)
+    except Exception as ex:
+        print ex.message
