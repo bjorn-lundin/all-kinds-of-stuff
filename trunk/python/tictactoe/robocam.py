@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import traceback
 import datetime
 #to find opencv as root....
 sys.path.append('/usr/local/lib/python2.7/site-packages')
@@ -46,11 +45,11 @@ class Robocam(object):
             ret = -1
         elif xpct < 16 + 15:
             ret = 0
-        elif xpct < 45 + 10:
+        elif xpct < 45 +  5:
             ret = 1
-        elif xpct < 65 + 10:
+        elif xpct < 65 + 0:
             ret = 2
-        elif xpct < 85 + 10:
+        elif xpct < 85 + 5:
             ret = 3
         else:
             ret = 4
@@ -131,8 +130,8 @@ class Robocam(object):
     
 
     def get_board_snapshop(self):
-        try:
-    
+        #try:
+        while True: 
             print '-----START-------', datetime.datetime.now(), \
                 '----------------'
             grey = None
@@ -296,19 +295,14 @@ class Robocam(object):
                     cv2.imwrite('/dev/shm/5.jpg', blur)
                     cv2.imwrite('/dev/shm/6.png', grey)
                     
-        except Exception as err:
-            print '-'*60
-            print "exception caught", err.message()
-            traceback.print_stack()
-            print repr(traceback.extract_stack())
-            print repr(traceback.format_stack())
-            #traceback.print_exc(file=sys.stdout)
-            print '-'*60        
-        finally :         
+        #except Exception as err:
+        #    print "exception caught", err.message()
+            
+        #finally :         
             cv2.destroyAllWindows()
             if self.USB:
                 self.camera.release()
-            
+            break
 
         
         

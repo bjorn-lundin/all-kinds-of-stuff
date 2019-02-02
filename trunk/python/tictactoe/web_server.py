@@ -41,13 +41,16 @@ class WebHandler(BaseHTTPRequestHandler):
 
     #Handler for the POST requests
     def do_POST(self):
+        print "----- got a POST ----"
+        print "path",  self.path
+        print "headers",  self.headers
         if self.path=="/board":
             form = cgi.FieldStorage(fp=self.rfile, headers=self.headers, environ={'REQUEST_METHOD':'POST', 'CONTENT_TYPE':self.headers['Content-Type'],})
-            dict_of_positions = form["board"].value
-            print "The dict is: %s" % dict_of_positions
-            
+            #dict_of_positions = form["board"].value
+            #print "The dict is: %s" % dict_of_positions
+
             board = Board()
-            pic = Robocam()
+            pic = Robocam(True)
             while True:
                 #get a new picture until ok parsed
                 try:
@@ -55,14 +58,16 @@ class WebHandler(BaseHTTPRequestHandler):
                     break
                 except Exception as ex:
                     print ex.message
-                    board.text('Försöker...')
+                    board.clear()
+                    board.text('Letar O...')
                     board.update()                    
                     time.sleep(1.0)            
-            
+            print "pic.board_dict",pic.board_dict
             board.set_pieces(pic.board_dict)
             board.clear()
             board.draw_grid()
             board.draw_markers()
+            board.text('Din tur!')
             board.update()
             self.send_response(200)
             self.end_headers()
@@ -72,12 +77,12 @@ class WebHandler(BaseHTTPRequestHandler):
             pic = Robocam()
             while True:
                 #get a new picture until ok parsed
-                try:
+                #try:
                     pic.get_board_snapshop()
                     break
-                except Exception as ex:
-                    print ex.message
-                    time.sleep(1.0)            
+                #except Exception as ex:
+                #    print ex.message
+                #    time.sleep(1.0)            
                     
             print "pic.board_dict", pic.board_dict
             self.send_response(200)
@@ -85,13 +90,13 @@ class WebHandler(BaseHTTPRequestHandler):
 #            self.wfile.write("")
             return
             
-while True:
-    r = Robocam(True)
-    try:
-        r.get_board_snapshop()
-        time.sleep(5.0)
-    except Exception as ex:
-        print ex.message
+#while True:
+#    r = Robocam(True)
+#    try:
+#        r.get_board_snapshop()
+#        time.sleep(5.0)
+#    except Exception as ex:
+#        print ex.message
             
             
 
