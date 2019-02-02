@@ -3,6 +3,8 @@
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 from os import curdir, sep
 import cgi
+import time
+
 from board import Board 
 from robocam import Robocam
 
@@ -84,7 +86,7 @@ class WebHandler(BaseHTTPRequestHandler):
             return
             
 while True:
-    r = Robocam()
+    r = Robocam(True)
     try:
         r.get_board_snapshop()
         time.sleep(5.0)
