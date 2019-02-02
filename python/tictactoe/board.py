@@ -25,8 +25,7 @@
 import datetime
 import time
 import json
-#import Adafruit_Nokia_LCD as LCD
-import PCD8544 as LCD
+import Adafruit_Nokia_LCD as LCD
 
 import Adafruit_GPIO.SPI as SPI
 import ast
