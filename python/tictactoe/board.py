@@ -28,7 +28,9 @@ import json
 import Adafruit_Nokia_LCD as LCD
 
 import Adafruit_GPIO.SPI as SPI
-import ast
+#import ast
+import json
+
 
 from PIL import Image
 from PIL import ImageDraw
@@ -180,11 +182,18 @@ class Board(object):
 
     def set_pieces(self,position_dict):
         #convert stringified dict to dict
-        self.position_dict = ast.literal_eval(position_dict)            
+        #{'0,3': 'S', '0,2': 'S', '5,2': 'S', '5,1': 'V', '1,2': 'S', '3,1': 'V', '2,1': 'V', '2,2': 'V'}
+        #{"0,3": "S", "0,2": "S", "5,2": "S", "5,1": "V", "1,2": "S", "3,1": "V", "2,1": "V", "2,2": "V"}
+        # all ' must be replaced with "
+        
+        #fixed_dict_string = position_dict.replace("'", '"') 
+        #print "set_pieces-old", position_dict
+        #print "set_pieces-new", fixed_dict_string
+        #self.position_dict = json.loads(fixed_dict_string)
+        self.position_dict = position_dict
 
     def update(self):        
         # Display image.
-        self.text('Din tur!')
         self.disp.image(self.image)
         self.disp.display()
 
