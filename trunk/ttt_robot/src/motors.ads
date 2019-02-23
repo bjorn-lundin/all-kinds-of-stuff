@@ -1,0 +1,30 @@
+
+
+package Motors is
+
+  type Pin_Type is new Integer range 1 .. 40;
+  type Coordinate_Type is new Integer range -10_000 .. 10_000;
+  type Step_Type is new Integer range -10_000 .. 10_000;
+  type Motor_State_Type is (Starting, Running);
+  type Speed_Type is (Slow, Normal);
+  subtype Direction_Type is Boolean;
+  Cw  : constant Direction_Type := True;
+  CCw : constant Direction_Type := False;
+
+  Delay_Time : array (Speed_Type'Range) of Duration := (Slow => 0.1, Normal => 0.001);
+
+
+  type Pins_Type is (Step,Direction,Enable,Emergency_Stop);
+  type Pin_Array_Type is array (Pins_Type'Range) of Pin_Type;
+
+  task type Motor_Task is
+    entry Start(Configuration_Pin : Pin_Array_Type; Direction_Towards_Emergency_Stop : Direction_Type);
+    entry Home;
+
+    entry Goto_Step(S : Step_Type);
+  end Motor_Task;
+
+
+  M : array (1..3) of Motor_Task;
+
+end Motors;

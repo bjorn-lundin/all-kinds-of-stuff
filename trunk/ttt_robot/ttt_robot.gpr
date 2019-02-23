@@ -9,13 +9,39 @@ project TTT_Robot is
    for Object_Dir use "obj";
    for Exec_Dir use "bin";
    for Main use ("ttt_robot.adb","crunch_trig.adb");
+   
+   
+
+   Platform_Independent_Compiler_Switches := ("-g",
+                                              "-gnat12",
+                                              "-fstack-check",
+                                              "-gnata",
+                                              "-gnatvoU",
+                                              "-gnatwlaKW",
+                                              "-gnatq",
+                                              "-gnatQ");
+   
 
    package Compiler is
-      for Default_Switches ("Ada") use ("-g", "-gnata", "-gnatq", "-gnatQ");
+      for Default_Switches ("Ada") use Platform_Independent_Compiler_Switches;
    end Compiler;
-
+   
    package Binder is
      for Default_Switches ("Ada") use ("-E");
    end Binder;
+
+   package Linker is
+      case Architecture is
+        when "drw_x64" => null;
+        when "lnx_arm" => for Default_Switches ("Ada") use ("-L/usr/local/lib",  "-lwiringPi");
+      end case;
+   end Linker;
+
+
+   package Builder is
+      for Default_Switches ("Ada") use ("-k", "-s", "-j1"); -- use 1 cpu
+   end Builder;
+
+
 
 end TTT_Robot;
