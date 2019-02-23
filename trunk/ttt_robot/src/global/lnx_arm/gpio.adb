@@ -1,5 +1,4 @@
-
---with Gpio.Thin ;
+with Ada.Environment_Variables;
 
 package body Gpio is
   
@@ -11,6 +10,11 @@ package body Gpio is
     pragma Import(C, Wiring_Pi_Setup_Gpio, "wiringPiSetupGpio");
      
   begin
+    -- to actually get the errorcodes ... 
+    if not Ada.Environment_Variables.Exists("WIRINGPI_CODES") then
+      Ada.Environment_Variables.Set("WIRINGPI_CODES","1"); -- to get the error codes
+    end if;    
+
     R := Wiring_Pi_Setup_Gpio;
     if R /= 0 then
       raise Bad_GPIO_Call with "Wiring_Pi_Setup_Gpio" & R'Img;
@@ -23,20 +27,20 @@ package body Gpio is
   
   begin
     if Value then
-      Digital_Write(Pin, HIGH);
+      Digital_Write(Pin, 1);
     else
-      Digital_Write(Pin, LOW);
+      Digital_Write(Pin, 0);
     end if;
   end Digital_Write;
   ------------------------------------------------------
-  procedure Digital_Read(Pin : Interfaces.C.Int; Value : out Boolean) is
-    procedure Digital_Write(Pin : Interfaces.C.Int; Value2 : out Interfaces.C.Int);
-    pragma Import(C, Digital_read, "digitalRead");
-  
+  function Digital_Read(Pin : Interfaces.C.Int) return Boolean is
+    procedure Digital_Read(Pin : Interfaces.C.Int; Value : out Interfaces.C.Int);
+    pragma Import(C, Digital_Read, "digitalRead");
+    V : Interfaces.C.Int := 0;  
   begin
-     Digital_Write(Pin,Value2);
-     Value := Value2 = HIGH;
-  end Digital_Write;
+     Digital_Read(Pin,V);
+     return V = 1;
+  end Digital_Read;
   ------------------------------------------------------
   
   
