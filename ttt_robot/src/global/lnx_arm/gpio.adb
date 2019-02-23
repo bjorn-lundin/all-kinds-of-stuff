@@ -11,9 +11,9 @@ package body Gpio is
      
   begin
     -- to actually get the errorcodes ... 
---    if not Ada.Environment_Variables.Exists("WIRINGPI_CODES") then
---      Ada.Environment_Variables.Set("WIRINGPI_CODES","1"); -- to get the error codes
---    end if;    
+    if not Ada.Environment_Variables.Exists("WIRINGPI_CODES") then
+      Ada.Environment_Variables.Set("WIRINGPI_CODES","1"); -- to get the error codes
+    end if;    
 
     R := Wiring_Pi_Setup_Gpio;
     if R /= 0 then
@@ -34,12 +34,10 @@ package body Gpio is
   end Digital_Write;
   ------------------------------------------------------
   function Digital_Read(Pin : Interfaces.C.Int) return Boolean is
-    procedure Digital_Read(Pin : Interfaces.C.Int; Value : out Interfaces.C.Int);
+    function Digital_Read(Pin : Interfaces.C.Int) return Interfaces.C.Int;
     pragma Import(C, Digital_Read, "digitalRead");
-    V : Interfaces.C.Int := 0;  
   begin
-     Digital_Read(Pin,V);
-     return V = 1;
+     return Digital_Read(Pin) = 1 ;
   end Digital_Read;
   ------------------------------------------------------
   

@@ -2,7 +2,7 @@
 
 package Motors is
 
-  type Pin_Type is new Integer range 1 .. 40;
+  type Pin_Type is new Integer range 0 .. 40;
   type Coordinate_Type is new Integer range -10_000 .. 10_000;
   type Step_Type is new Integer range -10_000 .. 10_000;
   type Motor_State_Type is (Starting, Running);

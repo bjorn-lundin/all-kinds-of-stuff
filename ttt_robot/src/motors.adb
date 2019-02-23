@@ -43,16 +43,13 @@ package body Motors is
       --  end Home;
 
         Current_Direction := Local_Direction_Towards_Emergency_Stop;
+        Write(Pin(Direction), Local_Direction_Towards_Emergency_Stop);
+
         loop
           Emg_Stop := Read(Pin(Emergency_Stop));
           put_line("home : emg_stop " & emg_stop'img );
-          if Emg_Stop then -- reached stop. go back until not affected any more
 
-            if Local_Direction_Towards_Emergency_Stop = Cw then
-              Current_Direction := CCw;
-            else
-              Current_Direction := Cw;
-            end if;
+          if Emg_Stop then -- reached stop. go back until not affected any more
 
             Write(Pin(Step), Gpio.HIGH);
             delay Delay_Time(Slow);
