@@ -11,9 +11,9 @@ package body Gpio is
      
   begin
     -- to actually get the errorcodes ... 
-    if not Ada.Environment_Variables.Exists("WIRINGPI_CODES") then
-      Ada.Environment_Variables.Set("WIRINGPI_CODES","1"); -- to get the error codes
-    end if;    
+--    if not Ada.Environment_Variables.Exists("WIRINGPI_CODES") then
+--      Ada.Environment_Variables.Set("WIRINGPI_CODES","1"); -- to get the error codes
+--    end if;    
 
     R := Wiring_Pi_Setup_Gpio;
     if R /= 0 then
