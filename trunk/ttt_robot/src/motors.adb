@@ -1,7 +1,7 @@
 with Stacktrace;
 with Gpio;
 with Interfaces.C;
-with Text_io; use Text_io;
+
 package body Motors is
 
 
@@ -32,7 +32,15 @@ package body Motors is
       Pin := Configuration_Pin;
       Local_Direction_Towards_Emergency_Stop := Direction_Towards_Emergency_Stop;
       Current_Direction := Direction_Towards_Emergency_Stop;
-      Write(Pin(Enable), Gpio.LOW);
+
+      Gpio.Pin_Mode( Interfaces.C.Int(Pin(Emergency_Stop)) , Gpio.INPUT);
+      Gpio.Pull_Up_Dn_Control(Interfaces.C.Int(Pin(Emergency_Stop)), Gpio. PUD_DOWN);
+      Gpio.Pin_Mode(Interfaces.C.Int(Pin(Direction)), Gpio.OUTPUT);
+      Gpio.Pin_Mode(Interfaces.C.Int(Pin(Step)), Gpio.OUTPUT);
+      Gpio.Pin_Mode(Interfaces.C.Int(Pin(Enable)), Gpio.OUTPUT);
+      Write(Pin(Direction), Gpio.LOW);
+      Write(Pin(Step), Gpio.LOW);
+      Write(Pin(Enable), Gpio.LOW); -- Low is to enable
     end Config;
 
     loop
@@ -40,21 +48,25 @@ package body Motors is
 
         accept Home do
           Wanted_Step := Step_Type'First;
-      --  end Home;
+        end Home;
 
         Current_Direction := Local_Direction_Towards_Emergency_Stop;
-        Write(Pin(Direction), Local_Direction_Towards_Emergency_Stop);
-
         loop
           Emg_Stop := Read(Pin(Emergency_Stop));
-          put_line("home : emg_stop " & emg_stop'img );
-
           if Emg_Stop then -- reached stop. go back until not affected any more
+
+            if Local_Direction_Towards_Emergency_Stop = Cw then
+              Current_Direction := CCw;
+            else
+              Current_Direction := Cw;
+            end if;
 
             Write(Pin(Step), Gpio.HIGH);
             delay Delay_Time(Slow);
             Write(Pin(Step), Gpio.LOW);
             delay Delay_Time(Slow);
+            Current_Step := 0; -- reset the step from here
+            State := Running;
             exit when not Read(Pin(Emergency_Stop));
 
           else -- tic on more towards emg_stop
@@ -64,9 +76,7 @@ package body Motors is
             delay Delay_Time(Slow);
           end if;
         end loop;
-        Current_Step := 0; -- reset the step from here
-        state := Running;
-        end Home;
+
       or
         when State = Running =>
           accept Goto_Step(S : Step_Type) do
