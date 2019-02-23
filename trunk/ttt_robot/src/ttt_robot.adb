@@ -15,15 +15,14 @@ begin
 
   Put_Line("setup");
   Gpio.Setup;
-  Gpio.Pin_Mode( 2, Gpio.INPUT);
-  Gpio.Pin_Mode( 3, Gpio.INPUT);
+  Gpio.Pin_Mode( 0, Gpio.INPUT);
+  Gpio.Pin_Mode( 1, Gpio.INPUT);
   Gpio.Pin_Mode( 4, Gpio.INPUT);
 
-  Gpio.Pull_Up_Dn_Control(2, Gpio. PUD_DOWN);
-  Gpio.Pull_Up_Dn_Control(3, Gpio. PUD_DOWN);
+  Gpio.Pull_Up_Dn_Control(0, Gpio. PUD_DOWN);
+  Gpio.Pull_Up_Dn_Control(1, Gpio. PUD_DOWN);
   Gpio.Pull_Up_Dn_Control(4, Gpio. PUD_DOWN);
 
-  Gpio.Pin_Mode( 5, Gpio.OUTPUT);
   Gpio.Pin_Mode( 6, Gpio.OUTPUT);
   Gpio.Pin_Mode( 9, Gpio.OUTPUT);
   Gpio.Pin_Mode(12, Gpio.OUTPUT);
@@ -34,8 +33,8 @@ begin
   Gpio.Pin_Mode(21, Gpio.OUTPUT);
   Gpio.Pin_Mode(22, Gpio.OUTPUT);
   Gpio.Pin_Mode(26, Gpio.OUTPUT);
+  Gpio.Pin_Mode(27, Gpio.OUTPUT);
 
-  Gpio.Digital_Write( 5, Gpio.LOW);
   Gpio.Digital_Write( 6, Gpio.LOW);
   Gpio.Digital_Write( 9, Gpio.LOW); --magnet off
   Gpio.Digital_Write(12, Gpio.LOW);
@@ -46,6 +45,7 @@ begin
   Gpio.Digital_Write(21, Gpio.LOW);
   Gpio.Digital_Write(22, Gpio.LOW);
   Gpio.Digital_Write(26, Gpio.LOW);
+  Gpio.Digital_Write(27, Gpio.LOW);
 
 
   Put_Line("wait 20 s");
@@ -71,13 +71,13 @@ begin
   declare
     use Motors;
   begin
---    Motor_Fi1.Config(Configuration_Pin => (Step => 16, Direction => 12, Enable => 20, Emergency_Stop => 2), Direction_Towards_Emergency_Stop => Cw);
---    Motor_Fi2.Config(Configuration_Pin => (Step => 19, Direction => 13, Enable => 26, Emergency_Stop => 3), Direction_Towards_Emergency_Stop => Cw);
-    Motor_Z.Config  (Configuration_Pin => (Step =>  5, Direction => 22, Enable =>  6, Emergency_Stop => 4), Direction_Towards_Emergency_Stop => Cw);
+   -- Motor_Fi1.Config(Configuration_Pin => (Step => 16, Direction => 12, Enable => 20, Emergency_Stop => 0), Direction_Towards_Emergency_Stop => Cw);
+   Motor_Fi2.Config(Configuration_Pin => (Step => 19, Direction => 13, Enable => 26, Emergency_Stop => 1), Direction_Towards_Emergency_Stop => Cw);
+--    Motor_Z.Config  (Configuration_Pin => (Step =>  27, Direction => 22, Enable =>  6, Emergency_Stop => 4), Direction_Towards_Emergency_Stop => Cw);
   end;
 
   Put_Line("MotorZ.Home start");
-  Motor_Z.Home;
+  Motor_Fi2.Home;
   Put_Line("MotorZ.Home stop");
 
 --  Put_Line("MotorZ.Goto_Step start");
