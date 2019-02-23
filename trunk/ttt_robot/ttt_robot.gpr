@@ -5,11 +5,10 @@ project TTT_Robot is
    type Os_Architecture_Type is ("drw_x64", "lnx_arm"); --, "lnx_x64");
    Architecture : Os_Architecture_Type := external ("OS_ARCHITECTURE", "not_set");
 
-   for Source_Dirs use (".", Architecture);
-   for Object_Dir use "../obj";
-   for Exec_Dir use "../bin";
-   for Main use ("ttt_robot.adb");
-
+   for Source_Dirs use ("src", "src/global", "src/global/" & Architecture);
+   for Object_Dir use "obj";
+   for Exec_Dir use "bin";
+   for Main use ("ttt_robot.adb","crunch_trig.adb");
 
    package Compiler is
       for Default_Switches ("Ada") use ("-g", "-gnata", "-gnatq", "-gnatQ");
@@ -19,7 +18,4 @@ project TTT_Robot is
      for Default_Switches ("Ada") use ("-E");
    end Binder;
 
---   package Builder is
---      for Executable ("tic_tac_toe-main.adb") use "tic_tac_toe";
---   end Builder;
 end TTT_Robot;
