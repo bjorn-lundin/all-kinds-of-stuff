@@ -18,7 +18,7 @@ package Motors is
   type Pin_Array_Type is array (Pins_Type'Range) of Pin_Type;
 
   task type Motor_Task is
-    entry Start(Configuration_Pin : Pin_Array_Type; Direction_Towards_Emergency_Stop : Direction_Type);
+    entry Config(Configuration_Pin : Pin_Array_Type; Direction_Towards_Emergency_Stop : Direction_Type);
     entry Home;
 
     entry Goto_Step(S : Step_Type);
