@@ -50,6 +50,7 @@ package Gpio is
   procedure Setup ;
 
   procedure Pin_Mode(Pin : Interfaces.C.Int ; Mode : Interfaces.C.Int) ;
+  procedure Pull_Up_Dn_Control(Pin : Interfaces.C.Int ; Mode : Interfaces.C.Int) ;
 
   procedure Digital_Write(Pin : Interfaces.C.Int; Value : Boolean);
   function Digital_Read(Pin : Interfaces.C.Int) return Boolean;
@@ -57,6 +58,6 @@ package Gpio is
 
 private
   pragma Import(C, Pin_Mode, "pinMode");
-
+  pragma Import(C, Pull_Up_Dn_Control, "pullUpDnControl");
 
 end Gpio;

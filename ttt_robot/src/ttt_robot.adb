@@ -15,24 +15,75 @@ begin
 
   Put_Line("setup");
   Gpio.Setup;
+  Gpio.Pin_Mode( 2, Gpio.INPUT);
+  Gpio.Pin_Mode( 3, Gpio.INPUT);
+  Gpio.Pin_Mode( 4, Gpio.INPUT);
+
+  Gpio.Pull_Up_Dn_Control(2, Gpio. PUD_DOWN);
+  Gpio.Pull_Up_Dn_Control(3, Gpio. PUD_DOWN);
+  Gpio.Pull_Up_Dn_Control(4, Gpio. PUD_DOWN);
+
+  Gpio.Pin_Mode( 5, Gpio.OUTPUT);
+  Gpio.Pin_Mode( 6, Gpio.OUTPUT);
+  Gpio.Pin_Mode( 9, Gpio.OUTPUT);
+  Gpio.Pin_Mode(12, Gpio.OUTPUT);
+  Gpio.Pin_Mode(13, Gpio.OUTPUT);
+  Gpio.Pin_Mode(16, Gpio.OUTPUT);
+  Gpio.Pin_Mode(19, Gpio.OUTPUT);
+  Gpio.Pin_Mode(20, Gpio.OUTPUT);
+  Gpio.Pin_Mode(21, Gpio.OUTPUT);
+  Gpio.Pin_Mode(22, Gpio.OUTPUT);
+  Gpio.Pin_Mode(26, Gpio.OUTPUT);
+
+  Gpio.Digital_Write( 5, Gpio.LOW);
+  Gpio.Digital_Write( 6, Gpio.LOW);
+  Gpio.Digital_Write( 9, Gpio.LOW); --magnet off
+  Gpio.Digital_Write(12, Gpio.LOW);
+  Gpio.Digital_Write(13, Gpio.LOW);
+  Gpio.Digital_Write(16, Gpio.LOW);
+  Gpio.Digital_Write(19, Gpio.LOW);
+  Gpio.Digital_Write(20, Gpio.LOW);
+  Gpio.Digital_Write(21, Gpio.LOW);
+  Gpio.Digital_Write(22, Gpio.LOW);
+  Gpio.Digital_Write(26, Gpio.LOW);
+
+
+  Put_Line("wait 20 s");
+
+  delay 1.0;
+
+--  for i in 1..10 loop
+--    Put_Line("Turn on relay for power to the Aa4988s" & i'img);
+--    Gpio.Digital_Write(21,Gpio.HIGH);
+--    delay 10.0;
+--
+--    Put_Line("Turn OFF relay for power to the Aa4988s" & i'img);
+--    Gpio.Digital_Write(21,Gpio.low);
+--    delay 10.0;
+--  end loop;
+
+
+
+--return;
 
   --Init The Motors with pins
   Put_Line("Config and init motors");
   declare
     use Motors;
   begin
-    Motor_Fi1.Config(Configuration_Pin => (Step => 16, Direction => 12, Enable => 20, Emergency_Stop => 2), Direction_Towards_Emergency_Stop => Cw);
-    Motor_Fi2.Config(Configuration_Pin => (Step => 19, Direction => 13, Enable => 26, Emergency_Stop => 3), Direction_Towards_Emergency_Stop => Cw);
+--    Motor_Fi1.Config(Configuration_Pin => (Step => 16, Direction => 12, Enable => 20, Emergency_Stop => 2), Direction_Towards_Emergency_Stop => Cw);
+--    Motor_Fi2.Config(Configuration_Pin => (Step => 19, Direction => 13, Enable => 26, Emergency_Stop => 3), Direction_Towards_Emergency_Stop => Cw);
     Motor_Z.Config  (Configuration_Pin => (Step =>  5, Direction => 22, Enable =>  6, Emergency_Stop => 4), Direction_Towards_Emergency_Stop => Cw);
   end;
 
-  Put_Line("MotorFi1.Home start");
-  Motor_Fi1.Home;
-  Put_Line("MotorFi1.Home stop");
+  Put_Line("MotorZ.Home start");
+  Motor_Z.Home;
+  Put_Line("MotorZ.Home stop");
 
-  Put_Line("MotorFi1.Goto_Step start");
-  Motor_Fi1.Goto_Step(100);
-  Put_Line("MotorFi1.Goto_Step stop");
+--  Put_Line("MotorZ.Goto_Step start");
+--  Motor_Z.Goto_Step(100);
+--  Put_Line("MotorZ.Goto_Step stop");
+
 
   exception
     when E: others =>

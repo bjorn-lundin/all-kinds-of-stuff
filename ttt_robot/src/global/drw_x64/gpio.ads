@@ -50,6 +50,7 @@ package Gpio is
   procedure Setup ;
 
   procedure Pin_Mode(Pin : Interfaces.C.Int ; Mode : Interfaces.C.Int) ;
+  procedure Pull_Up_Dn_Control(Pin : Interfaces.C.Int ; Mode : Interfaces.C.Int) is null;
 
   procedure Digital_Write(Pin : Interfaces.C.Int; Value : Boolean);
   function Digital_Read(Pin : Interfaces.C.Int) return Boolean;
