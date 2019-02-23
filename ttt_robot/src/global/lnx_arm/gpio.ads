@@ -22,8 +22,10 @@ package Gpio is
   SOFT_TONE_OUTPUT        : constant Interfaces.C.Int := 5;
   PWM_TONE_OUTPUT         : constant Interfaces.C.Int := 6;
 
-  LOW                     : constant Interfaces.C.Int := 0;
-  HIGH                    : constant Interfaces.C.Int := 1;
+--  LOW                     : constant Interfaces.C.Int := 0;
+--  HIGH                    : constant Interfaces.C.Int := 1;
+  LOW                     : constant Boolean := False;
+  HIGH                    : constant Boolean := True;
 
   -- Pull up/down/none
 
@@ -50,7 +52,7 @@ package Gpio is
   procedure Pin_Mode(Pin : Interfaces.C.Int ; Mode : Interfaces.C.Int) ;
 
   procedure Digital_Write(Pin : Interfaces.C.Int; Value : Boolean);
-  procedure Digital_Read(Pin : Interfaces.C.Int; Value : out Boolean);  
+  function Digital_Read(Pin : Interfaces.C.Int) return Boolean;
 
 
 private
