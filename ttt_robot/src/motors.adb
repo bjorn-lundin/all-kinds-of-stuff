@@ -27,12 +27,12 @@ package body Motors is
     Local_Direction_Towards_Emergency_Stop    : Direction_Type;
     Current_Direction                         : Direction_Type;
     Pin                                       : Pin_Array_Type;
-
+    local_name                                : Positive := Positive'last;
   begin
-    accept Config(Configuration_Pin : Pin_Array_Type; Direction_Towards_Emergency_Stop : Direction_Type) do
+    accept Config(Configuration_Pin : Pin_Array_Type; Direction_Towards_Emergency_Stop : Direction_Type; Name : Positive) do
       Pin := Configuration_Pin;
       Local_Direction_Towards_Emergency_Stop := Direction_Towards_Emergency_Stop;
-
+      Local_Name := Name;
       Gpio.Pin_Mode( Interfaces.C.Int(Pin(Emergency_Stop)) , Gpio.INPUT);
       Gpio.Pull_Up_Dn_Control(Interfaces.C.Int(Pin(Emergency_Stop)), Gpio. PUD_DOWN);
       Gpio.Pin_Mode(Interfaces.C.Int(Pin(Direction)), Gpio.OUTPUT);
@@ -40,10 +40,11 @@ package body Motors is
       Gpio.Pin_Mode(Interfaces.C.Int(Pin(Enable)), Gpio.OUTPUT);
       Write(Pin(Step), Gpio.LOW);
       Write(Pin(Enable), Gpio.LOW); -- Low is to enable
+      Text_Io.Put_Line("Config done" & Local_Name'Img);
     end Config;
 
     loop
-      Text_Io.Put_Line("select" & Current_Step'Img & " " & Current_Direction'Img);
+      Text_Io.Put_Line("select" & Current_Step'Img & " " & Current_Direction'Img & Local_Name'Img);
       select
 
         accept Home do
@@ -67,7 +68,7 @@ package body Motors is
           end if;
 
           if Emg_Stop then -- reached stop. go back until not affected any more
-            Text_Io.Put_Line("EMGSTOP");
+            Text_Io.Put_Line("EMGSTOP" & Local_Name'Img);
 
             Write(Pin(Step), Gpio.HIGH);
             delay Delay_Time(Slow);
@@ -91,7 +92,7 @@ package body Motors is
           accept Goto_Step(S : Step_Type) do
             Wanted_Step := S;
             Text_Io.Put_Line("Goto_step Accepted");
-            delay 10.0;
+            delay 1.0;
           end Goto_Step;
 
           Move_Loop : loop
@@ -164,7 +165,7 @@ package body Motors is
             else
               exit Move_Loop; --done
             end if;
-            Text_Io.Put_Line("move_Step" & Current_Step'Img & "/" & Wanted_Step'Img);
+           -- Text_Io.Put_Line("move_Step" & Current_Step'Img & "/" & Wanted_Step'Img & " " & current_direction'img);
           end loop Move_Loop;
           Text_Io.Put_Line("exit move_Step" & Current_Step'Img & " " & Current_Direction'Img);
           Write(Pin(Enable), Gpio.HIGH); -- Low is to enable
