@@ -56,9 +56,6 @@ begin
   Gpio.Pin_Mode(21, Gpio.OUTPUT);
   Gpio.Digital_Write(21, Gpio.LOW);
 
-
-  Put_Line("wait 20 s");
-
   delay 1.0;
 
 --  for i in 1..10 loop
@@ -90,7 +87,7 @@ begin
   Put_Line("MotorZ.Home stop");
 
   Put_Line("MotorZ.Goto_Step start");
-  Motor_Fi2.Goto_Step(100);
+  Motor_Fi2.Goto_Step(1000);
   Put_Line("MotorZ.Goto_Step stop");
 
 
