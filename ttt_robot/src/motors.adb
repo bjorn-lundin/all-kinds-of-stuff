@@ -1,7 +1,7 @@
 with Stacktrace;
 with Gpio;
 with Interfaces.C;
-with text_io;
+with Text_Io;
 package body Motors is
 
 
@@ -23,9 +23,10 @@ package body Motors is
     Wanted_Step                               : Step_Type;
     State                                     : Motor_State_Type := Starting;
     Emg_Stop                                  : Boolean := False;
+    Old_Stop                                  : Boolean := True;
     Local_Direction_Towards_Emergency_Stop    : Direction_Type;
     Current_Direction                         : Direction_Type;
-    Pin : Pin_Array_Type;
+    Pin                                       : Pin_Array_Type;
 
   begin
     accept Config(Configuration_Pin : Pin_Array_Type; Direction_Towards_Emergency_Stop : Direction_Type) do
@@ -37,35 +38,42 @@ package body Motors is
       Gpio.Pin_Mode(Interfaces.C.Int(Pin(Direction)), Gpio.OUTPUT);
       Gpio.Pin_Mode(Interfaces.C.Int(Pin(Step)), Gpio.OUTPUT);
       Gpio.Pin_Mode(Interfaces.C.Int(Pin(Enable)), Gpio.OUTPUT);
-      Write(Pin(Direction), Direction_Towards_Emergency_Stop);
       Write(Pin(Step), Gpio.LOW);
       Write(Pin(Enable), Gpio.LOW); -- Low is to enable
     end Config;
 
     loop
-      text_io.put_line("select" & current_step'img & " " & Current_Direction'img);
+      Text_Io.Put_Line("select" & Current_Step'Img & " " & Current_Direction'Img);
       select
 
         accept Home do
           Wanted_Step := Step_Type'First;
         end Home;
 
+        Write(Pin(Direction), Local_Direction_Towards_Emergency_Stop);
         Current_Direction := Local_Direction_Towards_Emergency_Stop;
-        Home_Loop: loop
+
+        Home_Loop         : loop
+          Old_Stop := Emg_Stop;
           Emg_Stop := Read(Pin(Emergency_Stop));
-          if Emg_Stop then -- reached stop. go back until not affected any more
-            text_io.put_line("EMGSTOP");
+
+          if Emg_Stop and then not Old_Stop then -- found the trig
             if Local_Direction_Towards_Emergency_Stop = Cw then
               Current_Direction := CCw;
             else
               Current_Direction := Cw;
-            end if;
+             end if;
             Write(Pin(Direction), Current_Direction);
+          end if;
+
+          if Emg_Stop then -- reached stop. go back until not affected any more
+            Text_Io.Put_Line("EMGSTOP");
+
             Write(Pin(Step), Gpio.HIGH);
             delay Delay_Time(Slow);
             Write(Pin(Step), Gpio.LOW);
             delay Delay_Time(Slow);
-            exit Home_Loop when not Read(Pin(Emergency_Stop));
+            exit Home_Loop when not Read(Pin(Emergency_Stop)); -- let it leave the stop
 
           else -- tic on more towards emg_stop
             Write(Pin(Step), Gpio.HIGH);
@@ -73,15 +81,16 @@ package body Motors is
             Write(Pin(Step), Gpio.LOW);
             delay Delay_Time(Slow);
           end if;
+
         end loop Home_Loop;
         Current_Step := 0; -- reset the step from here
         State := Running;
-        text_io.put_line("exit home" & current_step'img & " " & Current_Direction'img);
+        Text_Io.Put_Line("exit home" & Current_Step'Img & " " & Current_Direction'Img);
       or
         when State = Running =>
           accept Goto_Step(S : Step_Type) do
             Wanted_Step := S;
-            text_io.put_Line("Goto_step Accepted");
+            Text_Io.Put_Line("Goto_step Accepted");
             delay 10.0;
           end Goto_Step;
 
@@ -155,9 +164,9 @@ package body Motors is
             else
               exit Move_Loop; --done
             end if;
-
+            Text_Io.Put_Line("move_Step" & Current_Step'Img & "/" & Wanted_Step'Img);
           end loop Move_Loop;
-          text_io.put_line("exit move_Step" & current_step'img & " " & Current_Direction'img);
+          Text_Io.Put_Line("exit move_Step" & Current_Step'Img & " " & Current_Direction'Img);
           Write(Pin(Enable), Gpio.HIGH); -- Low is to enable
       end select;
     end loop;
