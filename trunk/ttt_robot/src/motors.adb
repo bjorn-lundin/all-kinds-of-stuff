@@ -169,6 +169,8 @@ package body Motors is
           end loop Move_Loop;
           Text_Io.Put_Line("exit move_Step" & Current_Step'Img & " " & Current_Direction'Img);
           Write(Pin(Enable), Gpio.HIGH); -- Low is to enable
+      or
+        terminate;
       end select;
     end loop;
   exception

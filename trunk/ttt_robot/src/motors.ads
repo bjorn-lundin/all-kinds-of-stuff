@@ -11,7 +11,7 @@ package Motors is
   Cw  : constant Direction_Type := True;
   CCw : constant Direction_Type := False;
 
-  Delay_Time : array (Speed_Type'Range) of Duration := (Slow => 0.01, Normal => 0.01);
+  Delay_Time : array (Speed_Type'Range) of Duration := (Slow => 0.01, Normal => 0.001);
 
 
   type Pins_Type is (Step,Direction,Enable,Emergency_Stop);
