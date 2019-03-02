@@ -12,7 +12,7 @@ procedure ttt_robot is
 
 begin
 
-  delay 5.0;
+  delay 1.0;
   Put_Line("setup");
   Gpio.Setup;
 
@@ -52,21 +52,6 @@ begin
   Gpio.Pin_Mode( 9, Gpio.OUTPUT);
   Gpio.Digital_Write( 9, Gpio.LOW);
 
-
-delay 10.0;
-
- Gpio.Digital_Write( 9, Gpio.HIGH);
-
-
-
-delay 10.0;
-
- Gpio.Digital_Write( 9, Gpio.LOW);
-
-
-
-
-
   --12v power
   Gpio.Pin_Mode(21, Gpio.OUTPUT);
   Gpio.Digital_Write(21, Gpio.LOW);
@@ -92,24 +77,24 @@ delay 10.0;
   declare
     use Motors;
   begin
-    Motor_Fi1.Config(Configuration_Pin => (Step => 16, Direction => 12, Enable => 20, Emergency_Stop => 1), Direction_Towards_Emergency_Stop => CCw, Name => 1);
-    Motor_Fi2.Config(Configuration_Pin => (Step => 19, Direction => 13, Enable => 26, Emergency_Stop => 0), Direction_Towards_Emergency_Stop => Cw,  Name => 2);
+--    Motor_Fi1.Config(Configuration_Pin => (Step => 16, Direction => 12, Enable => 20, Emergency_Stop => 1), Direction_Towards_Emergency_Stop => CCw, Name => 1);
+--    Motor_Fi2.Config(Configuration_Pin => (Step => 19, Direction => 13, Enable => 26, Emergency_Stop => 0), Direction_Towards_Emergency_Stop => Cw,  Name => 2);
     Motor_Z.Config  (Configuration_Pin => (Step => 27, Direction => 22, Enable =>  6, Emergency_Stop => 4), Direction_Towards_Emergency_Stop => CCw, Name => 3);
   end;
 
   Put_Line("MotorZ.Home start");
   Motor_Z.Home;
   Put_Line("MotorFi1.Home start");
-  Motor_Fi1.Home;
+--  Motor_Fi1.Home;
   Put_Line("MotorFi2.Home start");
-  Motor_Fi2.Home;
+--  Motor_Fi2.Home;
 
   Put_Line("MotorZ.Goto_Step start");
-  Motor_Z.Goto_Step(500);
+  Motor_Z.Goto_Step(5000);
   Put_Line("MotorFi1.Goto_Step start");
-  Motor_Fi1.Goto_Step(500);
+--  Motor_Fi1.Goto_Step(500);
   Put_Line("MotorFi2Goto_Step start");
-  Motor_Fi2.Goto_Step(500);
+--  Motor_Fi2.Goto_Step(500);
 
 
   exception
@@ -117,4 +102,3 @@ delay 10.0;
       Stacktrace.Tracebackinfo(E);
 
 end ttt_robot;
-
