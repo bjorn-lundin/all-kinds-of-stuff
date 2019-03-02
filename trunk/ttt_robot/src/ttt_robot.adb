@@ -52,6 +52,21 @@ begin
   Gpio.Pin_Mode( 9, Gpio.OUTPUT);
   Gpio.Digital_Write( 9, Gpio.LOW);
 
+
+delay 10.0;
+
+ Gpio.Digital_Write( 9, Gpio.HIGH);
+
+
+
+delay 10.0;
+
+ Gpio.Digital_Write( 9, Gpio.LOW);
+
+
+
+
+
   --12v power
   Gpio.Pin_Mode(21, Gpio.OUTPUT);
   Gpio.Digital_Write(21, Gpio.LOW);
