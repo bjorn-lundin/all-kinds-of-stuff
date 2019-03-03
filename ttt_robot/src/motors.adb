@@ -1,19 +1,30 @@
+with Text_IO; use Text_IO;
+with Interfaces.C;
+
 with Stacktrace;
 with Gpio;
-with Interfaces.C;
-with Text_Io;
+with Binary_Semaphores;
+
 package body Motors is
+
+  Sem : Binary_Semaphores.Semaphore_Type;
 
 
   procedure Write(Pin: Pin_Type ; Value : Boolean) is
   begin
+    Sem.Seize;
     Gpio.Digital_Write(Interfaces.C.Int(Pin), Value);
+    Sem.Release;
   end Write;
 
 
   function Read(Pin: Pin_Type) return Boolean is
+    R : Boolean := False;
   begin
-    return Gpio.Digital_Read(Interfaces.C.Int(Pin));
+    Sem.Seize;
+    R := Gpio.Digital_Read(Interfaces.C.Int(Pin));
+    Sem.Release;
+    return R;
   end Read;
 
 
@@ -27,7 +38,8 @@ package body Motors is
     Local_Direction_Towards_Emergency_Stop    : Direction_Type;
     Current_Direction                         : Direction_Type;
     Pin                                       : Pin_Array_Type;
-    local_name                                : Positive := Positive'last;
+    Local_Name                                : Positive := Positive'last;
+    Busy                                      : Boolean := False;
   begin
     accept Config(Configuration_Pin : Pin_Array_Type; Direction_Towards_Emergency_Stop : Direction_Type; Name : Positive) do
       Pin := Configuration_Pin;
@@ -49,6 +61,7 @@ package body Motors is
 
         accept Home do
           Wanted_Step := Step_Type'First;
+          Put_Line("Home" &  Local_Name'Img);
         end Home;
 
         Write(Pin(Direction), Local_Direction_Towards_Emergency_Stop);
@@ -88,20 +101,26 @@ package body Motors is
         State := Running;
         Text_Io.Put_Line("exit home" & Current_Step'Img & " " & Current_Direction'Img);
       or
-        when State = Running =>
+        when State = Running and not Busy =>
           accept Goto_Step(S : Step_Type) do
+            Busy := True;
             Wanted_Step := S;
-            Text_Io.Put_Line("Goto_step Accepted");
+            Text_Io.Put_Line(Local_Name'Img & " -> Goto_step Accepted" & " w/C" & S'Img & "/" & Current_Step'Img );
+            Write(Pin(Enable), Gpio.LOW); --Turn on stepper
             delay 1.0;
           end Goto_Step;
 
           Move_Loop : loop
             Emg_Stop := Read(Pin(Emergency_Stop));
             if Emg_Stop then
+              Text_Io.Put_Line(Local_Name'Img & " -> EMGSTOP" & Local_Name'Img & " kill motor and Exit task");
               Write(Pin(Enable), Gpio.Low); -- shut down power to stepper
               exit; -- error msg?
             end if;
 
+            Text_Io.Put_Line(Local_Name'Img & " -> Goto_step " & " W/C" & Wanted_Step'Img & "/" & Current_Step'Img );
+            
+            
             if Wanted_Step > Current_Step then
               -- do we need to switch direction ?
               case Local_Direction_Towards_Emergency_Stop is
@@ -163,11 +182,11 @@ package body Motors is
               end if;
 
             else
+              Busy := False;
               exit Move_Loop; --done
             end if;
-           -- Text_Io.Put_Line("move_Step" & Current_Step'Img & "/" & Wanted_Step'Img & " " & current_direction'img);
           end loop Move_Loop;
-          Text_Io.Put_Line("exit move_Step" & Current_Step'Img & " " & Current_Direction'Img);
+          Text_Io.Put_Line(Local_Name'Img & " -> exit move_Step " & " w/C" & Wanted_Step'Img & "/" & Current_Step'Img & " dir=" & Current_Direction'Img);
           Write(Pin(Enable), Gpio.HIGH); -- Low is to enable
       or
         terminate;
@@ -178,6 +197,23 @@ package body Motors is
       Stacktrace.Tracebackinfo(E);
   end Motor_Task;
 
+
+  procedure Safe_Home is  
+    --  Motor_Z   : Motors.Motor_Task renames Motors.M(1);
+    --  Motor_Fi1 : Motors.Motor_Task renames Motors.M(2);
+    --  Motor_Fi2 : Motors.Motor_Task renames Motors.M(3);
+  begin
+    Put_Line("Safe_Home Motorfi1.Home start");
+    M(2).Home;
+    M(2).Goto_Step(400);
+    
+    Put_Line("Safe_Home Motorfi2.Home start");
+    M(3).Home;
+    
+    Put_Line("Safe_Home MotorZ.Home start");
+    M(1).Home;
+      
+  end Safe_Home;  
 
 
 end Motors;

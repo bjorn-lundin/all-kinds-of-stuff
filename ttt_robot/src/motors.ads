@@ -25,5 +25,9 @@ package Motors is
 
 
   M : array (1..3) of Motor_Task;
-
+  
+  
+  procedure Safe_Home;
+  
+  
 end Motors;

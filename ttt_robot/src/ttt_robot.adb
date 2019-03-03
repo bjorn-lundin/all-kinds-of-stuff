@@ -3,13 +3,15 @@ with Stacktrace;
 with Motors;
 with Gpio;
 
+with Ada.Command_Line;
+
 procedure ttt_robot is
 
 
   Motor_Z   : Motors.Motor_Task renames Motors.M(1);
   Motor_Fi1 : Motors.Motor_Task renames Motors.M(2);
   Motor_Fi2 : Motors.Motor_Task renames Motors.M(3);
-
+  sStep     : Motors.Step_Type;
 begin
 
   delay 1.0;
@@ -81,21 +83,29 @@ begin
     Motor_Fi2.Config(Configuration_Pin => (Step => 19, Direction => 13, Enable => 26, Emergency_Stop => 0), Direction_Towards_Emergency_Stop => Cw,  Name => 2);
     Motor_Z.Config  (Configuration_Pin => (Step => 27, Direction => 22, Enable =>  6, Emergency_Stop => 4), Direction_Towards_Emergency_Stop => CCw, Name => 3);
   end;
+  
+  if Ada.Command_Line.Argument_Count > 0 then
+    sStep := Motors.Step_Type'Value(Ada.Command_Line.Argument(1));
+  end if;
+  
+  Motors.Safe_Home;
+  
+  
+  Motor_Z.Goto_Step(300);
+  Motor_Fi2.Goto_Step(200);
 
-  Put_Line("MotorZ.Home start");
---  Motor_Z.Home;
-  Put_Line("MotorFi1.Home start");
 --  Motor_Fi1.Home;
-  Put_Line("MotorFi2.Home start");
-  Motor_Fi2.Home;
 
-  Put_Line("MotorZ.Goto_Step start");
---  Motor_Z.Goto_Step(3000);
-  Put_Line("MotorFi1.Goto_Step start");
---  Motor_Fi1.Goto_Step(1050);
-  Put_Line("MotorFi2Goto_Step start");
-  Motor_Fi2.Goto_Step(300);
+  
+  for i in 2 .. 7 loop
+    Put_Line("Motorfi1.stuff normal" & i'Img);
+    Motor_Fi1.Goto_Step(Motors.Step_Type(i * 100));
+  end loop;
 
+  for i in  reverse 2 .. 6 loop
+    Put_Line("Motorfi1.stuff reverse" & i'Img);
+    Motor_Fi1.Goto_Step(Motors.Step_Type(i * 100));
+  end loop;
 
   exception
     when E: others =>
