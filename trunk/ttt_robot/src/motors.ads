@@ -4,7 +4,7 @@ package Motors is
 
   type Pin_Type is new Integer range 0 .. 40;
   type Coordinate_Type is new Integer range -10_000 .. 10_000;
-  type Step_Type is new Integer range -10_000 .. 10_000;
+  type Step_Type is new Integer range 0 .. 10_000;
   type Motor_State_Type is (Starting, Running);
   type Speed_Type is (Slow, Normal);
   subtype Direction_Type is Boolean;
@@ -25,9 +25,9 @@ package Motors is
 
 
   M : array (1..3) of Motor_Task;
-  
-  
+
+
   procedure Safe_Home;
-  
-  
+
+
 end Motors;
