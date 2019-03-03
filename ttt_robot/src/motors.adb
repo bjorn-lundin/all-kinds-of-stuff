@@ -8,6 +8,40 @@ with Binary_Semaphores;
 package body Motors is
 
   Sem : Binary_Semaphores.Semaphore_Type;
+  
+  
+  protected type Step_Holder_Type is
+    procedure Reset;
+    function Get return Step_Type;
+    procedure Increase;
+    procedure Decrease;
+  private
+    Step : Step_Type := 0;
+  end Step_Holder_Type;
+  
+  protected body  Step_Holder_Type is
+    procedure Reset is
+    begin
+      Step := 0;
+    end Reset;
+    -----------------------------
+    function Get return Step_Type is
+    begin
+      return Step;
+    end Get;    
+    -----------------------------
+    procedure Increase is
+    begin
+      Step := Step + 1;
+    end Increase;  
+    -----------------------------
+    procedure Decrease is
+    begin
+      Step := Step - 1;
+    end Decrease;
+  end Step_Holder_Type;
+  
+  Steps : array (1..3) of Step_Holder_Type;
 
 
   procedure Write(Pin: Pin_Type ; Value : Boolean) is
@@ -29,8 +63,6 @@ package body Motors is
 
 
   task body Motor_Task is
-
-    Current_Step                              : Step_Type := 0;
     Wanted_Step                               : Step_Type;
     State                                     : Motor_State_Type := Starting;
     Emg_Stop                                  : Boolean := False;
@@ -56,7 +88,7 @@ package body Motors is
     end Config;
 
     loop
-      Text_Io.Put_Line("select" & Current_Step'Img & " " & Current_Direction'Img & Local_Name'Img);
+      Text_Io.Put_Line("select" & Steps(Local_Name).Get'Img & " " & Current_Direction'Img & Local_Name'Img);
       select
 
         accept Home do
@@ -97,15 +129,15 @@ package body Motors is
           end if;
 
         end loop Home_Loop;
-        Current_Step := 0; -- reset the step from here
+        Steps(Local_Name).Reset;
         State := Running;
-        Text_Io.Put_Line("exit home" & Current_Step'Img & " " & Current_Direction'Img);
+        Text_Io.Put_Line("exit home" & Steps(Local_Name).Get'Img & " " & Current_Direction'Img);
       or
         when State = Running and not Busy =>
           accept Goto_Step(S : Step_Type) do
             Busy := True;
             Wanted_Step := S;
-            Text_Io.Put_Line(Local_Name'Img & " -> Goto_step Accepted" & " w/C" & S'Img & "/" & Current_Step'Img );
+            Text_Io.Put_Line(Local_Name'Img & " -> Goto_step Accepted" & " w/C" & S'Img & "/" & Steps(Local_Name).Get'Img );
             Write(Pin(Enable), Gpio.LOW); --Turn on stepper
             delay 1.0;
           end Goto_Step;
@@ -118,10 +150,10 @@ package body Motors is
               exit; -- error msg?
             end if;
 
-            Text_Io.Put_Line(Local_Name'Img & " -> Goto_step " & " W/C" & Wanted_Step'Img & "/" & Current_Step'Img );
+            Text_Io.Put_Line(Local_Name'Img & " -> Goto_step " & " W/C" & Wanted_Step'Img & "/" & Steps(Local_Name).Get'Img );
             
             
-            if Wanted_Step > Current_Step then
+            if Wanted_Step > Steps(Local_Name).Get then
               -- do we need to switch direction ?
               case Local_Direction_Towards_Emergency_Stop is
               when CCw =>
@@ -145,13 +177,13 @@ package body Motors is
               delay Delay_Time(Normal);
 
               if Current_Direction = Local_Direction_Towards_Emergency_Stop then
-                Current_Step := Current_Step -1 ;  --Towards 0
+                Steps(Local_Name).Decrease;
               else
-                Current_Step := Current_Step +1 ;  --Towards inifinty
+                Steps(Local_Name).Increase;
               end if;
 
 
-            elsif  Wanted_Step < Current_Step then
+            elsif  Wanted_Step < Steps(Local_Name).Get then
               -- do we need to switch direction ?
               case Local_Direction_Towards_Emergency_Stop is
               when CCw =>
@@ -174,11 +206,10 @@ package body Motors is
               Write(Pin(Step), Gpio.LOW);
               delay Delay_Time(Normal);
 
-
               if Current_Direction = Local_Direction_Towards_Emergency_Stop then
-                Current_Step := Current_Step -1 ;  --Towards 0
+                Steps(Local_Name).Decrease;
               else
-                Current_Step := Current_Step +1 ;  --Towards inifinty
+                Steps(Local_Name).Increase;
               end if;
 
             else
@@ -186,7 +217,7 @@ package body Motors is
               exit Move_Loop; --done
             end if;
           end loop Move_Loop;
-          Text_Io.Put_Line(Local_Name'Img & " -> exit move_Step " & " w/C" & Wanted_Step'Img & "/" & Current_Step'Img & " dir=" & Current_Direction'Img);
+          Text_Io.Put_Line(Local_Name'Img & " -> exit move_Step " & " w/C" & Wanted_Step'Img & "/" & Steps(Local_Name).Get'Img & " dir=" & Current_Direction'Img);
           Write(Pin(Enable), Gpio.HIGH); -- Low is to enable
       or
         terminate;
