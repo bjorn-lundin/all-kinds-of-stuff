@@ -57,7 +57,7 @@ begin
   Gpio.Pin_Mode(21, Gpio.OUTPUT);
   Gpio.Digital_Write(21, Gpio.LOW);
 
-  delay 1.0;
+--  delay 1.0;
 
 --  for i in 1..10 loop
 --    Put_Line("Turn on relay for power to the Aa4988s" & i'img);

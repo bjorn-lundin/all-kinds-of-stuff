@@ -139,7 +139,7 @@ package body Motors is
             Wanted_Step := S;
             Text_Io.Put_Line(Local_Name'Img & " -> Goto_step Accepted" & " w/C" & S'Img & "/" & Steps(Local_Name).Get'Img );
             Write(Pin(Enable), Gpio.LOW); --Turn on stepper
-            delay 1.0;
+           -- delay 1.0;
           end Goto_Step;
 
           Move_Loop : loop
