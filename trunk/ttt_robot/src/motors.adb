@@ -9,20 +9,20 @@ package body Motors is
 
   Sem : Binary_Semaphores.Semaphore_Type;
   
-  
   protected type Step_Holder_Type is
     procedure Reset;
     function Get return Step_Type;
     procedure Increase;
     procedure Decrease;
+    procedure Compensate_Fi1_Movement(D : Step_Type); 
   private
-    Step : Step_Type := 0;
+    Step : Step_Type := 0.0;
   end Step_Holder_Type;
   
   protected body  Step_Holder_Type is
     procedure Reset is
     begin
-      Step := 0;
+      Step := 0.0;
     end Reset;
     -----------------------------
     function Get return Step_Type is
@@ -32,16 +32,49 @@ package body Motors is
     -----------------------------
     procedure Increase is
     begin
-      Step := Step + 1;
+      Step := Step + 1.0;
     end Increase;  
     -----------------------------
     procedure Decrease is
     begin
-      Step := Step - 1;
+      Step := Step - 1.0;
     end Decrease;
+    
+    procedure Compensate_Fi1_Movement(D : Step_Type) is
+    begin
+      if D > 0.0 then
+        Step := Step + 33.0/62.0;
+      else
+        Step := Step - 33.0/62.0;
+      end if;        
+    end Compensate_Fi1_Movement;    
+    
   end Step_Holder_Type;
   
   Steps : array (1..3) of Step_Holder_Type;
+  
+  
+  protected type Busy_Type is
+    function Is_Busy return Boolean;
+    procedure Set(Val : Boolean);
+  private
+    B : Boolean := False;
+  end Busy_Type;
+  
+  protected body Busy_Type is
+    function Is_Busy return Boolean is
+    begin
+      return B;
+    end Is_Busy;
+    
+    procedure Set(Val : Boolean) is
+    begin 
+      B := Val;
+      end Set;
+  end Busy_Type;
+  
+  Busy : array (1..3) of Busy_Type;
+  
 
 
   procedure Write(Pin: Pin_Type ; Value : Boolean) is
@@ -71,7 +104,8 @@ package body Motors is
     Current_Direction                         : Direction_Type;
     Pin                                       : Pin_Array_Type;
     Local_Name                                : Positive := Positive'last;
-    Busy                                      : Boolean := False;
+   -- Busy                                      : Boolean := False;
+    Diff                                      : Step_Type := 0.0;
   begin
     accept Config(Configuration_Pin : Pin_Array_Type; Direction_Towards_Emergency_Stop : Direction_Type; Name : Positive) do
       Pin := Configuration_Pin;
@@ -133,9 +167,9 @@ package body Motors is
         State := Running;
         Text_Io.Put_Line("exit home" & Steps(Local_Name).Get'Img & " " & Current_Direction'Img);
       or
-        when State = Running and not Busy =>
+        when State = Running and not Busy(Local_Name).Is_Busy =>
           accept Goto_Step(S : Step_Type) do
-            Busy := True;
+            Busy(Local_Name).Set(True);
             Wanted_Step := S;
             Text_Io.Put_Line(Local_Name'Img & " -> Goto_step Accepted" & " w/C" & S'Img & "/" & Steps(Local_Name).Get'Img );
             Write(Pin(Enable), Gpio.LOW); --Turn on stepper
@@ -152,8 +186,9 @@ package body Motors is
 
             Text_Io.Put_Line(Local_Name'Img & " -> Goto_step " & " W/C" & Wanted_Step'Img & "/" & Steps(Local_Name).Get'Img );
             
+            Diff := Wanted_Step - Steps(Local_Name).Get;
             
-            if Wanted_Step > Steps(Local_Name).Get then
+            if Diff > 0.0 and then abs(Diff) > Epsilon then
               -- do we need to switch direction ?
               case Local_Direction_Towards_Emergency_Stop is
               when CCw =>
@@ -183,7 +218,7 @@ package body Motors is
               end if;
 
 
-            elsif  Wanted_Step < Steps(Local_Name).Get then
+            elsif Diff < 0.0 and then abs(Diff) > Epsilon then
               -- do we need to switch direction ?
               case Local_Direction_Towards_Emergency_Stop is
               when CCw =>
@@ -213,9 +248,22 @@ package body Motors is
               end if;
 
             else
-              Busy := False;
-              exit Move_Loop; --done
+              Busy(Local_Name).Set(False);
+              if Local_Name /= 2 then --done if we are 1 or 3
+                exit Move_Loop; 
+              elsif not Busy(1).Is_Busy then
+                exit Move_Loop; -- wait for 1 to exit. will affect 2 as long as it moves
+              end if;                
             end if;
+            
+            
+            --compensate fi2 for f1 movements
+            if Local_Name = 1 then
+              Steps(2).Compensate_Fi1_Movement(Diff); 
+            end if;  
+            
+            
+            
           end loop Move_Loop;
           Text_Io.Put_Line(Local_Name'Img & " -> exit move_Step " & " w/C" & Wanted_Step'Img & "/" & Steps(Local_Name).Get'Img & " dir=" & Current_Direction'Img);
           Write(Pin(Enable), Gpio.HIGH); -- Low is to enable
@@ -236,7 +284,7 @@ package body Motors is
   begin
     Put_Line("Safe_Home Motorfi1.Home start");
     M(2).Home;
-    M(2).Goto_Step(400);
+    M(2).Goto_Step(400.0);
     
     Put_Line("Safe_Home Motorfi2.Home start");
     M(3).Home;

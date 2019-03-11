@@ -9,8 +9,8 @@ procedure ttt_robot is
 
 
   Motor_Z   : Motors.Motor_Task renames Motors.M(1);
-  Motor_Fi1 : Motors.Motor_Task renames Motors.M(2);
-  Motor_Fi2 : Motors.Motor_Task renames Motors.M(3);
+  Motor_Fi1 : Motors.Motor_Task renames Motors.M(2); -- hip/weist
+  Motor_Fi2 : Motors.Motor_Task renames Motors.M(3); --elbow
 begin
 
   delay 1.0;
@@ -60,11 +60,11 @@ begin
 --  delay 1.0;
 
 --  for i in 1..10 loop
---    Put_Line("Turn on relay for power to the Aa4988s" & i'img);
+--    Put_Line("Turn on relay for power to the A4988s" & i'img);
 --    Gpio.Digital_Write(21,Gpio.HIGH);
 --    delay 10.0;
 --
---    Put_Line("Turn OFF relay for power to the Aa4988s" & i'img);
+--    Put_Line("Turn OFF relay for power to the A4988s" & i'img);
 --    Gpio.Digital_Write(21,Gpio.low);
 --    delay 10.0;
 --  end loop;
@@ -91,21 +91,21 @@ begin
 
   for I in 1 ..5 loop
 
-    Motor_Z.Goto_Step(300);
-    Motor_Fi2.Goto_Step(200);
+    Motor_Z.Goto_Step(300.0);
+    Motor_Fi2.Goto_Step(200.0);
 
     for I in 2 .. 7 loop
       Put_Line("Motorfi1.stuff normal" & I'Img);
-      Motor_Fi1.Goto_Step(Motors.Step_Type(I * 100));
+      Motor_Fi1.Goto_Step(Motors.Step_Type(I * 100.0));
     end loop;
 
     for I in  reverse 2 .. 6 loop
       Put_Line("Motorfi1.stuff reverse" & I'Img);
-      Motor_Fi1.Goto_Step(Motors.Step_Type(I * 100));
+      Motor_Fi1.Goto_Step(Motors.Step_Type(I * 100.0));
     end loop;
 
-    Motor_Z.Goto_Step(200);
-    Motor_Fi2.Goto_Step(300);
+    Motor_Z.Goto_Step(200.0);
+    Motor_Fi2.Goto_Step(300.0);
   end loop;
 
 exception

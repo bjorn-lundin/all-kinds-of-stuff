@@ -4,12 +4,13 @@ package Motors is
 
   type Pin_Type is new Integer range 0 .. 40;
   type Coordinate_Type is new Integer range -10_000 .. 10_000;
-  type Step_Type is new Integer range 0 .. 10_000;
+  type Step_Type is new Float range 0.0 .. 10_000.0;
   type Motor_State_Type is (Starting, Running);
   type Speed_Type is (Slow, Normal);
   subtype Direction_Type is Boolean;
   Cw  : constant Direction_Type := True;
   CCw : constant Direction_Type := False;
+  Epsilon : constant Step_Type := 0.4;
 
   Delay_Time : array (Speed_Type'Range) of Duration := (Slow => 0.01, Normal => 0.005);
 
