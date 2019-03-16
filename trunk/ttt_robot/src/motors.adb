@@ -5,9 +5,74 @@ with Stacktrace;
 with Gpio;
 with Binary_Semaphores;
 
-package body Motors is
 
+with Ada.Interrupts; use Ada.Interrupts;
+with Ada.Interrupts.Names; use Ada.Interrupts.Names;
+
+
+package body Motors is
+  
   Sem : Binary_Semaphores.Semaphore_Type;
+  
+  procedure Write(Pin: Pin_Type ; Value : Boolean) is
+  begin
+    Sem.Seize;
+    Gpio.Digital_Write(Interfaces.C.Int(Pin), Value);
+    Sem.Release;
+  end Write;
+
+  function Read(Pin: Pin_Type) return Boolean is
+    R : Boolean := False;
+  begin
+    Sem.Seize;
+    R := Gpio.Digital_Read(Interfaces.C.Int(Pin));
+    Sem.Release;
+    return R;
+  end Read;
+  
+  protected Handler is
+    procedure Set(P : Pin_Type);
+    procedure Handle_Sigint;
+    pragma Interrupt_Handler(Handle_Sigint);
+    pragma Attach_Handler(Handle_Sigint, Sigint);
+  private
+    A : Pin_Type := 0;
+    B : Pin_Type := 0;
+    C : Pin_Type := 0;    
+  end Handler;  
+  
+ 
+  protected body Handler is
+    procedure Set(P : Pin_Type) is
+    begin
+      if A = 0 then 
+        A := P;
+      elsif B = 0 then
+        B := P;
+      elsif C = 0 then
+        C := P;
+      end if;  
+    end Set;
+      
+      
+    procedure Handle_Sigint is
+    begin
+      Text_IO.Put_Line("sigint called");
+      if A > 0 then 
+        Gpio.Digital_Write(Interfaces.C.Int(A), False); -- Low is to enable
+      end if;  
+      if B > 0 then
+        Gpio.Digital_Write(Interfaces.C.Int(B), False); -- Low is to enable
+      end if;  
+      if C > 0 then
+        Gpio.Digital_Write(Interfaces.C.Int(C), False); -- Low is to enable
+      end if;  
+    end Handle_Sigint;
+ 
+  end Handler;
+  
+  
+
   
   protected type Step_Holder_Type is
     procedure Reset;
@@ -76,25 +141,6 @@ package body Motors is
   Busy : array (Motor_Index_Type'range) of Busy_Type;
   
 
-
-  procedure Write(Pin: Pin_Type ; Value : Boolean) is
-  begin
-    Sem.Seize;
-    Gpio.Digital_Write(Interfaces.C.Int(Pin), Value);
-    Sem.Release;
-  end Write;
-
-
-  function Read(Pin: Pin_Type) return Boolean is
-    R : Boolean := False;
-  begin
-    Sem.Seize;
-    R := Gpio.Digital_Read(Interfaces.C.Int(Pin));
-    Sem.Release;
-    return R;
-  end Read;
-
-
   task body Motor_Task is
     Wanted_Step                               : Step_Type;
     State                                     : Motor_State_Type := Starting;
@@ -118,6 +164,7 @@ package body Motors is
       Gpio.Pin_Mode(Interfaces.C.Int(Pin(Enable)), Gpio.OUTPUT);
       Write(Pin(Step), Gpio.LOW);
       Write(Pin(Enable), Gpio.LOW); -- Low is to enable
+      Handler.Set(P => Pin(Enable)); -- so we can shut it down on ctrl^C
       Text_Io.Put_Line("Config done" & Local_Name'Img);
     end Config;
 
@@ -128,44 +175,46 @@ package body Motors is
         accept Home do
           Wanted_Step := Step_Type'First;
           Put_Line("Home" &  Local_Name'Img);
+
+          Write(Pin(Direction), Local_Direction_Towards_Emergency_Stop);
+          Current_Direction := Local_Direction_Towards_Emergency_Stop;
+
+          Home_Loop : loop
+            Old_Stop := Emg_Stop;
+            Emg_Stop := Read(Pin(Emergency_Stop));
+
+            if Emg_Stop and then not Old_Stop then -- found the trig
+              if Current_Direction = Cw then
+                Current_Direction := CCw;
+              else
+                Current_Direction := Cw;
+              end if;
+              Write(Pin(Direction), Current_Direction);
+            end if;
+
+            if Emg_Stop then -- reached stop. go back until not affected any more
+              Text_Io.Put_Line("EMGSTOP" & Local_Name'Img);
+
+              Write(Pin(Step), Gpio.HIGH);
+              delay Delay_Time(Slow);
+              Write(Pin(Step), Gpio.LOW);
+              delay Delay_Time(Slow);
+              exit Home_Loop when not Read(Pin(Emergency_Stop)); -- let it leave the stop
+
+            else -- tic on more towards emg_stop
+              Write(Pin(Step), Gpio.HIGH);
+              delay Delay_Time(Slow);
+              Write(Pin(Step), Gpio.LOW);
+              delay Delay_Time(Slow);
+            end if;
+
+          end loop Home_Loop;
+          Steps(Local_Name).Reset;
+          State := Running;
+          Text_Io.Put_Line("exit home" & Steps(Local_Name).Get'Img & " " & Current_Direction'Img);
         end Home;
-
-        Write(Pin(Direction), Local_Direction_Towards_Emergency_Stop);
-        Current_Direction := Local_Direction_Towards_Emergency_Stop;
-
-        Home_Loop         : loop
-          Old_Stop := Emg_Stop;
-          Emg_Stop := Read(Pin(Emergency_Stop));
-
-          if Emg_Stop and then not Old_Stop then -- found the trig
-            if Local_Direction_Towards_Emergency_Stop = Cw then
-              Current_Direction := CCw;
-            else
-              Current_Direction := Cw;
-             end if;
-            Write(Pin(Direction), Current_Direction);
-          end if;
-
-          if Emg_Stop then -- reached stop. go back until not affected any more
-            Text_Io.Put_Line("EMGSTOP" & Local_Name'Img);
-
-            Write(Pin(Step), Gpio.HIGH);
-            delay Delay_Time(Slow);
-            Write(Pin(Step), Gpio.LOW);
-            delay Delay_Time(Slow);
-            exit Home_Loop when not Read(Pin(Emergency_Stop)); -- let it leave the stop
-
-          else -- tic on more towards emg_stop
-            Write(Pin(Step), Gpio.HIGH);
-            delay Delay_Time(Slow);
-            Write(Pin(Step), Gpio.LOW);
-            delay Delay_Time(Slow);
-          end if;
-
-        end loop Home_Loop;
-        Steps(Local_Name).Reset;
-        State := Running;
-        Text_Io.Put_Line("exit home" & Steps(Local_Name).Get'Img & " " & Current_Direction'Img);
+          
+          
       or
         when State = Running and not Busy(Local_Name).Is_Busy =>
           accept Goto_Step(S : Step_Type) do
