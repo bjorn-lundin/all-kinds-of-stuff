@@ -184,7 +184,7 @@ package body Motors is
               exit; -- error msg?
             end if;
 
-            Text_Io.Put_Line(Local_Name'Img & " -> Goto_step " & " W/C" & Wanted_Step'Img & "/" & Steps(Local_Name).Get'Img );
+          --  Text_Io.Put_Line(Local_Name'Img & " -> Goto_step " & " W/C" & Wanted_Step'Img & "/" & Steps(Local_Name).Get'Img );
             
             Diff := Wanted_Step - Steps(Local_Name).Get;
             
@@ -258,9 +258,14 @@ package body Motors is
             
             --compensate fi2 for fi1 movements if moved
             if Local_Name = 1 then
-              Text_Io.Put_Line(Local_Name'Img & " -> before compensate" & Steps(2).Get'Img );            
               Steps(2).Compensate_Fi1_Movement(Diff); 
-              Text_Io.Put_Line(Local_Name'Img & " -> after  compensate" & Steps(2).Get'Img );            
+              declare
+                S : Step_Type := Steps(2).Get;
+              begin
+                if S < 0.0 then 
+                  Text_Io.Put_Line(Local_Name'Img & " -> after  compensate" & Steps(2).Get'Img );    
+                end if; 
+              end;  
             end if;          
             
           end loop Move_Loop;
