@@ -1,3 +1,7 @@
+
+with Ada.Interrupts; use Ada.Interrupts;
+with Ada.Interrupts.Names; use Ada.Interrupts.Names;
+
 with Text_IO; use Text_IO;
 with Stacktrace;
 with Motors;
@@ -17,37 +21,13 @@ begin
   Put_Line("setup");
   Gpio.Setup;
 
--- done in motor task .config
---    -- Motor Fi1
---    Gpio.Pin_Mode( 0, Gpio.INPUT);
---    Gpio.Pull_Up_Dn_Control(0, Gpio. PUD_DOWN);
---    Gpio.Pin_Mode(12, Gpio.OUTPUT);
---    Gpio.Pin_Mode(16, Gpio.OUTPUT);
---    Gpio.Pin_Mode(20, Gpio.OUTPUT);
---    Gpio.Digital_Write(12, Gpio.LOW);
---    Gpio.Digital_Write(16, Gpio.LOW);
---    Gpio.Digital_Write(20, Gpio.LOW);
---
---    --Motor Fi2
---    Gpio.Pin_Mode( 1, Gpio.INPUT);
---    Gpio.Pull_Up_Dn_Control(1, Gpio. PUD_DOWN);
---    Gpio.Pin_Mode(13, Gpio.OUTPUT);
---    Gpio.Pin_Mode(19, Gpio.OUTPUT);
---    Gpio.Pin_Mode(26, Gpio.OUTPUT);
---    Gpio.Digital_Write(13, Gpio.LOW);
---    Gpio.Digital_Write(19, Gpio.LOW);
---    Gpio.Digital_Write(26, Gpio.LOW);
---
---    -- Motor Z
---    Gpio.Pin_Mode( 4, Gpio.INPUT);
---    Gpio.Pull_Up_Dn_Control(4, Gpio. PUD_DOWN);
---    Gpio.Pin_Mode( 6, Gpio.OUTPUT);
---    Gpio.Pin_Mode(22, Gpio.OUTPUT);
---    Gpio.Pin_Mode(27, Gpio.OUTPUT);
---    Gpio.Digital_Write( 6, Gpio.LOW);
---    Gpio.Digital_Write(22, Gpio.LOW);
---    Gpio.Digital_Write(27, Gpio.LOW);
 
+ if Is_Attached( SIGINT ) then
+    Put_Line( "There is a SIGINT handler installed" );
+  else
+    Put_Line( "There is no SIGINT handler installed" );
+  end if;
+  Detach_Handler(Sigint);
 
   -- Magnet
   Gpio.Pin_Mode( 9, Gpio.OUTPUT);

@@ -6,9 +6,6 @@ with Gpio;
 with Binary_Semaphores;
 
 
-with Ada.Interrupts; use Ada.Interrupts;
-with Ada.Interrupts.Names; use Ada.Interrupts.Names;
-
 
 package body Motors is
   
@@ -30,18 +27,7 @@ package body Motors is
     return R;
   end Read;
   
-  protected Handler is
-    procedure Set(P : Pin_Type);
-    procedure Handle_Sigint;
-    pragma Interrupt_Handler(Handle_Sigint);
-    pragma Attach_Handler(Handle_Sigint, Sigint);
-  private
-    A : Pin_Type := 0;
-    B : Pin_Type := 0;
-    C : Pin_Type := 0;    
-  end Handler;  
   
- 
   protected body Handler is
     procedure Set(P : Pin_Type) is
     begin
