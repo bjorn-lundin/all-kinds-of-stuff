@@ -93,7 +93,7 @@ package body Motors is
     
     procedure Compensate_Fi1_Movement(D : Step_Type) is
     begin
-      if D < 0.0 then
+      if D > 0.0 then
         Step := Step + 33.0/62.0;
       else
         Step := Step - 33.0/62.0;
