@@ -222,6 +222,7 @@ package body Motors is
           --  Text_Io.Put_Line(Local_Name'Img & " -> Goto_step " & " W/C" & Wanted_Step'Img & "/" & Steps(Local_Name).Get'Img );
             
             Diff := Wanted_Step - Steps(Local_Name).Get;
+            Text_Io.Put_Line(Local_Name'Img & " -> Goto_step " & " Diff " & Diff'Img);
             
             if Diff > 0.0 and then abs(Diff) > Epsilon then
               -- do we need to switch direction ?
