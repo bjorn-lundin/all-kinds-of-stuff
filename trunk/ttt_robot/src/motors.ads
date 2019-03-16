@@ -36,6 +36,7 @@ package Motors is
 
   protected Handler is
     procedure Set(P : Pin_Type);
+    pragma Unreserve_All_Interrupts;
     procedure Handle_Sigint;
     pragma Interrupt_Handler(Handle_Sigint);
     pragma Attach_Handler(Handle_Sigint, Sigint);
