@@ -89,7 +89,8 @@ begin
 
   Motors.Safe_Home;
 
-  for I in 1 ..5 loop
+  for J in 1 ..5 loop
+    Put_Line("big loop" & J'Img);
 
     Motor_Z.Goto_Step(300.0);
     Motor_Fi2.Goto_Step(200.0);
