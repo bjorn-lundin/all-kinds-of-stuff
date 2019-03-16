@@ -14,7 +14,7 @@ package Motors is
   subtype Direction_Type is Boolean;
   Cw  : constant Direction_Type := True;
   CCw : constant Direction_Type := False;
-  Epsilon : constant Step_Type := 0.4;
+  Epsilon : constant Step_Type := 0.501;
 
   Delay_Time : array (Speed_Type'Range) of Duration := (Slow => 0.01, Normal => 0.005);
 
