@@ -96,12 +96,12 @@ begin
 
     for I in 2 .. 7 loop
       Put_Line("Motorfi1.stuff normal" & I'Img);
-      Motor_Fi1.Goto_Step(Motors.Step_Type(I * 100.0));
+      Motor_Fi1.Goto_Step(Motors.Step_Type(I * 100));
     end loop;
 
     for I in  reverse 2 .. 6 loop
       Put_Line("Motorfi1.stuff reverse" & I'Img);
-      Motor_Fi1.Goto_Step(Motors.Step_Type(I * 100.0));
+      Motor_Fi1.Goto_Step(Motors.Step_Type(I * 100));
     end loop;
 
     Motor_Z.Goto_Step(200.0);

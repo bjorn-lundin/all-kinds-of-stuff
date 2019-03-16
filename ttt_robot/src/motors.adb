@@ -19,7 +19,7 @@ package body Motors is
     Step : Step_Type := 0.0;
   end Step_Holder_Type;
   
-  protected body  Step_Holder_Type is
+  protected body Step_Holder_Type is
     procedure Reset is
     begin
       Step := 0.0;
@@ -37,7 +37,7 @@ package body Motors is
     -----------------------------
     procedure Decrease is
     begin
-      Step := Step - 1.0;
+      Step := Step - 1.0;      
     end Decrease;
     
     procedure Compensate_Fi1_Movement(D : Step_Type) is
@@ -51,7 +51,7 @@ package body Motors is
     
   end Step_Holder_Type;
   
-  Steps : array (1..3) of Step_Holder_Type;
+  Steps : array (Motor_Index_Type'range) of Step_Holder_Type;
   
   
   protected type Busy_Type is
@@ -73,7 +73,7 @@ package body Motors is
       end Set;
   end Busy_Type;
   
-  Busy : array (1..3) of Busy_Type;
+  Busy : array (Motor_Index_Type'range) of Busy_Type;
   
 
 
@@ -103,11 +103,11 @@ package body Motors is
     Local_Direction_Towards_Emergency_Stop    : Direction_Type;
     Current_Direction                         : Direction_Type;
     Pin                                       : Pin_Array_Type;
-    Local_Name                                : Positive := Positive'last;
+    Local_Name                                : Motor_Index_Type ;
    -- Busy                                      : Boolean := False;
     Diff                                      : Step_Type := 0.0;
   begin
-    accept Config(Configuration_Pin : Pin_Array_Type; Direction_Towards_Emergency_Stop : Direction_Type; Name : Positive) do
+    accept Config(Configuration_Pin : Pin_Array_Type; Direction_Towards_Emergency_Stop : Direction_Type; Name : Motor_Index_Type) do
       Pin := Configuration_Pin;
       Local_Direction_Towards_Emergency_Stop := Direction_Towards_Emergency_Stop;
       Local_Name := Name;
@@ -254,19 +254,18 @@ package body Motors is
               elsif not Busy(1).Is_Busy then
                 exit Move_Loop; -- wait for 1 to exit. will affect 2 as long as it moves
               end if;                
-            end if;
+            end if;            
             
-            
-            --compensate fi2 for f1 movements
+            --compensate fi2 for fi1 movements if moved
             if Local_Name = 1 then
+              Text_Io.Put_Line(Local_Name'Img & " -> before compensate" & Steps(2).Get'Img );            
               Steps(2).Compensate_Fi1_Movement(Diff); 
-            end if;  
-            
-            
+              Text_Io.Put_Line(Local_Name'Img & " -> after  compensate" & Steps(2).Get'Img );            
+            end if;          
             
           end loop Move_Loop;
           Text_Io.Put_Line(Local_Name'Img & " -> exit move_Step " & " w/C" & Wanted_Step'Img & "/" & Steps(Local_Name).Get'Img & " dir=" & Current_Direction'Img);
-          Write(Pin(Enable), Gpio.HIGH); -- Low is to enable
+          --Write(Pin(Enable), Gpio.HIGH); -- Low is to enable
       or
         terminate;
       end select;
