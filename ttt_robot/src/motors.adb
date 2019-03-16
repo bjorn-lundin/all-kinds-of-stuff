@@ -28,34 +28,34 @@ package body Motors is
   end Read;
   
   
-  protected body Handler is
-    procedure Set(P : Pin_Type) is
-    begin
-      if A = 0 then 
-        A := P;
-      elsif B = 0 then
-        B := P;
-      elsif C = 0 then
-        C := P;
-      end if;  
-    end Set;
-      
-      
-    procedure Handle_Sigint is
-    begin
-      Text_IO.Put_Line("sigint called");
-      if A > 0 then 
-        Gpio.Digital_Write(Interfaces.C.Int(A), False); -- Low is to enable
-      end if;  
-      if B > 0 then
-        Gpio.Digital_Write(Interfaces.C.Int(B), False); -- Low is to enable
-      end if;  
-      if C > 0 then
-        Gpio.Digital_Write(Interfaces.C.Int(C), False); -- Low is to enable
-      end if;  
-    end Handle_Sigint;
- 
-  end Handler;
+--    protected body Handler is
+--      procedure Set(P : Pin_Type) is
+--      begin
+--        if A = 0 then 
+--          A := P;
+--        elsif B = 0 then
+--          B := P;
+--        elsif C = 0 then
+--          C := P;
+--        end if;  
+--      end Set;
+--        
+--        
+--      procedure Handle_Sigint is
+--      begin
+--        Text_IO.Put_Line("sigint called");
+--        if A > 0 then 
+--          Gpio.Digital_Write(Interfaces.C.Int(A), False); -- Low is to enable
+--        end if;  
+--        if B > 0 then
+--          Gpio.Digital_Write(Interfaces.C.Int(B), False); -- Low is to enable
+--        end if;  
+--        if C > 0 then
+--          Gpio.Digital_Write(Interfaces.C.Int(C), False); -- Low is to enable
+--        end if;  
+--      end Handle_Sigint;
+--   
+--    end Handler;
   
   
 
@@ -93,7 +93,7 @@ package body Motors is
     
     procedure Compensate_Fi1_Movement(D : Step_Type) is
     begin
-      if D > 0.0 then
+      if D < 0.0 then
         Step := Step + 33.0/62.0;
       else
         Step := Step - 33.0/62.0;
@@ -150,7 +150,7 @@ package body Motors is
       Gpio.Pin_Mode(Interfaces.C.Int(Pin(Enable)), Gpio.OUTPUT);
       Write(Pin(Step), Gpio.LOW);
       Write(Pin(Enable), Gpio.LOW); -- Low is to enable
-      Handler.Set(P => Pin(Enable)); -- so we can shut it down on ctrl^C
+      --Handler.Set(P => Pin(Enable)); -- so we can shut it down on ctrl^C
       Text_Io.Put_Line("Config done" & Local_Name'Img);
     end Config;
 

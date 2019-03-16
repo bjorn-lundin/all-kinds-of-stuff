@@ -1,6 +1,4 @@
 
-with Ada.Interrupts; use Ada.Interrupts;
-with Ada.Interrupts.Names; use Ada.Interrupts.Names;
 
 with Text_IO; use Text_IO;
 with Stacktrace;
@@ -22,12 +20,6 @@ begin
   Gpio.Setup;
 
 
- if Is_Attached( SIGINT ) then
-    Put_Line( "There is a SIGINT handler installed" );
-  else
-    Put_Line( "There is no SIGINT handler installed" );
-  end if;
-  Detach_Handler(Sigint);
 
   -- Magnet
   Gpio.Pin_Mode( 9, Gpio.OUTPUT);

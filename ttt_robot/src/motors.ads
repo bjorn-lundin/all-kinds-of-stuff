@@ -1,6 +1,6 @@
 
-with Ada.Interrupts; use Ada.Interrupts;
-with Ada.Interrupts.Names; use Ada.Interrupts.Names;
+--with Ada.Interrupts; use Ada.Interrupts;
+--with Ada.Interrupts.Names; use Ada.Interrupts.Names;
 
 
 package Motors is
@@ -34,18 +34,18 @@ package Motors is
 
   procedure Safe_Home;
 
-  protected Handler is
-    procedure Set(P : Pin_Type);
-    pragma Unreserve_All_Interrupts;
-    procedure Handle_Sigint;
-    pragma Interrupt_Handler(Handle_Sigint);
-    pragma Attach_Handler(Handle_Sigint, Sigint);
-
-  private
-    A : Pin_Type := 0;
-    B : Pin_Type := 0;
-    C : Pin_Type := 0;
-  end Handler;
+--    protected Handler is
+--      procedure Set(P : Pin_Type);
+--      pragma Unreserve_All_Interrupts;
+--      procedure Handle_Sigint;
+--      pragma Interrupt_Handler(Handle_Sigint);
+--      pragma Attach_Handler(Handle_Sigint, Sigint);
+--
+--    private
+--      A : Pin_Type := 0;
+--      B : Pin_Type := 0;
+--      C : Pin_Type := 0;
+--    end Handler;
 
 
 end Motors;
