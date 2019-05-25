@@ -38,6 +38,18 @@ class neuralNetwork:
         
         pass
 
+    # save neural network weights
+    def save(self):
+        numpy.save('saved_wih.npy', self.wih)
+        numpy.save('saved_who.npy', self.who)
+        pass
+
+    # load neural network weights
+    def load(self):
+        self.wih = numpy.load('saved_wih.npy')
+        self.who = numpy.load('saved_who.npy')
+        pass
+
     
     # train the neural network
     def train(self, inputs_list, targets_list):
@@ -98,7 +110,7 @@ learning_rate = 0.01
 n = neuralNetwork(input_nodes,hidden_nodes,output_nodes, learning_rate)
 
 # load the mnist training data CSV file into a list
-training_data_file = open("mnist_dataset/mnist_train.csv", 'r')
+training_data_file = open("/Users/bnl/Downloads/plots/ai/train_all.csv", 'r')
 training_data_list = training_data_file.readlines()
 training_data_file.close()
 
@@ -122,11 +134,11 @@ for e in range(epochs):
         
         ## create rotated variations
         # rotated anticlockwise by x degrees
-        inputs_plusx_img = scipy.ndimage.interpolation.rotate(inputs.reshape(28,28), 10, cval=0.01, order=1, reshape=False)
-        n.train(inputs_plusx_img.reshape(784), targets)
+        #bnl inputs_plusx_img = scipy.ndimage.interpolation.rotate(inputs.reshape(28,28), 10, cval=0.01, order=1, reshape=False)
+        #bnl n.train(inputs_plusx_img.reshape(784), targets)
         # rotated clockwise by x degrees
-        inputs_minusx_img = scipy.ndimage.interpolation.rotate(inputs.reshape(28,28), -10, cval=0.01, order=1, reshape=False)
-        n.train(inputs_minusx_img.reshape(784), targets)
+        #bnl inputs_minusx_img = scipy.ndimage.interpolation.rotate(inputs.reshape(28,28), -10, cval=0.01, order=1, reshape=False)
+        #bnl n.train(inputs_minusx_img.reshape(784), targets)
         
         # rotated anticlockwise by 10 degrees
         #inputs_plus10_img = scipy.ndimage.interpolation.rotate(inputs.reshape(28,28), 10, cval=0.01, order=1, reshape=False)
@@ -140,7 +152,7 @@ for e in range(epochs):
 
 
 # load the mnist test data CSV file into a list
-test_data_file = open("mnist_dataset/mnist_test.csv", 'r')
+test_data_file = open("/Users/bnl/Downloads/plots/ai/test_all.csv", 'r')
 test_data_list = test_data_file.readlines()
 test_data_file.close()
 
@@ -177,3 +189,6 @@ for record in test_data_list:
 # calculate the performance score, the fraction of correct answers
 scorecard_array = numpy.asarray(scorecard)
 print ("performance = ", scorecard_array.sum() / scorecard_array.size)
+
+n.save()
+
