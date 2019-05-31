@@ -20,6 +20,7 @@ resume = my_file.is_file()
 #resume = False # resume from previous checkpoint?
 
 render = False
+#render = True
 
 # model initialization
 D = 80 * 80 # input dimensionality: 80x80 grid
@@ -29,7 +30,7 @@ else:
   model = {}
   model['W1'] = np.random.randn(H,D) / np.sqrt(D) # "Xavier" initialization
   model['W2'] = np.random.randn(H) / np.sqrt(H)
-  
+
 grad_buffer = { k : np.zeros_like(v) for k,v in model.items() } # update buffers that add up gradients over a batch
 rmsprop_cache = { k : np.zeros_like(v) for k,v in model.items() } # rmsprop memory
 
@@ -144,8 +145,8 @@ while True:
     else:
       print ('ep %d: game finished, reward: %f' % (episode_number, reward))
 
-      
-      
+
+
  except KeyboardInterrupt:
   print('saving model')
   pickle.dump(model, open(filename, 'wb'))
