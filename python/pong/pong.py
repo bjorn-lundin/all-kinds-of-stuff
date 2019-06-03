@@ -141,9 +141,9 @@ while True:
 
   if reward != 0: # Pong has either +1 or -1 reward exactly when game ends.
     if reward > 0 :
-      print ('ep %d: game finished, reward: %f :-)' % (episode_number, reward))
+      print ('ep %d: ball finished, reward: %f :-)' % (episode_number, reward))
     else:
-      print ('ep %d: game finished, reward: %f' % (episode_number, reward))
+      print ('ep %d: ball finished, reward: %f' % (episode_number, reward))
 
 
 
