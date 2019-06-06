@@ -22,6 +22,10 @@ resume = my_file.is_file()
 render = False
 #render = True
 
+#for horses always 1x16
+#each row in file corresponds to a frame
+#could actauly feed it row-diff, just like frame-diffs
+
 # model initialization
 D = 80 * 80 # input dimensionality: 80x80 grid
 if resume:
