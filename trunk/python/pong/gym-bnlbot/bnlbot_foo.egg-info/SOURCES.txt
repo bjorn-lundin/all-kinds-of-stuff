@@ -1,0 +1,7 @@
+README.md
+setup.py
+bnlbot_foo.egg-info/PKG-INFO
+bnlbot_foo.egg-info/SOURCES.txt
+bnlbot_foo.egg-info/dependency_links.txt
+bnlbot_foo.egg-info/requires.txt
+bnlbot_foo.egg-info/top_level.txt
