@@ -45,12 +45,19 @@ class BnlbotEnv(gym.Env):
   def get_observation(self):
    # print('get_observation')
    # print('get_observation.race_list_idx ', self.race_list_idx)
-   # print('get_observation rewardfile ' + self.reward_file )
+    print('get_observation rewardfile ' + self.reward_file )
    # print('get_observation race_list_idx ' + str(self.race_list_idx) )
 
 
     #wtf IS this shitlanguage
-    tmp = copy.deepcopy(self.race_list[self.race_list_idx])
+    try:
+        tmp = copy.deepcopy(self.race_list[self.race_list_idx])
+    except IndexError:
+        print('get_observation.IndexError ')
+        print('get_observation.race_list_idx ', self.race_list_idx)
+        print('get_observation rewardfile ' + self.reward_file )
+        print('get_observation race_list_idx ' + str(self.race_list_idx) )
+          
     #print(tmp)
     tmp2=tmp
     for i in range(1,len(tmp)):
@@ -102,16 +109,6 @@ class BnlbotEnv(gym.Env):
                 lowest = odds
                 selidx = idx
             idx = idx +1
-
-#        #get the second best odds
-#        l = lowest
-#        lowest = 10000
-#        for odds in ob:
-#            if 1.0 < odds and odds < lowest and odds != l :
-#                lowest = odds
-#                selidx = idx
-#            idx = idx +1
-
 
         if lowest > 1000.0 :
             print('did not find a valid odds')
