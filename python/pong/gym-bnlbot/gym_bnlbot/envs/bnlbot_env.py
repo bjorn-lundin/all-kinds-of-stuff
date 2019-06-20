@@ -185,7 +185,8 @@ class BnlbotEnv(gym.Env):
             self.reward_list.append(line.split('|'))
 
     #skip header row
-    self.race_list_idx = 1
+    #self.race_list_idx = 1
+    self.race_list_idx = int(0.75 * len(self.race_list_idx))
     #print(self.race_list[self.race_list_idx])
 
     return self.get_observation()
