@@ -15,7 +15,7 @@ gamma = 0.99 # discount factor for reward
 decay_rate = 0.99 # decay factor for RMSProp leaky sum of grad^2
 
 #bnl
-filename = "./horses_ai.p"
+filename = "./horse_ai.p"
 my_file = Path(filename)
 resume = my_file.is_file()
 #resume = False # resume from previous checkpoint?
@@ -43,13 +43,16 @@ def sigmoid(x):
   return 1.0 / (1.0 + np.exp(-x)) # sigmoid "squashing" function to interval [0,1]
 
 def prepro(I):
-  """ prepro 210x160x3 uint8 frame into 6400 (80x80) 1D float vector """
+
+  return np.array(I)
+
+#  """ prepro 210x160x3 uint8 frame into 6400 (80x80) 1D float vector """
 #  I = I[35:195] # crop
 #  I = I[::2,::2,0] # downsample by factor of 2
 #  I[I == 144] = 0 # erase background (background type 1)
 #  I[I == 109] = 0 # erase background (background type 2)
 #  I[I != 0] = 1 # everything else (paddles, ball) just set to 1
-  return I.astype(np.float).ravel()
+#  return I.astype(np.float).ravel()
 
 def discount_rewards(r):
   """ take 1D float array of rewards and compute discounted reward """
@@ -94,6 +97,8 @@ while True:
 
   # forward the policy network and sample an action from the returned probability
   aprob, h = policy_forward(x)
+  # action is to back the leader or do nothing
+  # 2 = back, 3 = pass
   action = 2 if np.random.uniform() < aprob else 3 # roll the dice!
 
   # record various intermediates (needed later for backprop)
@@ -148,14 +153,21 @@ while True:
     pass
 
   if reward < 0:
-      print ('ep %d: ball finished, reward: %f :-(' % (episode_number, reward))
+      print ('race %d: turn finished, reward: %f :-(' % (episode_number, reward))
   elif reward == 0:
-      print ('ep %d: ball finished, reward: %f :-|' % (episode_number, reward))
+      print ('race %d: turn finished, reward: %f :-|' % (episode_number, reward))
   else:
-      print ('ep %d: ball finished, reward: %f :-)' % (episode_number, reward))
+      print ('race %d: turn finished, reward: %f :-)' % (episode_number, reward))
 
  except KeyboardInterrupt:
-  print('saving model')
-  pickle.dump(model, open(filename, 'wb'))
-  print('done')
-  break
+    print('saving model, KeyboardInterrupt')
+    pickle.dump(model, open(filename, 'wb'))
+    print('done')
+    break
+
+ except IndexError:
+    print('saving model, IndexError')
+    pickle.dump(model, open(filename, 'wb'))
+    print('done')
+    break
+
