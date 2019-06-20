@@ -165,9 +165,9 @@ while True:
     print('done')
     break
 
- except IndexError:
-    print('saving model, IndexError')
-    pickle.dump(model, open(filename, 'wb'))
-    print('done')
-    break
+# except IndexError:
+#    print('saving model, IndexError')
+#    pickle.dump(model, open(filename, 'wb'))
+#    print('done')
+#    break
 

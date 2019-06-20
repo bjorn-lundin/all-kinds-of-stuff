@@ -103,14 +103,14 @@ class BnlbotEnv(gym.Env):
                 selidx = idx
             idx = idx +1
 
-        #get the second best odds
-        l = lowest
-        lowest = 10000
-        for odds in ob:
-            if 1.0 < odds and odds < lowest and odds != l :
-                lowest = odds
-                selidx = idx
-            idx = idx +1
+#        #get the second best odds
+#        l = lowest
+#        lowest = 10000
+#        for odds in ob:
+#            if 1.0 < odds and odds < lowest and odds != l :
+#                lowest = odds
+#                selidx = idx
+#            idx = idx +1
 
 
         if lowest > 1000.0 :
@@ -119,7 +119,10 @@ class BnlbotEnv(gym.Env):
 
         #print('step:selidx/lowodds ' + str(selidx) + '/' + str(lowest))
         #in observation first col is runner, timestamp is stripped away
+ 
         idx_list = selidx +1
+#        print('step.idx_list',idx_list)
+#        print('step.len(race_list)', len(self.race_list))
         selid = self.race_list[0][idx_list]
 
        # print('step.selidx ' + str(selidx))
@@ -186,7 +189,7 @@ class BnlbotEnv(gym.Env):
 
     #skip header row
     #self.race_list_idx = 1
-    self.race_list_idx = int(0.75 * len(self.race_list_idx))
+    self.race_list_idx = int(0.75 * len(self.race_list))
     #print(self.race_list[self.race_list_idx])
 
     return self.get_observation()
