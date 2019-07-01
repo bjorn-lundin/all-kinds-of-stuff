@@ -15,8 +15,14 @@ while :
 do
   python3 horse_ai.py > h${i}.log 2>&1
   gzip h${i}.log
+#  sleep 5
   i=$((i + 1)) 
   if [ $DO_EXIT -eq 1 ] ; then
     break
   fi
+
+  if [ $i -gt 100 ] ; then
+    break
+  fi
+
 done

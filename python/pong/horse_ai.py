@@ -39,6 +39,11 @@ else:
 grad_buffer = { k : np.zeros_like(v) for k,v in model.items() } # update buffers that add up gradients over a batch
 rmsprop_cache = { k : np.zeros_like(v) for k,v in model.items() } # rmsprop memory
 
+
+
+#np.seterr(all='raise')
+
+
 def sigmoid(x):
   return 1.0 / (1.0 + np.exp(-x)) # sigmoid "squashing" function to interval [0,1]
 
@@ -59,14 +64,19 @@ def discount_rewards(r):
   discounted_r = np.zeros_like(r)
   running_add = 0
   for t in reversed(range(0, r.size)):
-    if r[t] != 0: running_add = 0 # reset the sum, since this was a game boundary (pong specific!)
+    # reset the sum, since this was a game boundary (pong specific!) (and as a race)
+    if r[t] != 0: running_add = 0
     running_add = running_add * gamma + r[t]
     discounted_r[t] = running_add
   return discounted_r
 
 def policy_forward(x):
   h = np.dot(model['W1'], x)
-  h[h<0] = 0 # ReLU nonlinearity
+#  print(h)
+  for i in range(0,len(h)):
+#      print(i,h[i])
+      if h[i] < 0 : h[i] = 0
+#  h[h<0] = 0 # ReLU nonlinearity
   logp = np.dot(model['W2'], h)
   p = sigmoid(logp)
   return p, h # return probability of taking action 2, and hidden state. !!! what does this really mean??
@@ -75,7 +85,14 @@ def policy_backward(eph, epdlogp):
   """ backward pass. (eph is array of intermediate hidden states) """
   dW2 = np.dot(eph.T, epdlogp).ravel()
   dh = np.outer(epdlogp, model['W2'])
-  dh[eph <= 0] = 0 # backpro prelu
+#  dh[eph <= 0] = 0 # backpro prelu
+#  print(dh)
+  rows,cols = np.shape(dh)
+  for r in range(0,rows):
+    for c in range(0,cols):
+#      print(i,dh[i])
+      if dh[r,c] <= 0 : dh[r,c] = 0
+
   dW1 = np.dot(dh.T, epx)
   return {'W1':dW1, 'W2':dW2}
 
@@ -86,6 +103,8 @@ xs,hs,dlogps,drs = [],[],[],[]
 running_reward = None
 reward_sum = 0
 episode_number = 0
+first = True
+
 while True:
  try:
   if render: env.render()
@@ -97,6 +116,7 @@ while True:
 
   # forward the policy network and sample an action from the returned probability
   aprob, h = policy_forward(x)
+
   # action is to back the leader or do nothing
   # 2 = back, 3 = pass
   action = 2 if np.random.uniform() < aprob else 3 # roll the dice!
@@ -127,10 +147,13 @@ while True:
     discounted_epr = discount_rewards(epr)
     # standardize the rewards to be unit normal (helps control the gradient estimator variance)
     discounted_epr -= np.mean(discounted_epr)
-    discounted_epr /= np.std(discounted_epr)
+    bnl_tmp1 = np.std(discounted_epr)
+    if abs(bnl_tmp1) >= 0.00000001:
+        discounted_epr /= np.std(discounted_epr)
 
     epdlogp *= discounted_epr # modulate the gradient with advantage (PG magic happens right here.)
     grad = policy_backward(eph, epdlogp)
+
     for k in model: grad_buffer[k] += grad[k] # accumulate grad over batch
 
     # perform rmsprop parameter update every batch_size episodes
@@ -143,7 +166,7 @@ while True:
 
     # boring book-keeping
     running_reward = reward_sum if running_reward is None else running_reward * 0.99 + reward_sum * 0.01
-    print ('resetting env. episode reward total was %f. running mean: %f' % (reward_sum, running_reward))
+    print ('resetting env. episode turn %d, reward total was %f. running mean: %f' % (episode_number,reward_sum, running_reward))
     if episode_number % 100 == 0: pickle.dump(model, open(filename, 'wb'))
     reward_sum = 0
     observation = env.reset() # reset env
@@ -152,12 +175,12 @@ while True:
   else:
     pass
 
-  if reward < 0:
-      print ('race %d: turn finished, reward: %f :-(' % (episode_number, reward))
-  elif reward == 0:
-      print ('race %d: turn finished, reward: %f :-|' % (episode_number, reward))
-  else:
-      print ('race %d: turn finished, reward: %f :-)' % (episode_number, reward))
+#  if reward < 0:
+#      print ('race %d: turn finished, reward: %f :-(' % (episode_number, reward))
+#  elif reward == 0:
+#      print ('race %d: turn finished, reward: %f :-|' % (episode_number, reward))
+#  else:
+#      print ('race %d: turn finished, reward: %f :-)' % (episode_number, reward))
 
  except KeyboardInterrupt:
     print('saving model, KeyboardInterrupt')
@@ -165,9 +188,9 @@ while True:
     print('done')
     break
 
-# except IndexError:
-#    print('saving model, IndexError')
-#    pickle.dump(model, open(filename, 'wb'))
-#    print('done')
-#    break
+ except IndexError:
+    print('saving model, IndexError')
+    pickle.dump(model, open(filename, 'wb'))
+    print('done')
+    break
 
