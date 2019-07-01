@@ -188,7 +188,7 @@ class BnlbotEnv(gym.Env):
     # get name from racefile
     path = self.racefile_list[self.racefile_list_idx].split('/')
     
-    winmarket = path.split('.')[0]
+    winmarket = path[1].split('.')[0]
     placemarket = self.win_place[winmarket]
     
     #self.reward_file = REWARDFILE_DIRECTORY + '/' + path[1]
