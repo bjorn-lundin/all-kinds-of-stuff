@@ -5,8 +5,8 @@ import os
 from pathlib import Path
 import copy
 
-RACEFILE_DIRECTORY = os.environ.get('BOT_HISTORY') + '/data/ai/races'
-REWARDFILE_DIRECTORY = os.environ.get('BOT_HISTORY') + '/data/ai/rewards'
+RACEFILE_DIRECTORY = os.environ.get('BOT_HISTORY') + '/data/ai/win/races'
+REWARDFILE_DIRECTORY = os.environ.get('BOT_HISTORY') + '/data/ai/win/rewards'
 
   ##########################################
 
@@ -23,6 +23,7 @@ class BnlbotEnv(gym.Env):
     self.racefile_list = []
     self.race_list = []
     self.race_list_idx = 0
+    self.has_betted = False
 
     dir_list = os.listdir(RACEFILE_DIRECTORY)
     for dirname in dir_list:
@@ -45,7 +46,7 @@ class BnlbotEnv(gym.Env):
   def get_observation(self):
    # print('get_observation')
    # print('get_observation.race_list_idx ', self.race_list_idx)
-    print('get_observation rewardfile ' + self.reward_file )
+   # print('get_observation rewardfile ' + self.reward_file )
    # print('get_observation race_list_idx ' + str(self.race_list_idx) )
 
 
@@ -57,7 +58,7 @@ class BnlbotEnv(gym.Env):
         print('get_observation.race_list_idx ', self.race_list_idx)
         print('get_observation rewardfile ' + self.reward_file )
         print('get_observation race_list_idx ' + str(self.race_list_idx) )
-          
+
     #print(tmp)
     tmp2=tmp
     for i in range(1,len(tmp)):
@@ -67,14 +68,14 @@ class BnlbotEnv(gym.Env):
     return tmp2
   ##########################################
   def get_reward(self,ts,idx, sel):
-     # print ( "get_reward " + ts + ',' + str(idx) + ',' + str(sel))
+      #print ( "get_reward " + ts + ',' + str(idx) + ',' + str(sel))
       for line in self.reward_list:
           if line[0] == ts:
-             # print('get_reward ', self.race_list[0])
-             # print('get_reward ', self.race_list[self.race_list_idx])
-             # print('get_reward ', line)
-              if self.reward_list[0][idx] == sel:
-                 # print('get_reward ',idx, line[idx])
+              #print('get_reward ', self.race_list[0])
+              #print('get_reward ', self.race_list[self.race_list_idx])
+              #print('get_reward ', line)
+              if int(self.reward_list[0][idx]) == int(sel):
+                  #print('get_reward ',idx, line[idx])
 
                   r = float(line[idx])
                   if r > 0.0 :
@@ -98,6 +99,7 @@ class BnlbotEnv(gym.Env):
     rew = 0.0
     info = "no_info"
     #decide to bet or not
+    #if action == 2 and not self.has_betted :
     if action == 2 :
         #do bet on first runner found with lowest odds
         lowest = 10000.0
@@ -105,7 +107,8 @@ class BnlbotEnv(gym.Env):
         selidx = 0
         b=[]
         for odds in ob:
-            if 1.0 < odds and odds < lowest :
+            #if 1.0 < odds and odds < lowest :
+            if 0.0 < odds and odds < lowest :
                 lowest = odds
                 selidx = idx
             idx = idx +1
@@ -114,22 +117,26 @@ class BnlbotEnv(gym.Env):
             print('did not find a valid odds')
             a=1/0
 
-        #print('step:selidx/lowodds ' + str(selidx) + '/' + str(lowest))
-        #in observation first col is runner, timestamp is stripped away
- 
-        idx_list = selidx +1
-#        print('step.idx_list',idx_list)
-#        print('step.len(race_list)', len(self.race_list))
-        selid = self.race_list[0][idx_list]
+        #only allow bet if low odds
+        if lowest < 11111.03 :
 
-       # print('step.selidx ' + str(selidx))
-       # print('step.selid ' + str(selid))
+            #print('step:selidx/lowodds ' + str(selidx) + '/' + str(lowest))
+            #in observation first col is runner, timestamp is stripped away
 
-        #check outcome of bet
-        timestamp = self.race_list[self.race_list_idx][0]
-        #print('timestamp ' + timestamp)
+            idx_list = selidx +1
+            #print('step.idx_list',idx_list)
+            #print('step.len(race_list)', len(self.race_list))
+            selid = self.race_list[0][idx_list]
 
-        rew = self.get_reward(timestamp,idx_list,selid)
+            #print('step.selidx ' + str(selidx))
+            #print('step.selid ' + str(selid))
+
+            #check outcome of bet
+            timestamp = self.race_list[self.race_list_idx][0]
+            #print('timestamp ' + timestamp)
+
+            rew = self.get_reward(timestamp,idx_list,selid)
+            self.has_betted = True
 
     else:
         pass
@@ -145,7 +152,7 @@ class BnlbotEnv(gym.Env):
 
   def reset(self):
     self.total_count = self.total_count +1
-    print('reset ' + str(self.total_count))
+    #print('reset ' + str(self.total_count))
 
     self.race_list = []
     self.race_list_idx = 0
@@ -168,8 +175,21 @@ class BnlbotEnv(gym.Env):
             break
 
     with open(RACEFILE_DIRECTORY + '/' + self.racefile_list[self.racefile_list_idx]) as rf:
+        lineno = 0
         for line in rf:
-            self.race_list.append(line.split('|'))
+            lineno = lineno + 1
+            #self.race_list.append(line.split('|')/1000.0)
+            line2 = line.split('|')
+            cnt = 0
+            line3=[]
+            for el in line2:
+                cnt = cnt+1
+                if cnt > 1 and lineno > 1:
+                    line3.append(float(el)/1000.0)
+                    #line3.append(float(el))
+                else:
+                    line3.append(el)
+            self.race_list.append(line3)
 
 
     self.reward_file=""
@@ -185,9 +205,11 @@ class BnlbotEnv(gym.Env):
             self.reward_list.append(line.split('|'))
 
     #skip header row
-    #self.race_list_idx = 1
-    self.race_list_idx = int(0.75 * len(self.race_list))
+    self.race_list_idx = 1
+    #self.race_list_idx = int(0.90 * len(self.race_list))
     #print(self.race_list[self.race_list_idx])
+
+    self.has_betted = False
 
     return self.get_observation()
 
