@@ -54,9 +54,8 @@ class BnlbotEnv(gym.Env):
   def get_observation(self):
    # print('get_observation')
    # print('get_observation.race_list_idx ', self.race_list_idx)
-    print('get_observation rewardfile ' + self.reward_file )
+   # print('get_observation rewardfile ' + self.reward_file )
    # print('get_observation race_list_idx ' + str(self.race_list_idx) )
-
 
     #wtf IS this shitlanguage
     try:
@@ -78,7 +77,7 @@ class BnlbotEnv(gym.Env):
   def get_reward(self,ts,idx, sel):
      # print ( "get_reward " + ts + ',' + str(idx) + ',' + str(sel))
       for line in self.reward_list:
-          if line[0] == ts:
+          if line[0] >= ts:
              # print('get_reward ', self.race_list[0])
              # print('get_reward ', self.race_list[self.race_list_idx])
              # print('get_reward ', line)
@@ -91,7 +90,9 @@ class BnlbotEnv(gym.Env):
                   return r
               else:
                   print ('get_reward.wtf?' + str(self.reward_list[0][idx]) + '/=' + str(sel))
-                  a=1/0
+                  print ( "get_reward " + ts + ',' + str(idx) + ',' + str(sel))
+                  return 0
+                  #a=1/0
 
       print ('get_reward.wtf? no hit in get reward' )
       a=1/0
@@ -176,6 +177,34 @@ class BnlbotEnv(gym.Env):
             #print("'" + self.racefile_list[self.racefile_list_idx] + "'")
             break
 
+    placemarket = ''
+    while True:
+        # read reward-file into array
+        # get name from racefile
+        path = self.racefile_list[self.racefile_list_idx].split('/')
+        print('path',path)
+        tmp = path[1].split('.')
+        winmarket = tmp[0] + '.' + tmp[1]
+        print('winmarket', winmarket)
+        try :
+            placemarket = self.win_place[winmarket]
+            print('Found placemarket', placemarket)
+            #check for rewardfile
+            filename = REWARDFILE_DIRECTORY + '/' + placemarket + '.dat'
+            my_file = Path(filename)
+            resume = my_file.is_file()
+  
+            if resume : 
+                break
+            else:
+                print('no rewardfile named', filename)   
+
+        except KeyError :
+            self.racefile_list_idx = self.racefile_list_idx +1 
+            print('KeyError, use next')
+
+
+
     with open(RACEFILE_DIRECTORY + '/' + self.racefile_list[self.racefile_list_idx]) as rf:
         for line in rf:
             self.race_list.append(line.split('|'))
@@ -183,13 +212,6 @@ class BnlbotEnv(gym.Env):
 
     self.reward_file=""
     self.reward_list=[]
-
-    # read reward-file into array
-    # get name from racefile
-    path = self.racefile_list[self.racefile_list_idx].split('/')
-    
-    winmarket = path[1].split('.')[0]
-    placemarket = self.win_place[winmarket]
     
     #self.reward_file = REWARDFILE_DIRECTORY + '/' + path[1]
     self.reward_file = REWARDFILE_DIRECTORY + '/' + placemarket + '.dat'
