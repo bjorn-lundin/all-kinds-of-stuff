@@ -119,15 +119,15 @@ while not done:
       clock.tick(1)
 
   except ValueError :
-    logging.exception("ValueError exception - server down? wait 1 min")
+    logging.exception("ValueError exception - server down? try again.")
     screen.fill(RED)
-    puts("server down?", 50, 100, 100)
+    puts("server down?", 50, 160, 120)
     pygame.display.flip()
-    time.sleep(60)
+
   except Exception :
     logging.exception("generic exception")
     screen.fill(RED)
-    puts("generic exception", 50, 100, 100)
+    puts("generic exception", 50, 160, 120)
     pygame.display.flip()
 
 # Close the window and quit.
