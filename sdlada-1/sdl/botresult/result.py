@@ -26,14 +26,13 @@ WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
-URL=https://lundin.duckdns.org
+URL='https://lundin.duckdns.org'
 
 def puts(what,size,x,y):
     logging.debug(what + " size=" + str(size) + " x=" + str(x) + " y=" +str(y))
     font = pygame.font.SysFont("freserif", size)
     text = font.render(what, True, (255,128, 0))
     screen.blit(text, (x - text.get_width() // 2, y - text.get_height() // 2))
-#    pygame.display.flip()
 #    time.sleep(1)
 
 
@@ -58,10 +57,10 @@ pygame.mouse.set_visible(0)
 
 done = False
 clock = pygame.time.Clock()
-cnt = 10
+cnt = 100
 # -------- Main Program Loop -----------
-try:
-  while not done:
+while not done:
+  try:
     # --- Main event loop
 
     # --- Limit to 1 frames per second
@@ -73,7 +72,7 @@ try:
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             done = True
 
-    if cnt > 10 :
+    if cnt > 100 :
       cnt = 0
       # --- Game logic should go here
 
@@ -90,52 +89,21 @@ try:
       payload = {'context': 'check_logged_in', 'dummy': str(time.time())}
       if s == None :
         s = requests.session()
-      r = s.get('https://lundin.duckdns.org', params=payload, verify=False)
+
+      r = s.get(URL, params=payload, verify=False)
+
       if r.status_code == 200:
         pass
       elif r.status_code == 401:
       # login needed
         payload = {'username': 'bnl', 'context': 'login'}
-        r = s.post('https://lundin.duckdns.org', params=payload, verify=False)
-
-     # payload = {'context': 'todays_bets', 'dummy': str(time.time())}
-     # r = s.get('https://lundin.duckdns.org', params=payload, verify=False)
-     # today = json.loads(r.text)
-     # logging.debug("today %s"  % today['total'] )
+        r = s.post(URL, params=payload, verify=False)
 
       today = get_data(s, 'todays_bets')
-
-
-     # payload = {'context': 'thisweeks_bets', 'dummy': str(time.time())}
-     # r = s.get('https://lundin.duckdns.org', params=payload, verify=False)
-     # this_week = json.loads(r.text)
-     # logging.debug("this_week %s"  % this_week['total'] )
-
       this_week = get_data(s, 'thisweeks_bets')
-
-     # payload = {'context': 'lastweeks_bets', 'dummy': str(time.time())}
-     # r = s.get('https://lundin.duckdns.org', params=payload, verify=False)
-     # last_week = json.loads(r.text)
-     # logging.debug("last_week %s"  % last_week['total'] )
-
       last_week = get_data(s, 'lastweeks_bets')
-
-
-     # payload = {'context': 'thismonths_bets', 'dummy': str(time.time())}
-     # r = s.get('https://lundin.duckdns.org', params=payload, verify=False)
-     # this_month = json.loads(r.text)
-     # logging.debug("this_month %s"  % this_month['total'] )
-
       this_month = get_data(s, 'thismonths_bets')
-
-
-     # payload = {'context': 'lastmonths_bets', 'dummy': str(time.time())}
-     # r = s.get('https://lundin.duckdns.org', params=payload, verify=False)
-     # last_month = json.loads(r.text)
-     # logging.debug("last_month %s"  % last_month['total'] )
-
       last_month = get_data(s, 'lastmonths_bets')
-
 
       # --- Drawing code should go here
       puts(str(today['total']),      60,  80, 120)
@@ -149,12 +117,14 @@ try:
     else:
       logging.debug("sleeping %s"  % str(cnt) )
       clock.tick(1)
-#      time.sleep(1)
+
+  except ValueError :
+    logging.exception("ValueError exception - server down? wait 1 min")
+    time.sleep(60)
 
 # Close the window and quit.
-  #pygame.display.quit()
-  pygame.quit()
-  exit()
+pygame.quit()
+exit()
 
 except Exception :
-  logging.exception("generic execption")
+  logging.exception("generic exception")
