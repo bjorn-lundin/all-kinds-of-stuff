@@ -26,6 +26,7 @@ WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
+URL=https://lundin.duckdns.org
 
 def puts(what,size,x,y):
     logging.debug(what + " size=" + str(size) + " x=" + str(x) + " y=" +str(y))
@@ -36,25 +37,27 @@ def puts(what,size,x,y):
 #    time.sleep(1)
 
 
-logging.basicConfig(filename='botresult.log',level=logging.DEBUG, format='%(asctime)s %(levelname)s:%(message)s')
+def get_data(sess, context):
+   payload = {'context': context, 'dummy': str(time.time())}
+   r = sess.get(URL, params=payload, verify=False)
+   data = json.loads(r.text)
+   logging.debug("today %s"  % data['total'] )
+   return data
 
+
+logging.basicConfig(filename='botresult.log',level=logging.DEBUG, format='%(asctime)s %(levelname)s:%(message)s')
 s = None
 os.environ["SDL_FBDEV"] = "/dev/fb1"
-pygame.init()
 
+
+pygame.init()
 # Set the width and height of the screen [width, height]
 size = (320, 240)
 screen = pygame.display.set_mode(size)
 pygame.mouse.set_visible(0)
 
-#pygame.display.set_caption("My Game")
-
-# Loop until the user clicks the close button.
 done = False
-
-# Used to manage how fast the screen updates
 clock = pygame.time.Clock()
-
 cnt = 10
 # -------- Main Program Loop -----------
 try:
@@ -63,7 +66,7 @@ try:
 
     # --- Limit to 1 frames per second
     cnt = cnt + 1
-    
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
@@ -82,7 +85,7 @@ try:
       # If you want a background image, replace this clear with blit'ing the
       # background image.
       screen.fill(WHITE)
-     
+
       #get a seession  if not already in one
       payload = {'context': 'check_logged_in', 'dummy': str(time.time())}
       if s == None :
@@ -95,30 +98,44 @@ try:
         payload = {'username': 'bnl', 'context': 'login'}
         r = s.post('https://lundin.duckdns.org', params=payload, verify=False)
 
-      payload = {'context': 'todays_bets', 'dummy': str(time.time())}
-      r = s.get('https://lundin.duckdns.org', params=payload, verify=False)
-      today = json.loads(r.text)
-      logging.debug("today %s"  % today['total'] )
+     # payload = {'context': 'todays_bets', 'dummy': str(time.time())}
+     # r = s.get('https://lundin.duckdns.org', params=payload, verify=False)
+     # today = json.loads(r.text)
+     # logging.debug("today %s"  % today['total'] )
 
-      payload = {'context': 'thisweeks_bets', 'dummy': str(time.time())}
-      r = s.get('https://lundin.duckdns.org', params=payload, verify=False)
-      this_week = json.loads(r.text)
-      logging.debug("this_week %s"  % this_week['total'] )
-    
-      payload = {'context': 'lastweeks_bets', 'dummy': str(time.time())}
-      r = s.get('https://lundin.duckdns.org', params=payload, verify=False)
-      last_week = json.loads(r.text)
-      logging.debug("last_week %s"  % last_week['total'] )
+      today = get_data(s, 'todays_bets')
 
-      payload = {'context': 'thismonths_bets', 'dummy': str(time.time())}
-      r = s.get('https://lundin.duckdns.org', params=payload, verify=False)
-      this_month = json.loads(r.text)
-      logging.debug("this_month %s"  % this_month['total'] )
 
-      payload = {'context': 'lastmonths_bets', 'dummy': str(time.time())}
-      r = s.get('https://lundin.duckdns.org', params=payload, verify=False)
-      last_month = json.loads(r.text)
-      logging.debug("last_month %s"  % last_month['total'] )
+     # payload = {'context': 'thisweeks_bets', 'dummy': str(time.time())}
+     # r = s.get('https://lundin.duckdns.org', params=payload, verify=False)
+     # this_week = json.loads(r.text)
+     # logging.debug("this_week %s"  % this_week['total'] )
+
+      this_week = get_data(s, 'thisweeks_bets')
+
+     # payload = {'context': 'lastweeks_bets', 'dummy': str(time.time())}
+     # r = s.get('https://lundin.duckdns.org', params=payload, verify=False)
+     # last_week = json.loads(r.text)
+     # logging.debug("last_week %s"  % last_week['total'] )
+
+      last_week = get_data(s, 'lastweeks_bets')
+
+
+     # payload = {'context': 'thismonths_bets', 'dummy': str(time.time())}
+     # r = s.get('https://lundin.duckdns.org', params=payload, verify=False)
+     # this_month = json.loads(r.text)
+     # logging.debug("this_month %s"  % this_month['total'] )
+
+      this_month = get_data(s, 'thismonths_bets')
+
+
+     # payload = {'context': 'lastmonths_bets', 'dummy': str(time.time())}
+     # r = s.get('https://lundin.duckdns.org', params=payload, verify=False)
+     # last_month = json.loads(r.text)
+     # logging.debug("last_month %s"  % last_month['total'] )
+
+      last_month = get_data(s, 'lastmonths_bets')
+
 
       # --- Drawing code should go here
       puts(str(today['total']),      60,  80, 120)
@@ -126,7 +143,7 @@ try:
       puts(str(last_week['total']),  40, 240,  86)
       puts(str(this_month['total']), 40, 240, 152)
       puts(str(last_month['total']), 40, 240, 220)
- 
+
       # --- Go ahead and update the screen with what we've drawn.
       pygame.display.flip()
     else:
