@@ -125,11 +125,11 @@ while not done:
         payload = {'username': 'bnl', 'context': 'login'}
         r = s.post(URL, params=payload, verify=False)
 
-      today = get_data(s, 'todays_bets')
-      this_week = get_data(s, 'thisweeks_bets')
-      last_week = get_data(s, 'lastweeks_bets')
-      this_month = get_data(s, 'thismonths_bets')
-      last_month = get_data(s, 'lastmonths_bets')
+      today = get_data(s, 'todays_bets_total')
+      this_week = get_data(s, 'thisweeks_bets_total')
+      last_week = get_data(s, 'lastweeks_bets_total')
+      this_month = get_data(s, 'thismonths_bets_total')
+      last_month = get_data(s, 'lastmonths_bets_total')
 
       # --- Drawing code should go here
       puts(str(int(today['total'])),     150, 160,  60)
