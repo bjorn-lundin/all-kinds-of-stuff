@@ -18,20 +18,46 @@ import json
 import requests
 import pygame
 import logging
+from logging.handlers import RotatingFileHandler
+
+
 urllib3.disable_warnings()
 
 # Define some colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
+GREEN = (99, 255, 99)
+RED = (255, 66, 66)
 
 URL='https://lundin.duckdns.org'
 
+
+def isnumeric(s):
+  try:
+    f=float(s)
+    return True
+  except ValueError:
+    return False
+
+
+log = logging.getLogger('my_logger')
+log.setLevel(logging.DEBUG)
+#log.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s:%(message)s')
+handler = RotatingFileHandler('botresult.log', maxBytes=2000000, backupCount=10)
+log.addHandler(handler)
+
+
 def puts(what,size,x,y):
-    logging.debug(what + " size=" + str(size) + " x=" + str(x) + " y=" +str(y))
+#    log.debug(what + " size=" + str(size) + " x=" + str(x) + " y=" +str(y))
     font = pygame.font.SysFont("freserif", size)
-    text = font.render(what, True, (255,128, 0))
+    color = WHITE
+    if isnumeric(what):
+        n = int(float(what))
+        color = GREEN
+        if n < 0 :
+            color = RED
+         
+    text = font.render(what, True, color)
     screen.blit(text, (x - text.get_width() // 2, y - text.get_height() // 2))
 #    time.sleep(1)
 
@@ -40,11 +66,11 @@ def get_data(sess, context):
    payload = {'context': context, 'dummy': str(time.time())}
    r = sess.get(URL, params=payload, verify=False)
    data = json.loads(r.text)
-   logging.debug("today %s"  % data['total'] )
+#   log.debug("today %s"  % data['total'] )
    return data
 
-
-logging.basicConfig(filename='botresult.log',level=logging.DEBUG, format='%(asctime)s %(levelname)s:%(message)s')
+log.debug("start")
+#logging.basicConfig(filename='botresult.log',level=logging.DEBUG, format='%(asctime)s %(levelname)s:%(message)s')
 s = None
 os.environ["SDL_FBDEV"] = "/dev/fb1"
 
@@ -83,7 +109,7 @@ while not done:
 
       # If you want a background image, replace this clear with blit'ing the
       # background image.
-      screen.fill(WHITE)
+      screen.fill(BLACK)
 
       #get a seession  if not already in one
       payload = {'context': 'check_logged_in', 'dummy': str(time.time())}
@@ -106,26 +132,26 @@ while not done:
       last_month = get_data(s, 'lastmonths_bets')
 
       # --- Drawing code should go here
-      puts(str(today['total']),      60,  80, 120)
-      puts(str(this_week['total']),  40, 240,  20)
-      puts(str(last_week['total']),  40, 240,  86)
-      puts(str(this_month['total']), 40, 240, 152)
-      puts(str(last_month['total']), 40, 240, 220)
+      puts(str(int(today['total'])),     150, 160,  60)
+      puts(str(int(this_week['total'])),  75,  80, 140)
+      puts(str(int(last_week['total'])),  75,  80, 200)
+      puts(str(int(this_month['total'])), 75, 240, 140)
+      puts(str(int(last_month['total'])), 75, 240, 200)
 
       # --- Go ahead and update the screen with what we've drawn.
       pygame.display.flip()
     else:
-      logging.debug("sleeping %s"  % str(cnt) )
+#      log.debug("sleeping %s"  % str(cnt) )
       clock.tick(1)
 
   except ValueError :
-    logging.exception("ValueError exception - server down? try again.")
+    log.exception("ValueError exception - server down? try again.")
     screen.fill(RED)
     puts("server down?", 50, 160, 120)
     pygame.display.flip()
 
   except Exception :
-    logging.exception("generic exception")
+    log.exception("generic exception")
     screen.fill(RED)
     puts("generic exception", 50, 160, 120)
     pygame.display.flip()
