@@ -14,13 +14,14 @@ gamma = 0.99 # discount factor for reward
 decay_rate = 0.99 # decay factor for RMSProp leaky sum of grad^2
 
 #bnl
-filename = "./save.p"
+filename = "./save_3_actions2.p"
+#filename = "./save.p"
 my_file = Path(filename)
 resume = my_file.is_file()
 #resume = False # resume from previous checkpoint?
 
-render = False
-#render = True
+#render = False
+render = True
 
 #for horses always 1x16
 #each row in file corresponds to a frame
@@ -93,12 +94,25 @@ while True:
 
   # forward the policy network and sample an action from the returned probability
   aprob, h = policy_forward(x)
-  action = 2 if np.random.uniform() < aprob else 3 # roll the dice!
+  #action = 2 if np.random.uniform() < aprob else 3 # roll the dice!
+  if np.random.uniform() < aprob :   # roll the dice! [ 0  1  3  4 11 12]
+      action = 2 # up
+  else :
+      action = 3 # down
+
 
   # record various intermediates (needed later for backprop)
   xs.append(x) # observation
   hs.append(h) # hidden state
-  y = 1 if action == 2 else 0 # a "fake label"
+  #y = 1 if action == 2 else 0 # a "fake label"
+  if action == 2 : # a "fake label"
+      y = 1
+  else :
+      y = 0
+
+#  print ("action",action)
+#  print(env.ale.getMinimalActionSet())
+
   dlogps.append(y - aprob) # grad that encourages the action that was taken to be taken (see http://cs231n.github.io/neural-networks-2/#losses if confused)
 
   # step the environment and get new measurements
@@ -136,7 +150,12 @@ while True:
         grad_buffer[k] = np.zeros_like(v) # reset batch gradient buffer
 
     # boring book-keeping
-    running_reward = reward_sum if running_reward is None else running_reward * 0.99 + reward_sum * 0.01
+    #running_reward = reward_sum if running_reward is None else running_reward * 0.99 + reward_sum * 0.01
+    if running_reward is None:
+        running_reward = reward_sum
+    else:
+        running_reward = running_reward * 0.99 + reward_sum * 0.01
+
     print ('resetting env. episode reward total was %f. running mean: %f' % (reward_sum, running_reward))
     if episode_number % 100 == 0: pickle.dump(model, open(filename, 'wb'))
     reward_sum = 0
