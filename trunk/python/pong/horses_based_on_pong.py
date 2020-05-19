@@ -151,6 +151,8 @@ xs,hs,dlogps,drs = [],[],[],[]
 running_reward = None
 reward_sum = 0
 episode_number = 0
+history = []
+
 while True:
  try:
 #  if render: env.render()
@@ -191,7 +193,7 @@ while True:
 
   if done: # an episode finished
     episode_number += 1
-
+    history.append(reward_sum)
     # stack together all inputs, hidden states, action gradients, and rewards for this episode
     epx = np.vstack(xs)
     eph = np.vstack(hs)
