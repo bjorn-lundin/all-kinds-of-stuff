@@ -24,7 +24,7 @@ i=1
 # Recommend syntax for setting an infinite while loop
 while :
 do
-  python3 horse_ai.py > h${i}.log 2>&1
+  python3 horse_based_on_pong.py --bettype=$2 > h${i}.log 2>&1
   [ -r h${i}.log.gz ] && rm -f h${i}.log.gz
   gzip h${i}.log
   i=$((i + 1))
@@ -32,7 +32,7 @@ do
     break
   fi
 
-  if [ $i -gt 300 ] ; then
+  if [ $i -gt 1000 ] ; then
     break
   fi
 

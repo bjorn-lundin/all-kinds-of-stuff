@@ -23,7 +23,7 @@ class BnlbotEnv(gym.Env):
     #set up data structure
     self.racefile_list_idx = -1
     self.racefile_list = []
-    self.racefile = []
+    self.racefile_name = []
     self.racefile_idx = 0
     self.win_place = {}
 
@@ -58,12 +58,12 @@ class BnlbotEnv(gym.Env):
 
     #wtf IS this shitlanguage
     try:
-        tmp = copy.deepcopy(self.racefile[self.racefile_idx])
+        tmp = copy.deepcopy(self.racefile_name[self.racefile_idx])
     except IndexError:
         print('get_observation.IndexError ')
         print('get_observation.racefile_idx ', self.racefile_idx)
         print('get_observation rewardfile ' + self.reward_file )
-        print('get_observation racefile ' + str(self.racefile) )
+        print('get_observation racefile_name ' + str(self.racefile_name) )
         print('get_observation racefile_list_idx ' + str(self.racefile_list_idx) )
         print('get_observation racefile_list[idx] ' + self.racefile_list[self.racefile_list_idx] )
 
@@ -131,10 +131,10 @@ class BnlbotEnv(gym.Env):
         #in observation first col is runner, timestamp is stripped away
 
         idx_list = selidx +1
-        selid = self.racefile[0][idx_list]
+        selid = self.racefile_name[0][idx_list]
 
         #check outcome of bet
-        timestamp = self.racefile[self.racefile_idx][0]
+        timestamp = self.racefile_name[self.racefile_idx][0]
         #print('timestamp ' + timestamp)
 
         rew = self.get_reward(timestamp,idx_list,selid)
@@ -147,7 +147,7 @@ class BnlbotEnv(gym.Env):
 
     #try only to end of file
     if not done :
-        done = self.racefile_idx == len(self.racefile) -1
+        done = self.racefile_idx == len(self.racefile_name) -1
 
     return (ob,rew,done,info)
 
@@ -157,7 +157,7 @@ class BnlbotEnv(gym.Env):
     self.total_count = self.total_count +1
     print('reset ' + str(self.total_count))
 
-    self.racefile = []
+    self.racefile_name = []
     self.racefile_idx = 0
 
     # read race-file into array
@@ -180,7 +180,7 @@ class BnlbotEnv(gym.Env):
     placemarket = ''
     while True:
         # read reward-file into array
-        # get name from racefile
+        # get name from racefile_name
         path = self.racefile_list[self.racefile_list_idx].split('/')
         print('reset.path',path)
         tmp = path[1].split('.')
@@ -212,7 +212,7 @@ class BnlbotEnv(gym.Env):
 
     with open(RACEFILE_DIRECTORY + '/' + self.racefile_list[self.racefile_list_idx]) as rf:
         for line in rf:
-            self.racefile.append(line.split('|'))
+            self.racefile_name.append(line.split('|'))
 
 
     self.reward_file=""
@@ -227,8 +227,8 @@ class BnlbotEnv(gym.Env):
 
     #skip header row
     #self.racefile_idx = 1
-    self.racefile_idx = int(0.75 * len(self.racefile))
-    #print(self.racefile[self.racefile_idx])
+    self.racefile_idx = int(0.75 * len(self.racefile_name))
+    #print(self.racefile_name[self.racefile_idx])
 
     return self.get_observation()
 
