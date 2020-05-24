@@ -21,18 +21,21 @@ fi
 
 i=1
 
+bettype=$2
+
 # Recommend syntax for setting an infinite while loop
 while :
 do
-  python3 horse_based_on_pong.py --bettype=$2 > h${i}.log 2>&1
-  [ -r h${i}.log.gz ] && rm -f h${i}.log.gz
-  gzip h${i}.log
+  logfile=h_one_bet_${bettype}_${i}.log
+  python3 horses_based_on_pong.py --bettype=${bettype} > log/${logfile} 2>&1
+  [ -r log/${logfile}.gz ] && rm -f log/${logfile}.gz
+  gzip log/${logfile}
   i=$((i + 1))
   if [ $DO_EXIT -eq 1 ] ; then
     break
   fi
 
-  if [ $i -gt 1000 ] ; then
+  if [ $i -gt 10 ] ; then
     break
   fi
 
@@ -40,3 +43,4 @@ do
     break
   fi
 done
+
