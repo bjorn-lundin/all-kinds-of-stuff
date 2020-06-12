@@ -16,8 +16,8 @@ full_cmd_arguments = sys.argv
 # Keep all but the first
 argument_list = full_cmd_arguments[1:]
 
-long_options = ["mode=", "bettype="]
-short_options = ["m:","b:"]
+long_options = ["mode=", "bettype=", "learningrate="]
+short_options = ["m:","b:, l:"]
 
 try:
     arguments, values = getopt.getopt(argument_list, short_options, long_options)
@@ -30,7 +30,7 @@ except getopt.error as err:
 mode='train'
 bettype='back'
 DATA_OFFSET = 25
-
+learning_rate=1e-4
 
 for current_argument, current_value in arguments:
     if current_argument in ("-m", "--mode"):
@@ -41,6 +41,9 @@ for current_argument, current_value in arguments:
     elif current_argument in ("-b", "--bettype"):
         bettype = current_value
         print ("Enabling bettype", bettype)
+    elif current_argument in ("-l", "--learningrate"):
+        learning_rate = float(current_value)
+        print ("Enabling learningrate", learning_rate)
 
 
 class FakeHorse(object):
@@ -56,11 +59,11 @@ class FakeHorse(object):
     self.racefile_idx = 0
     self.mode = mode
     self.bettype = bettype
-    self.dirname = os.environ.get('BOT_HISTORY') + '/data/ai/pong/' + self.bettype + '/win/' + self.mode
+    self.dirname = os.environ.get('BOT_HISTORY') + '/data/ai/pong/2nd/' + self.bettype + '/win/' + self.mode
     self.size = 1.0
     self.commision = 0.05
 
-    #print(self.dirname)
+    print(self.dirname)
     filelist = os.listdir(self.dirname)
     #print(filelist)
     for filename in filelist:
@@ -69,7 +72,7 @@ class FakeHorse(object):
                 pass
             else :
                 self.racefile_list.append(self.dirname + '/' + filename)
-                #print(self.dirname + '/' + filename)
+                print(self.dirname + '/' + filename)
         else:
             pass
 
@@ -88,7 +91,7 @@ class FakeHorse(object):
     if action == 2 :
         #do bet on first runner found with lowest odds
         lowest_odds = float(ob[6])
-        idx_with_lowest_odds = int(ob[8]) + DATA_OFFSET
+        idx_with_lowest_odds = int(float(ob[8])) + DATA_OFFSET
         print ("lowest_odds idx/odds",lowest_odds , float(ob[idx_with_lowest_odds]) , idx_with_lowest_odds)
         
 #        if lowest_odds != 1000.0 * float(ob[idx_with_lowest_odds]):
@@ -175,6 +178,7 @@ class FakeHorse(object):
         with open(self.racefile_list[self.racefile_list_idx]) as rf:
             for line in rf:
                self.racefile_name.append(line.split(','))
+            print('opened', self.racefile_list[self.racefile_list_idx])
         return self.get_observation()
     except IndexError:
         print('reset.IndexError ')
@@ -186,13 +190,13 @@ class FakeHorse(object):
 # hyperparameters
 H = 200 # number of hidden layer neurons
 batch_size = 10 # every how many episodes to do a param update?
-learning_rate = 1e-4
+#learning_rate = 1e-4
+#cmdline param - default =1e-4
 gamma = 0.99 # discount factor for reward
 decay_rate = 0.99 # decay factor for RMSProp leaky sum of grad^2
 
 #bnl
-filename = "./horses_2_actions_" + bettype +".p"
-#filename = "./horses_2_actions_lay.p"
+filename = "./horses_2_actions_2nd_" + bettype + ".p"
 my_file = Path(filename)
 resume = my_file.is_file()
 
@@ -223,9 +227,11 @@ def prepro(I):
   """ prepro 16x1  (16x1) 1D float vector """
   J = np.zeros(16)
   cnt=0
-  for odds in I[DATA_OFFSET:]:
+  print(I)
+  for odds in I[DATA_OFFSET:DATA_OFFSET+16]:
       J[cnt] = float(odds)
       cnt=cnt+1
+      if cnt == 16 : break
   return J
 
 def discount_rewards(r):
