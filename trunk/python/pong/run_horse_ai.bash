@@ -22,11 +22,11 @@ fi
 i=1
 
 bettype=$2
-
+#lr=$3
 # Recommend syntax for setting an infinite while loop
 while :
 do
-  logfile=h_one_bet_${bettype}_${i}.log
+  logfile=h_one_bet_${bettype}_${lr}_${i}.log
   python3 horses_based_on_pong.py --bettype=${bettype} > log/${logfile} 2>&1
   [ -r log/${logfile}.gz ] && rm -f log/${logfile}.gz
   gzip log/${logfile}
