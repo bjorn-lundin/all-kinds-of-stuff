@@ -77,6 +77,38 @@ class FakeHorse(object):
             pass
 
 
+  def reward(self, marketid, selectionid, timestamp):
+      #filename = os.environ.get('BOT_HISTORY') + '/data/ai/...'
+      dirname = '/Users/bnl/svn/bnlbot/botstart/bot-1-0/history/data/ai/win/rewards/back'
+      filename = dirname + '/' + marketid + '.dat'
+      selids = []
+      rew = 0.0
+      try:
+        first = True
+        print('opened',filename)
+        with open(filename) as rf:
+            for line in rf:
+               if first :
+                   selids.append(line.split(','))
+                   idx = 0 # find column of selid
+                   for sel in selids:
+                       if sel == selectionid :
+                           break
+                       else :
+                           idx = idx +1    
+                   first = False;               
+               else:
+                   if line[0] == timestamp :
+                       rew = float(line[idx])
+        return rew
+      except :
+        print('reward, exception ')
+        return 0.0
+       
+################################
+      
+      
+
   def step(self,action):
     """ will do action and step one step further"""
     #print('step')
@@ -268,6 +300,8 @@ running_reward = None
 reward_sum = 0
 episode_number = 0
 render = False
+
+print("test",env.reward( '1.160934105', 19450871, '16:55:41.578'))
 
 while True:
     try:
