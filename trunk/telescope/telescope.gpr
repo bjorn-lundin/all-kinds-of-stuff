@@ -27,12 +27,13 @@ project Telescope is
 
 
    for Source_Dirs use ("src");
-   
+
    for Object_Dir use "obj";
    for Exec_Dir use "bin";
-   
-   for Main use ("telescope.adb");
-   
+
+   for Main use ("telescope.adb",
+                 "joystick_test.adb");
+
    package Compiler is
      for Default_Switches ("ada") use Platform_Independent_Compiler_Switches & ("-O0");
      --for Default_Switches ("c") use ("-g", "-Wall");
@@ -43,12 +44,12 @@ project Telescope is
    end Binder;
 
   package Linker is
-   for Default_Switches ("ada") use ("-L/usr/local/lib", 
+   for Default_Switches ("ada") use ("-L/usr/local/lib",
                                      "-lwiringPi");
   end Linker;
 
    package Builder is
-      for Default_Switches ("ada") use ("-k", "-s", "-j1"); -- use 1 cpu 
+      for Default_Switches ("ada") use ("-k", "-s", "-j1"); -- use 1 cpu
    end Builder;
-   
+
 end Telescope;
