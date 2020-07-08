@@ -8,8 +8,8 @@ procedure Telescope is
   package C renames Interfaces.C;
   use type C.Short;
 
-  Motor_Fi1 : Motors.Motor_Task renames Motors.M(2); -- hip/weist
-  Motor_Fi2 : Motors.Motor_Task renames Motors.M(3); --elbow
+  Motor_1 : Motors.Motor_Task renames Motors.M(2); -- left
+  Motor_2 : Motors.Motor_Task renames Motors.M(3); -- right
 
 
   procedure Log(Who,What : in String) is
@@ -65,25 +65,25 @@ procedure Telescope is
             case Event.Value is --
               when -32768 .. -1 =>  --left pressed
                 Log("Handle_Events","HAT_LEFT");
-              --  Steppers.Left;
+                Motors.Set_Direction(Motors.Ccw);
               when 0            => -- released/centered
                 Log("Handle_Events","HAT_CENTERED");
-             --   Steppers.No_Direction;
+                Motors.Set_Direction(Motors.None);
               when 1 .. 32767 =>  --right pressed
                 Log("Handle_Events","HAT_RIGHT");
-             --   Steppers.Right;
+                Motors.Set_Direction(Motors.Cw);
             end case;
           when 5      =>    --up/down   (hat)
             case Event.Value is -- 1=pressed, 0=released
               when -32768 .. -1 =>  --leupft pressed
                 Log("Handle_Events","HAT_UP");
-            --    Steppers.Up;
+                Motors.Set_Direction(Motors.Up);
               when 0            => -- released/centered
                 Log("Handle_Events","HAT_CENTERED");
-               -- Steppers.No_Direction;
+                Motors.Set_Direction(Motors.None);
               when 1 .. 32767 =>  --down pressed
                 Log("Handle_Events","HAT_DOWN");
-            --    Steppers.Down;
+                Motors.Set_Direction(Motors.Down);
             end case;
           when others =>  null; --axises
         end case;
@@ -104,8 +104,8 @@ begin
   declare
     use Motors;
   begin
-    Motor_Fi1.Config(Configuration_Pin => (Step => 16, Direction => 12, Enable => 20, Emergency_Stop => 1), Direction_Towards_Emergency_Stop => CCw, Name => 1);
-    Motor_Fi2.Config(Configuration_Pin => (Step => 19, Direction => 13, Enable => 26, Emergency_Stop => 0), Direction_Towards_Emergency_Stop => Cw,  Name => 2);
+    Motor_1.Config(Configuration_Pin => (Step => 16, Direction => 12, Enable => 20, Emergency_Stop => 1), Name => 1);
+    Motor_1.Config(Configuration_Pin => (Step => 19, Direction => 13, Enable => 26, Emergency_Stop => 0), Name => 2);
  --   Motor_Z.Config  (Configuration_Pin => (Step => 27, Direction => 22, Enable =>  6, Emergency_Stop => 4), Direction_Towards_Emergency_Stop => CCw, Name => 3);
   end;
   --Log("main","test start");
