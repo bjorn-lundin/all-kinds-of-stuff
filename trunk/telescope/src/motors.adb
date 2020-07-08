@@ -11,6 +11,7 @@ package body Motors is
 
 -- Sem : Binary_Semaphores.Semaphore_Type;
 
+
   procedure Write(Pin: Pin_Type ; Value : Boolean) is
   begin
     --    Sem.Seize;
@@ -31,7 +32,7 @@ package body Motors is
     procedure Set(Val : Direction_Type);
     function Get return Direction_Type ;
   private
-    Db : Direction_Type := None;
+    D : Direction_Type := None;
   end Direction_Keeper;
 
   protected body Direction_Keeper is
@@ -44,9 +45,6 @@ package body Motors is
     begin
       return D;
     end Get;
-
-  private
-    Db : Direction_Type := None;
   end Direction_Keeper;
   ----------------------------------
 
@@ -56,24 +54,21 @@ package body Motors is
   end Set_Direction;
   ----------------------------------
 
-
   task body Motor_Task is
-    Wanted_Step                               : Step_Type;
-    State                                     : Motor_State_Type := Starting;
-    Direction                                 : Direction_Type;
+    Dir                                       : Direction_Type;
     Pin                                       : Pin_Array_Type;
     Local_Name                                : Motor_Index_Type ;
   begin
     accept Config(Configuration_Pin : Pin_Array_Type; Name : Motor_Index_Type) do
       Pin := Configuration_Pin;
       Local_Name := Name;
-      Gpio.Pin_Mode( Interfaces.C.Int(Pin(Emergency_Stop)) , Gpio.Input);
-      Gpio.Pull_Up_Dn_Control(Interfaces.C.Int(Pin(Emergency_Stop)), Gpio. Pud_Down);
+    --  Gpio.Pin_Mode( Interfaces.C.Int(Pin(Emergency_Stop)) , Gpio.Input);
+    --  Gpio.Pull_Up_Dn_Control(Interfaces.C.Int(Pin(Emergency_Stop)), Gpio. Pud_Down);
       Gpio.Pin_Mode(Interfaces.C.Int(Pin(Direction)), Gpio.Output);
       Gpio.Pin_Mode(Interfaces.C.Int(Pin(Step)), Gpio.Output);
       Gpio.Pin_Mode(Interfaces.C.Int(Pin(Enable)), Gpio.Output);
-      Write(Pin(Step), Gpio.Low);
-      Write(Pin(Enable), Gpio.Low); -- Low is to enable
+      Write(Pin(Step), False);
+      Write(Pin(Enable), False); -- Low is to enable
       Text_Io.Put_Line("Config done" & Local_Name'Img);
     end Config;
 
@@ -81,27 +76,28 @@ package body Motors is
       select
 
         accept Go do
-          Write(Pin(Enable), Gpio.Low); --Turn on stepper
+          Write(Pin(Enable), False); --Turn on stepper
           -- delay 1.0;
-        end Gop;
+        end Go;
 
-        Direction := Direction_Keeper.Get;
+        Dir := Direction_Keeper.Get;
 
-        case Direction is
+        case Dir is
           when Ccw  => null;
           when Cw   => null;
-          when Up   => Write(Pin(Direction), 1);
-          when Down => Write(Pin(Direction), 0);
+          when Up   => Write(Pin(Direction), True);
+          when Down => Write(Pin(Direction), False);
+          when None => null;
         end case;
 
         Move_Loop : loop
           exit Move_Loop when Direction_Keeper.Get = None;
-          Write(Pin(Step), Gpio.High);
+          Write(Pin(Step), True);
           delay Delay_Time(Normal);
-          Write(Pin(Step), Gpio.Low);
+          Write(Pin(Step), False);
           delay Delay_Time(Normal);
         end loop Move_Loop;
-        Write(Pin(Enable), Gpio.HIGH); -- Low is to enable - turn off
+        Write(Pin(Enable), True); -- Low is to enable - turn off
       or
         terminate;
       end select;

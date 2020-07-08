@@ -32,4 +32,13 @@ package body Gpio is
     end if;
   end Digital_Write;
   ------------------------------------------------------
+
+  function Digital_Read(Pin :  Interfaces.C.Int) return Boolean is
+    function Digital_Read(Pin : Interfaces.C.Int) return Interfaces.C.Int;
+    pragma Import(C, Digital_Read, "digitalRead");
+  begin
+    return Digital_Read(Pin) > 0 ; -- true if 1 false if 0
+  end Digital_Read;
+
+
 end Gpio;
