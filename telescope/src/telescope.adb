@@ -24,7 +24,7 @@ procedure Telescope is
     Event : Joystick.Js_Event;
   begin
     Quit := False;
-    --  Log("Handle_Events","Start");
+    Log("Handle_Events","Start");
     Joystick.Read_Event(Reading_Ok => Ok, Jse => Event) ;
     if not OK then
       Log("Handle_Events","BAD READ");
@@ -79,12 +79,16 @@ procedure Telescope is
               when -32768 .. -1 =>  --leupft pressed
                 Log("Handle_Events","HAT_UP");
                 Motors.Set_Direction(Motors.Up);
+                Motor_1.Go;
+                Motor_2.Go;
               when 0            => -- released/centered
                 Log("Handle_Events","HAT_CENTERED");
                 Motors.Set_Direction(Motors.None);
               when 1 .. 32767 =>  --down pressed
                 Log("Handle_Events","HAT_DOWN");
                 Motors.Set_Direction(Motors.Down);
+                Motor_1.Go;
+                Motor_2.Go;
             end case;
           when others =>  null; --axises
         end case;
@@ -108,7 +112,7 @@ begin
     use Motors;
   begin
     Motor_1.Config(Configuration_Pin => (Step => 16, Direction => 12, Enable => 20, Emergency_Stop => 1), Name => 1);
-    Motor_1.Config(Configuration_Pin => (Step => 19, Direction => 13, Enable => 26, Emergency_Stop => 0), Name => 2);
+    Motor_2.Config(Configuration_Pin => (Step => 19, Direction => 13, Enable => 26, Emergency_Stop => 0), Name => 2);
  --   Motor_Z.Config  (Configuration_Pin => (Step => 27, Direction => 22, Enable =>  6, Emergency_Stop => 4), Direction_Towards_Emergency_Stop => CCw, Name => 3);
   end;
   --Log("main","test start");
