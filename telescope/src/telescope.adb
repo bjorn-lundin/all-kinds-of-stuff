@@ -71,7 +71,7 @@ procedure Telescope is
       when Joystick.Js_Event_Axis =>
         Log("Handle_Events","Js_Event_Axis");
         case Event.Number is -- Axis
-          when 4      =>       --left/right (hat)
+          when 0      =>       --left/right (hat)
             case Event.Value is --
               when -32768 .. -1 =>  --left pressed
                 Log("Handle_Events","HAT_LEFT");
@@ -83,7 +83,7 @@ procedure Telescope is
                 Log("Handle_Events","HAT_RIGHT");
                 Motors.Set_Direction(Motors.Cw);
             end case;
-          when 5      =>    --up/down   (hat)
+          when 1      =>    --up/down   (hat)
             case Event.Value is -- 1=pressed, 0=released
               when -32768 .. -1 =>  --leupft pressed
                 Log("Handle_Events","HAT_UP");
