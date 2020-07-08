@@ -31,16 +31,24 @@ procedure Telescope is
       -- Quit := True;
       return;
     end if;
-    Log("Handle_Events","an event occurred");
+    Log("Handle_Events","an event occurred -> time" & Event.Time'img &
+                  " value " & Event.Value'Img &
+                  " c_type " & Event.C_Type'Img &
+                  " number " & Event.Number'Img);
+
     case Event.C_Type is
 
       when Joystick.Js_Event_Init_Button =>
+        Log("Handle_Events","Js_Event_Init_Button");
           null;
 
       when Joystick.Js_Event_Init_Axis =>
+        Log("Handle_Events","Js_Event_Init_Axis");
           null;
 
       when Joystick.Js_Event_Button =>
+        Log("Handle_Events","Js_Event_Button");
+
         case Event.Number is -- Button
           when 8      =>
             case Event.Value is -- 1=pressed, 0=released
@@ -61,6 +69,7 @@ procedure Telescope is
         end case;
 
       when Joystick.Js_Event_Axis =>
+        Log("Handle_Events","Js_Event_Axis");
         case Event.Number is -- Axis
           when 4      =>       --left/right (hat)
             case Event.Value is --
@@ -91,6 +100,7 @@ procedure Telescope is
                 Motor_2.Go;
             end case;
           when others =>  null; --axises
+            Log("Handle_Events","other event");
         end case;
 
       when others => null;
