@@ -107,5 +107,6 @@ package body Motors is
     --    Stacktrace.Tracebackinfo(E);
   end Motor_Task;
 
-
+begin
+  Gpio.Setup;
 end Motors;
