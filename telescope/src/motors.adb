@@ -96,14 +96,19 @@ package body Motors is
           delay Delay_Time(Normal);
           Write(Pin(Step), False);
           delay Delay_Time(Normal);
+          Text_Io.Put_Line("in loop " & Local_Name'Img);
         end loop Move_Loop;
         Write(Pin(Enable), True); -- Low is to enable - turn off
+        Text_Io.Put_Line("out of loop " & Local_Name'Img);
       or
         terminate;
       end select;
+      Text_Io.Put_Line("task died ok " & Local_Name'Img);
     end loop;
-    --  exception
-    --   when E: others =>
+  exception
+    when E: others =>
+      Text_Io.Put_Line("task died bad " & Local_Name'Img);
+
     --    Stacktrace.Tracebackinfo(E);
   end Motor_Task;
 
