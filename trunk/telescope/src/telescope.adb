@@ -2,7 +2,7 @@ with Text_Io; use Text_Io;
 with Motors;
 with Joystick;
 with Interfaces.C;
-with Gpio;
+--with Gpio;
 
 
 procedure Telescope is
@@ -100,7 +100,7 @@ procedure Telescope is
 
 begin
 
-  Gpio.Setup;
+  --Gpio.Setup;
   Log("main","init steppers");
   --Init The Motors with pins
   Put_Line("Config and init motors");
