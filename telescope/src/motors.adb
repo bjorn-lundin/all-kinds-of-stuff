@@ -55,10 +55,40 @@ package body Motors is
   end Set_Direction;
   ----------------------------------
 
+
+  protected Speed_Keeper is
+    procedure Set(Val : Speed_Type);
+    function Get return Speed_Type ;
+  private
+    S : Speed_Type := Normal;
+  end Speed_Keeper;
+
+  protected body Speed_Keeper is
+    procedure Set(Val : Speed_Type) is
+    begin
+      S := Val;
+    end Set;
+
+    function Get return Speed_Type is
+    begin
+      return S;
+    end Get;
+  end Speed_Keeper;
+  ----------------------------------
+
+  procedure Set_Speed(Speed: Speed_Type) is
+  begin
+    Speed_Keeper.Set(Speed);
+  end Set_Speed;
+  ----------------------------------
+
+
+
   task body Motor_Task is
-    Dir                                       : Direction_Type;
-    Pin                                       : Pin_Array_Type;
-    Local_Name                                : Motor_Index_Type ;
+    Dir        : Direction_Type;
+    Pin        : Pin_Array_Type;
+    Local_Name : Motor_Index_Type;
+    Speed      : Speed_Type := Normal;
   begin
     accept Config(Configuration_Pin : Pin_Array_Type; Name : Motor_Index_Type) do
       Pin := Configuration_Pin;
@@ -72,7 +102,7 @@ package body Motors is
       Put_Line("Config done" & Local_Name'Img);
     end Config;
 
-    loop
+    Select_Loop : loop
       select
         accept Go do
           Write(Pin(Enable), False); --Turn on stepper
@@ -91,19 +121,26 @@ package body Motors is
 
         Move_Loop : loop
           exit Move_Loop when Direction_Keeper.Get = None;
+          Speed := Speed_Keeper.Get;
           Write(Pin(Step), True);
-          delay Delay_Time(Normal);
+          delay Delay_Time(Speed);
           Write(Pin(Step), False);
-          delay Delay_Time(Normal);
+          delay Delay_Time(Speed);
           Put_Line("in loop " & Local_Name'Img);
         end loop Move_Loop;
         Write(Pin(Enable), True); -- Low is to enable - turn off
         Put_Line("out of loop " & Local_Name'Img);
       or
+        accept Stop do
+          null;
+        end Stop;
+        exit Select_Loop;
+      or
         terminate;
       end select;
       Put_Line("task exited MOVE loop ok " & Local_Name'Img);
-    end loop;
+    end loop Select_Loop;
+    Put_Line("task died ok " & Local_Name'Img);
   exception
     when others =>
       Put_Line("task died bad " & Local_Name'Img);
