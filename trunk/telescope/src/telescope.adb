@@ -9,8 +9,8 @@ procedure Telescope is
   package C renames Interfaces.C;
   use type C.Short;
 
-  Motor_1 : Motors.Motor_Task renames Motors.M(2); -- left
-  Motor_2 : Motors.Motor_Task renames Motors.M(3); -- right
+  Motor_2 : Motors.Motor_Task renames Motors.M(2); -- left
+  Motor_3 : Motors.Motor_Task renames Motors.M(3); -- right
 
 
   procedure Log(Who,What : in String) is
@@ -60,9 +60,9 @@ procedure Telescope is
           when 1      =>
             case Event.Value is -- 1=pressed, 0=released
               when 0      => Log("Handle_Events","Normal speed");
-                           --  Steppers.Set_Speed(Steppers.Normal);
-              when 1      => Log("Handle_Events","fast speed");
-                         --    Steppers.Set_Speed(Steppers.Fast);
+                             Motors.Set_Speed(Motors.Normal);
+              when 1      => Log("Handle_Events","slow speed");
+                             Motors.Set_Speed(Motors.Slow);
               when others => null;
             end case;
           when others =>  null; --buttons
@@ -88,16 +88,16 @@ procedure Telescope is
               when -32768 .. -1 =>  --leupft pressed
                 Log("Handle_Events","HAT_UP");
                 Motors.Set_Direction(Motors.Up);
-                Motor_1.Go;
                 Motor_2.Go;
+                Motor_3.Go;
               when 0            => -- released/centered
                 Log("Handle_Events","HAT_CENTERED");
                 Motors.Set_Direction(Motors.None);
               when 1 .. 32767 =>  --down pressed
                 Log("Handle_Events","HAT_DOWN");
                 Motors.Set_Direction(Motors.Down);
-                Motor_1.Go;
                 Motor_2.Go;
+                Motor_3.Go;
             end case;
           when others =>  null; --axises
             Log("Handle_Events","other event");
@@ -114,20 +114,14 @@ procedure Telescope is
 
 begin
 
-  --Gpio.Setup;
   Log("main","init steppers");
-  --Init The Motors with pins
-  Put_Line("Config and init motors");
   declare
     use Motors;
   begin
-    Motor_1.Config(Configuration_Pin => (Step => 16, Direction => 12, Enable => 20, Emergency_Stop => 1), Name => 1);
-    Motor_2.Config(Configuration_Pin => (Step => 19, Direction => 13, Enable => 26, Emergency_Stop => 0), Name => 2);
+    Motor_2.Config(Configuration_Pin => (Step => 16, Direction => 12, Enable => 20, Emergency_Stop => 1), Name => 2);
+    Motor_3.Config(Configuration_Pin => (Step => 19, Direction => 13, Enable => 26, Emergency_Stop => 0), Name => 3);
  --   Motor_Z.Config  (Configuration_Pin => (Step => 27, Direction => 22, Enable =>  6, Emergency_Stop => 4), Direction_Towards_Emergency_Stop => CCw, Name => 3);
   end;
-  --Log("main","test start");
-  --Steppers.Test;
-  --Log("main","test stop");
 
   Joystick.Open;
 
@@ -136,11 +130,14 @@ begin
     exit when Quit;
   end loop;
 
---  Steppers.Stop;
+  Log("main","exit");
+  Motor_2.Stop;
+  Motor_3.Stop;
+
   Joystick.Close;
+  Log("main","all closed");
 exception
   when others =>
---    Steppers.Stop;
-    Joystick.Close;
+   Joystick.Close;
 
 end Telescope;
