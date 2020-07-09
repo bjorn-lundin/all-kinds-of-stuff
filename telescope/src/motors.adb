@@ -12,14 +12,14 @@ package body Motors is
 -- Sem : Binary_Semaphores.Semaphore_Type;
 
 
-  procedure Write(Pin: Pin_Type ; Value : Boolean) is
+  procedure Write(Pin: Pin_Number_Type ; Value : Boolean) is
   begin
     --    Sem.Seize;
     Gpio.Digital_Write(Interfaces.C.Int(Pin), Value);
     --    Sem.Release;
   end Write;
 
-  function Read(Pin: Pin_Type) return Boolean is
+  function Read(Pin: Pin_Number_Type) return Boolean is
     R : Boolean := False;
   begin
     --   Sem.Seize;
@@ -27,6 +27,7 @@ package body Motors is
     --   Sem.Release;
     return R;
   end Read;
+  pragma Unreferenced(Read);
 
   protected Direction_Keeper is
     procedure Set(Val : Direction_Type);
@@ -68,13 +69,11 @@ package body Motors is
       Gpio.Pin_Mode(Interfaces.C.Int(Pin(Step)), Gpio.Output);
       Gpio.Pin_Mode(Interfaces.C.Int(Pin(Enable)), Gpio.Output);
       Write(Pin(Step), False);
-      Write(Pin(Enable), False); -- Low is to enable
-      Text_Io.Put_Line("Config done" & Local_Name'Img);
+      Put_Line("Config done" & Local_Name'Img);
     end Config;
 
     loop
       select
-
         accept Go do
           Write(Pin(Enable), False); --Turn on stepper
           -- delay 1.0;
@@ -96,18 +95,18 @@ package body Motors is
           delay Delay_Time(Normal);
           Write(Pin(Step), False);
           delay Delay_Time(Normal);
-          Text_Io.Put_Line("in loop " & Local_Name'Img);
+          Put_Line("in loop " & Local_Name'Img);
         end loop Move_Loop;
         Write(Pin(Enable), True); -- Low is to enable - turn off
-        Text_Io.Put_Line("out of loop " & Local_Name'Img);
+        Put_Line("out of loop " & Local_Name'Img);
       or
         terminate;
       end select;
-      Text_Io.Put_Line("task died ok " & Local_Name'Img);
+      Put_Line("task exited MOVE loop ok " & Local_Name'Img);
     end loop;
   exception
-    when E: others =>
-      Text_Io.Put_Line("task died bad " & Local_Name'Img);
+    when others =>
+      Put_Line("task died bad " & Local_Name'Img);
 
     --    Stacktrace.Tracebackinfo(E);
   end Motor_Task;
