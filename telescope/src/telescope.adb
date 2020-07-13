@@ -136,6 +136,7 @@ procedure Telescope is
 begin
 
   Log("main","init steppers");
+  Steppers.Init;
   declare
     use Motors;
   begin
@@ -143,6 +144,7 @@ begin
     Motor_3.Config(Configuration_Pin => (Step => 19, Direction => 13, Enable => 26, Emergency_Stop => 0), Name => 3);
  --   Motor_Z.Config  (Configuration_Pin => (Step => 27, Direction => 22, Enable =>  6, Emergency_Stop => 4), Direction_Towards_Emergency_Stop => CCw, Name => 3);
   end;
+
 
   Joystick.Open;
 
@@ -155,6 +157,7 @@ begin
   Motor_2.Stop;
   Motor_3.Stop;
 
+  Steppers.Stop;
   Joystick.Close;
   Log("main","all closed");
 exception
