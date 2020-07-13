@@ -26,7 +26,7 @@ package body Steppers is
   type Stepper_Pins_Array_Type is array (Pin_Range_Type'Range) of Interfaces.C.Int;
 
   -- https://projects.drogon.net/raspberry-pi/wiringpi/special-pin-functions/
-  Step_Pins : array (Id_Type'Range) of Stepper_Pins_Array_Type := ( 1 => (17,27,22,23) --,
+  Step_Pins : array (Id_Type'Range) of Stepper_Pins_Array_Type := ( 1 => (23,22,17,27) --,
                                                                   --( 1 => (22,10, 9,11) --,
                                                                   --  2 => (23,18,17,27), Rev 2?
                                                               --      2 => (23,18,17,21),  --Rev 1?
