@@ -149,8 +149,9 @@ package body Steppers is
     Id             : Id_Type;
     Sequence_Index : Sequence_Range_Type := 1;
     use Ada.Real_Time;
-    Next : Time;
-    Interval : Time_Span;
+    Next           : Time;
+    Interval       : Time_Span;
+    First          : Boolean := True;
   begin
     ----------------------------------------------------------
     accept Init(Identity : Id_Type) do
@@ -170,8 +171,16 @@ package body Steppers is
 
       case Data(Id).Get_Direction is
         when Stop => exit Motor_Loop;
-        when None => null;
+        when None =>
+          if First then
+            for Pin in Pin_Range_Type'Range loop
+              Gpio.Digital_Write(Pins(Pin), False);
+            end loop;
+            First := False;
+          end if;
+
         when Forward =>
+          First := True;
           for Pin in Pin_Range_Type'Range loop
             if Sequence(Sequence_Index, Pin) /= 0 then
               Gpio.Digital_Write(Pins(Pin), True);
@@ -186,6 +195,7 @@ package body Steppers is
           end if;
 
         when Backward =>
+          First := True;
           for Pin in Pin_Range_Type'Range loop
             if Sequence(Sequence_Index, Pin) /= 0 then
               Gpio.Digital_Write(Pins(Pin), True);
