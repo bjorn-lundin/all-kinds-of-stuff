@@ -3,6 +3,7 @@ with Motors;
 with Joystick;
 with Interfaces.C;
 --with Gpio;
+with Steppers;
 
 
 procedure Telescope is
@@ -50,19 +51,39 @@ procedure Telescope is
         Log("Handle_Events","Js_Event_Button");
 
         case Event.Number is -- Button
+          when 1      =>
+            case Event.Value is -- 1=pressed, 0=released
+              when 0      => Log("Handle_Events","Normal speed");
+                           --  Steppers.Set_Speed(Steppers.Normal);
+                             Motors.Set_Speed(Motors.Normal);
+
+              when 1      => Log("Handle_Events","slow speed");
+                          --   Steppers.Set_Speed(Steppers.Slow);
+                             Motors.Set_Speed(Motors.Slow);
+              when others => null;
+            end case;
+
+          when 6      => --Left Low Indexfinger
+            case Event.Value is -- 1=pressed, 0=released
+              when 0      => Log("Handle_Events","focus_off");
+                             Steppers.No_Direction;
+              when 1      => Log("Handle_Events","focus_plus");
+                             Steppers.Focus_Plus;
+              when others => null;
+            end case;
+          when 7      => --right Low Indexfinger
+            case Event.Value is -- 1=pressed, 0=released
+              when 0      => Log("Handle_Events","focus off");
+                             Steppers.No_Direction;
+              when 1      => Log("Handle_Events","focus_minus");
+                             Steppers.Focus_Minus;
+              when others => null;
+            end case;
           when 8      =>
             case Event.Value is -- 1=pressed, 0=released
               when 0      => Log("Handle_Events","QUITing");
                              Quit := True;
               when 1      => null;
-              when others => null;
-            end case;
-          when 1      =>
-            case Event.Value is -- 1=pressed, 0=released
-              when 0      => Log("Handle_Events","Normal speed");
-                             Motors.Set_Speed(Motors.Normal);
-              when 1      => Log("Handle_Events","slow speed");
-                             Motors.Set_Speed(Motors.Slow);
               when others => null;
             end case;
           when others =>  null; --buttons
