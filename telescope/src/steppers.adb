@@ -51,7 +51,7 @@ package body Steppers is
 
 
   pragma Warnings(Off);
-  Delay_Time : array(Id_Type'range) of Duration  := (1 => 0.01); --  second
+  Delay_Time : array(Id_Type'range) of Duration  := (1 => 0.001); --  second
 
 
   pragma Warnings(On);
