@@ -12,6 +12,10 @@ package body Motors is
 -- Sem : Binary_Semaphores.Semaphore_Type;
 
 
+  Delay_Time : array (Speed_Type'Range) of Duration := (Slow => 0.005, Normal => 0.001);
+  -- 1 us is absolutly min
+
+
   procedure Write(Pin: Pin_Number_Type ; Value : Boolean) is
   begin
     --    Sem.Seize;

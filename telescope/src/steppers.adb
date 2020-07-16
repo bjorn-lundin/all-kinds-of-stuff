@@ -6,7 +6,7 @@ with Calendar2;
 --with Types; use Types;
 with Gpio;
 pragma Elaborate_All(Gpio);
-with Ada.Real_Time;
+--with Ada.Real_Time;
 --with Ada.Numerics.Generic_Elementary_Functions;
 
 
@@ -49,12 +49,33 @@ package body Steppers is
 --    Koggs_Per_Revolution_Small   : constant Positive :=     8;
 
 
+  protected Speed_Keeper is
+    procedure Set(Val : Speed_Type);
+    function Get return Speed_Type ;
+  private
+    S : Speed_Type := Normal;
+  end Speed_Keeper;
 
-  pragma Warnings(Off);
-  Delay_Time : array(Id_Type'range) of Duration  := (1 => 0.001); --  second
+  protected body Speed_Keeper is
+    procedure Set(Val : Speed_Type) is
+    begin
+      S := Val;
+    end Set;
 
+    function Get return Speed_Type is
+    begin
+      return S;
+    end Get;
+  end Speed_Keeper;
+  ----------------------------------
 
-  pragma Warnings(On);
+  procedure Set_Speed(Speed: Speed_Type) is
+  begin
+    Speed_Keeper.Set(Speed);
+  end Set_Speed;
+  ----------------------------------
+
+  Delay_Time : array (Speed_Type'Range) of Duration := (Slow => 0.005, Normal => 0.001);
 
   Global_Is_Initiated        : Boolean := False;
 
@@ -95,13 +116,6 @@ package body Steppers is
     Put_Line(Calendar2.Clock.To_String & " " & Who & " " & What);
     --Put_Line( Who & " " & What);
   end Log;
-
-
---    procedure Set_Speed(Speed: in Motors.Speed_Type) is
---    begin
---      Log("Handle_Events","Set_Speed " & Speed'Img );
---    end Set_Speed;
---    -----------------------------------------------
 
   --M1 Handles Up/down
   --M2 Handles Left/Right
@@ -148,16 +162,15 @@ package body Steppers is
     Pins           : Stepper_Pins_Array_Type;
     Id             : Id_Type;
     Sequence_Index : Sequence_Range_Type := 1;
-    use Ada.Real_Time;
-    Next           : Time;
-    Interval       : Time_Span;
+    --   use Ada.Real_Time;
+    --   Next           : Time;
     First          : Boolean := True;
+    Speed          : Speed_Type;
   begin
     ----------------------------------------------------------
     accept Init(Identity : Id_Type) do
       Pins := Step_Pins(Identity);
       Id   := Identity;
-      Interval := To_Time_Span(Delay_Time(Id));
       -- set pins output, and turn them off
       for Pin in Pin_Range_Type'Range loop
         Gpio.Pin_Mode(Pins(Pin), Gpio.Output);
@@ -166,7 +179,7 @@ package body Steppers is
     end Init;
     ----------------------------------------------------------
 
-    Next := Clock; -- start time
+   -- Next := Clock; -- start time
     Motor_Loop : loop
 
       case Data(Id).Get_Direction is
@@ -210,11 +223,8 @@ package body Steppers is
           end if;
       end case;
 
-      Next := Next + Interval;
-      delay until Next;
-
-   --   Cnt := Cnt +1;
-   --   Log("Steppers.Test", "id" & Id'Img & " cnt" & Cnt'Img);
+      Speed := Speed_Keeper.Get;
+      delay Delay_Time(Speed);
 
     end loop Motor_Loop;
 

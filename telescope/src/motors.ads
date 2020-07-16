@@ -12,8 +12,6 @@ package Motors is
   type Speed_Type is (Slow, Normal);
   type Direction_Type is (None, Up, Down, Ccw, Cw);
 
-  Delay_Time : array (Speed_Type'Range) of Duration := (Slow => 0.005, Normal => 0.001);
-  -- 1 us is absolutly min
 
 
   type Pins_Type is (Step,Direction,Enable,Emergency_Stop);
