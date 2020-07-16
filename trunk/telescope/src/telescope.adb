@@ -54,11 +54,11 @@ procedure Telescope is
           when 1      =>
             case Event.Value is -- 1=pressed, 0=released
               when 0      => Log("Handle_Events","Normal speed");
-                           --  Steppers.Set_Speed(Steppers.Normal);
+                             Steppers.Set_Speed(Steppers.Normal);
                              Motors.Set_Speed(Motors.Normal);
 
               when 1      => Log("Handle_Events","slow speed");
-                          --   Steppers.Set_Speed(Steppers.Slow);
+                             Steppers.Set_Speed(Steppers.Slow);
                              Motors.Set_Speed(Motors.Slow);
               when others => null;
             end case;
