@@ -54,11 +54,11 @@ procedure Telescope is
           when 1      =>
             case Event.Value is -- 1=pressed, 0=released
               when 0      => Log("Handle_Events","Normal speed");
-                             Steppers.Set_Speed(Steppers.Normal);
+                             Steppers.Set_Slow_Is_Pressed(False);
                              Motors.Set_Speed(Motors.Normal);
 
               when 1      => Log("Handle_Events","slow speed");
-                             Steppers.Set_Speed(Steppers.Slow);
+                             Steppers.Set_Slow_Is_Pressed(True);
                              Motors.Set_Speed(Motors.Slow);
               when others => null;
             end case;
@@ -68,7 +68,7 @@ procedure Telescope is
               when 0      => Log("Handle_Events","focus_off");
                              Steppers.No_Direction;
               when 1      => Log("Handle_Events","focus_plus slow");
-                             Steppers.Focus_Plus_One;
+                             Steppers.Focus_Plus_Slow;
               when others => null;
             end case;
 
@@ -77,7 +77,7 @@ procedure Telescope is
               when 0      => Log("Handle_Events","focus off");
                              Steppers.No_Direction;
               when 1      => Log("Handle_Events","focus_minus slow");
-                             Steppers.Focus_Minus_One;
+                             Steppers.Focus_Minus_Slow;
               when others => null;
             end case;
 
