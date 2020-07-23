@@ -7,6 +7,8 @@ package Steppers is
   procedure Set_Speed(Speed : Speed_Type);
   procedure Focus_Plus;
   procedure Focus_Minus;
+  procedure Focus_Plus_One;
+  procedure Focus_Minus_One;
   procedure No_Direction;
 
   procedure Stop;
