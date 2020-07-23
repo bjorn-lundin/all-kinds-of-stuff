@@ -52,11 +52,18 @@ package body Steppers is
   protected Speed_Keeper is
     procedure Set(Val : Speed_Type);
     function Get return Speed_Type ;
+    procedure Set_Slow_Is_Pressed(Val : Boolean) ;
   private
     S : Speed_Type := Normal;
+    Slow_Is_Pressed : Boolean := False;
   end Speed_Keeper;
 
   protected body Speed_Keeper is
+    procedure Set_Slow_Is_Pressed(Val : Boolean) is
+    begin
+      Slow_Is_Pressed := Val;
+    end Set_Slow_Is_Pressed;
+
     procedure Set(Val : Speed_Type) is
     begin
       S := Val;
@@ -64,7 +71,14 @@ package body Steppers is
 
     function Get return Speed_Type is
     begin
-      return S;
+      if Slow_Is_Pressed then
+        case S is
+          when Normal    | Slow          => return Slow;
+          when Very_Slow | Extremly_Slow => return Extremly_Slow;
+        end case;
+      else
+        return S;
+      end if;
     end Get;
   end Speed_Keeper;
   ----------------------------------
@@ -74,17 +88,24 @@ package body Steppers is
   end Set_Speed;
   ----------------------------------
 
-  Delay_Time : array (Speed_Type'Range) of Duration := (Slow => 0.005, Normal => 0.001);
+  procedure Set_Slow_Is_Pressed(Val : Boolean) is
+  begin
+    Speed_Keeper.Set_Slow_Is_Pressed ( Val);
+  end Set_Slow_Is_Pressed;
+  ----------------------------------
+
+
+  Delay_Time : array (Speed_Type'Range) of Duration := (Extremly_Slow => 0.050,
+                                                        Very_Slow     => 0.010,
+                                                        Slow          => 0.005,
+                                                        Normal        => 0.001);
   Global_Is_Initiated        : Boolean := False;
 
   protected type Data_Type is
     procedure Set_Direction(Direction : Direction_Type);
     function Get_Direction return Direction_Type;
-    procedure Set_Once(O : Boolean);
-    function Get_Once return Boolean;
   private
     D : Direction_Type := None;
-    Once : Boolean := False;
   end Data_Type;
   -----------------------------------------------
   task type Motor_Type is
@@ -106,15 +127,6 @@ package body Steppers is
       return D;
     end Get_Direction;
     ------------------------------
-    procedure Set_Once(O : Boolean) is
-    begin
-      Once := O;
-    end Set_Once;
-    ------------------------------
-    function Get_Once return Boolean is
-    begin
-      return Once;
-    end Get_Once;
   end Data_Type;
   -----------------------------------------------
 
@@ -129,31 +141,33 @@ package body Steppers is
   --M1 Handles Up/down
   --M2 Handles Left/Right
 
-  procedure Focus_Plus_One is
+  procedure Focus_Plus_Slow is
   begin
-    Data(1).Set_Once(True);
+    Steppers.Set_Speed(Speed => Very_Slow);
     Data(1).Set_Direction(Direction => Forward);
-  end Focus_Plus_One;
+  end Focus_Plus_Slow;
   -----------------------------------------------
-  procedure Focus_Minus_One is
+  procedure Focus_Minus_Slow is
   begin
-    Data(1).Set_Once(True);
+    Steppers.Set_Speed(Speed => Very_Slow);
     Data(1).Set_Direction(Direction => Backward);
-  end Focus_Minus_One;
+  end Focus_Minus_Slow;
   -----------------------------------------------
   procedure Focus_Plus is
   begin
+    Steppers.Set_Speed(Speed => Normal);
     Data(1).Set_Direction(Direction => Forward);
   end Focus_Plus;
   -----------------------------------------------
   procedure Focus_Minus is
   begin
-    null;
+    Steppers.Set_Speed(Speed => Normal);
     Data(1).Set_Direction(Direction => Backward);
   end Focus_Minus;
   -----------------------------------------------
   procedure No_Direction is
   begin
+    Steppers.Set_Speed(Speed => Normal);
     Data(1).Set_Direction(Direction => None);
   end No_Direction;
   -----------------------------------------------
@@ -242,10 +256,6 @@ package body Steppers is
           end if;
       end case;
 
-      if Data(1).Get_Once then
-        Data(1).Set_Once(False);
-        Data(1).Set_Direction(None);
-      end if;
 
       Speed := Speed_Keeper.Get;
       delay Delay_Time(Speed);
