@@ -63,6 +63,24 @@ procedure Telescope is
               when others => null;
             end case;
 
+          when 4      => --Left High Indexfinger
+            case Event.Value is -- 1=pressed, 0=released
+              when 0      => Log("Handle_Events","focus_off");
+                             Steppers.No_Direction;
+              when 1      => Log("Handle_Events","focus_plus slow");
+                             Steppers.Focus_Plus_One;
+              when others => null;
+            end case;
+
+          when 5      => --right High Indexfinger
+            case Event.Value is -- 1=pressed, 0=released
+              when 0      => Log("Handle_Events","focus off");
+                             Steppers.No_Direction;
+              when 1      => Log("Handle_Events","focus_minus slow");
+                             Steppers.Focus_Minus_One;
+              when others => null;
+            end case;
+
           when 6      => --Left Low Indexfinger
             case Event.Value is -- 1=pressed, 0=released
               when 0      => Log("Handle_Events","focus_off");
@@ -71,6 +89,7 @@ procedure Telescope is
                              Steppers.Focus_Plus;
               when others => null;
             end case;
+
           when 7      => --right Low Indexfinger
             case Event.Value is -- 1=pressed, 0=released
               when 0      => Log("Handle_Events","focus off");

@@ -48,7 +48,7 @@ package body Steppers is
 --    Koggs_Per_Revolution_Large   : constant Positive :=   40;
 --    Koggs_Per_Revolution_Small   : constant Positive :=     8;
 
-
+  -----------------------------------------------
   protected Speed_Keeper is
     procedure Set(Val : Speed_Type);
     function Get return Speed_Type ;
@@ -68,7 +68,6 @@ package body Steppers is
     end Get;
   end Speed_Keeper;
   ----------------------------------
-
   procedure Set_Speed(Speed: Speed_Type) is
   begin
     Speed_Keeper.Set(Speed);
@@ -76,17 +75,18 @@ package body Steppers is
   ----------------------------------
 
   Delay_Time : array (Speed_Type'Range) of Duration := (Slow => 0.005, Normal => 0.001);
-
   Global_Is_Initiated        : Boolean := False;
 
   protected type Data_Type is
     procedure Set_Direction(Direction : Direction_Type);
     function Get_Direction return Direction_Type;
+    procedure Set_Once(O : Boolean);
+    function Get_Once return Boolean;
   private
     D : Direction_Type := None;
+    Once : Boolean := False;
   end Data_Type;
   -----------------------------------------------
-
   task type Motor_Type is
     entry Init(Identity : Id_Type);
   end Motor_Type;
@@ -105,11 +105,20 @@ package body Steppers is
     begin
       return D;
     end Get_Direction;
+    ------------------------------
+    procedure Set_Once(O : Boolean) is
+    begin
+      Once := O;
+    end Set_Once;
+    ------------------------------
+    function Get_Once return Boolean is
+    begin
+      return Once;
+    end Get_Once;
   end Data_Type;
   -----------------------------------------------
 
   Data  : array(Id_Type'Range) of Data_Type;
-
 
   procedure Log(Who,What : in String) is
   begin
@@ -120,6 +129,18 @@ package body Steppers is
   --M1 Handles Up/down
   --M2 Handles Left/Right
 
+  procedure Focus_Plus_One is
+  begin
+    Data(1).Set_Once(True);
+    Data(1).Set_Direction(Direction => Forward);
+  end Focus_Plus_One;
+  -----------------------------------------------
+  procedure Focus_Minus_One is
+  begin
+    Data(1).Set_Once(True);
+    Data(1).Set_Direction(Direction => Backward);
+  end Focus_Minus_One;
+  -----------------------------------------------
   procedure Focus_Plus is
   begin
     Data(1).Set_Direction(Direction => Forward);
@@ -130,7 +151,6 @@ package body Steppers is
     null;
     Data(1).Set_Direction(Direction => Backward);
   end Focus_Minus;
-  -----------------------------------------------
   -----------------------------------------------
   procedure No_Direction is
   begin
@@ -143,7 +163,6 @@ package body Steppers is
       Data(I).Set_Direction(Direction => Stop);
     end loop;
   end Stop;
-
   -----------------------------------------------
   procedure Init is
   begin
@@ -222,6 +241,11 @@ package body Steppers is
             Sequence_Index := Sequence_Index - 1;
           end if;
       end case;
+
+      if Data(1).Get_Once then
+        Data(1).Set_Once(False);
+        Data(1).Set_Direction(None);
+      end if;
 
       Speed := Speed_Keeper.Get;
       delay Delay_Time(Speed);
