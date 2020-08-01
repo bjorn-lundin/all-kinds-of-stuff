@@ -18,8 +18,9 @@ class AI_Model(object):
     #print('init-AI_Model')
     #set up data structure
     # model initialization
-    self.D = 16 * 1 # input dimensionality: 16x1 grid
-    self.filename = "horses_2_actions_2nd_lay.p"
+#    self.D = 16 * 1 # input dimensionality: 16x1 grid
+    self.D = 32 * 1 # input dimensionality: 16x1 grid
+    self.filename = "./horses_2_actions_2nd_with_real_reward_lay.p"
     self.model = pickle.load(open(self.filename, 'rb'))
 
   def sigmoid(self,x):
@@ -32,11 +33,16 @@ class AI_Model(object):
     p = self.sigmoid(logp)
     return p, h # return probability of taking action 2, and hidden state
 
-  def query(self,diff):
+  def query(self,diff,curr):
     x = np.zeros(self.D)
     cnt = 0
+    #first look at the diff
     for diffed_odds in diff:
         x[cnt] = float(diffed_odds)
+        cnt = cnt + 1
+    #now add the current odds
+    for odds in curr:
+        x[cnt] = float(odds)
         cnt = cnt + 1
 
     # forward the policy network and sample an action from the returned probability
@@ -70,7 +76,7 @@ class MyServer(BaseHTTPRequestHandler):
         parsed_json = json.loads(post_data)
         #print(json.dumps(parsed_json, indent=4, sort_keys=True))
 
-        self.do_bet = self.ai_model.query(parsed_json['odds'])
+        self.do_bet = self.ai_model.query(parsed_json['diff'],parsed_json['curr'])
 
         self.send_response(200)
         self.end_headers()
