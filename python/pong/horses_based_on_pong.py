@@ -30,6 +30,9 @@ except getopt.error as err:
 #defaults
 mode='train'
 DATA_OFFSET = 25
+MAKE_BET = 2
+MAKE_NOTHING = 3
+
 learning_rate=1e-4
 position='2nd'
 side='lay'
@@ -106,7 +109,7 @@ class FakeHorse(object):
                        rew = float(fields[idx])
 
         if found :
-          return rew/100.0 
+          return rew/100.0
         else:
           return -0.15
       except :
@@ -126,12 +129,12 @@ class FakeHorse(object):
     rew = 0.0
     info = "no_info"
     #decide to bet or not
-    if action == 2 :
+    if action == MAKE_BET :
         #do bet on first runner found with lowest odds
         lowest_odds = float(ob[6])
         idx_with_lowest_odds = int(float(ob[8])) + DATA_OFFSET
         print ("lowest_odds idx/odds",lowest_odds , float(ob[idx_with_lowest_odds]) , idx_with_lowest_odds)
-        
+
         rew = self.reward(self.current_marketid, idx_with_lowest_odds, ob[41])
 
         #used size = 1.0
@@ -157,7 +160,7 @@ class FakeHorse(object):
         #        rew = self.size * (1.0 - self.commision)
         #else:
         #    raise Exception("bad bettype '" + self.bettype + "'" )
-        # 
+        #
         #
         #rew = rew/1000.0  # normering
 
@@ -296,7 +299,7 @@ def policy_forward(x):
   h[h<0] = 0 # ReLU nonlinearity
   logp = np.dot(model['W2'], h)
   p = sigmoid(logp)
-  return p, h # return probability of taking action 2, and hidden state
+  return p, h # return probability of taking action 2=MAKE_BET, and hidden state
 
 def policy_backward(eph, epdlogp):
   """ backward pass. (eph is array of intermediate hidden states) """
@@ -323,7 +326,7 @@ render = False
 while True:
     try:
         if render: env.render()
-        
+
         # preprocess the observation, set input to network to be difference image
         cur_x = prepro(observation)
         reread = False
@@ -331,65 +334,63 @@ while True:
             x = np.zeros(D)
             reread = True
         else:
-            x = cur_x - prev_x             
+            x = cur_x - prev_x
 
         prev_x = cur_x
-        if reread :
-            observation, reward, done, info = env.step(3) # get another sample so we get a diff. do NOT bet now (3)
+        if reread : # get another sample so we get a diff. do NOT bet now (MAKE_NOTHING)
+            observation, reward, done, info = env.step(MAKE_NOTHING)
             cur_x = prepro(observation)
             x = cur_x - prev_x
             prev_x = cur_x
         else:
-        
+
             # forward the policy network and sample an action from the returned probability
             aprob, h = policy_forward(x)
-            
-            #action = 2 if np.random.uniform() < aprob else 3 # roll the dice!
+
             if np.random.uniform() < aprob :   # roll the dice! [ 0  1  3  4 11 12]
-                action = 2 # lay favorite
+                action = MAKE_BET # lay favorite
             else :
-                action = 3 # no bet
-            
+                action = MAKE_NOTHING # no bet
+
             # record various intermediates (needed later for backprop)
             xs.append(x) # observation
             hs.append(h) # hidden state
-            #y = 1 if action == 2 else 0 # a "fake label"
-            if action == 2 : # a "fake label"
+            if action == MAKE_BET : # a "fake label"
                 y = 1
             else :
                 y = 0
-            
+
             dlogps.append(y - aprob) # grad that encourages the action that was taken to be taken (see http://cs231n.github.io/neural-networks-2/#losses if confused)
-            
+
             # step the environment and get new measurements
             observation, reward, done, info = env.step(action)
             reward_sum += reward
-            
+
             print ("action",action,"reward",reward,"reward_sum",reward_sum,"aprob",aprob)
-            
+
             drs.append(reward) # record reward (has to be done after we call step() to get reward for previous action)
-            
-            if done: # an episode finished
+
+            if done: # an episode/race finished
                 episode_number += 1
-                
+
                 # stack together all inputs, hidden states, action gradients, and rewards for this episode
                 epx = np.vstack(xs)
                 eph = np.vstack(hs)
                 epdlogp = np.vstack(dlogps)
                 epr = np.vstack(drs)
                 xs,hs,dlogps,drs = [],[],[],[] # reset array memory
-                
+
                 # compute the discounted reward backwards through time
                 discounted_epr = discount_rewards(epr)
                 # standardize the rewards to be unit normal (helps control the gradient estimator variance)
                 discounted_epr -= np.mean(discounted_epr)
                 discounted_epr /= np.std(discounted_epr)
-                
+
                 epdlogp *= discounted_epr # modulate the gradient with advantage (PG magic happens right here.)
                 grad = policy_backward(eph, epdlogp)
-                for k in model: 
+                for k in model:
                     grad_buffer[k] += grad[k] # accumulate grad over batch
-                
+
                 # perform rmsprop parameter update every batch_size episodes
                 if episode_number % batch_size == 0:
                     for k,v in model.items():
@@ -397,24 +398,23 @@ while True:
                         rmsprop_cache[k] = decay_rate * rmsprop_cache[k] + (1 - decay_rate) * g**2
                         model[k] += learning_rate * g / (np.sqrt(rmsprop_cache[k]) + 1e-5)
                         grad_buffer[k] = np.zeros_like(v) # reset batch gradient buffer
-                
+
                 # boring book-keeping
-                #running_reward = reward_sum if running_reward is None else running_reward * 0.99 + reward_sum * 0.01
                 if running_reward is None:
                     running_reward = reward_sum
                 else:
                     running_reward = running_reward * 0.99 + reward_sum * 0.01
-                
+
                 print ('resetting env. episode reward total was %f. running mean: %f' % (reward_sum, running_reward))
-                if episode_number % 100 == 0: 
+                if episode_number % 100 == 0:
                     pickle.dump(model, open(filename, 'wb'))
                 reward_sum = 0
-                observation = env.reset() # reset env
+                observation = env.reset() # get new observation for next turn
                 if observation is None :
                     raise KeyboardInterrupt
-                prev_x = None
-             
-        
+                prev_x = None # don't compare last input of race n with first input of race n+1
+
+
     except KeyboardInterrupt:
      print('saving model')
      pickle.dump(model, open(filename, 'wb'))
