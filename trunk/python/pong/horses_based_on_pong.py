@@ -1,3 +1,4 @@
+
 """ Trains an agent with (stochastic) Policy Gradients on Pong. Uses OpenAI Gym. """
 import numpy as np
 import _pickle as pickle
@@ -16,8 +17,8 @@ full_cmd_arguments = sys.argv
 # Keep all but the first
 argument_list = full_cmd_arguments[1:]
 
-long_options = ["mode=", "bettype=", "learningrate="]
-short_options = ["m:","b:, l:"]
+long_options = ["mode="]
+short_options = ["m:"]
 
 try:
     arguments, values = getopt.getopt(argument_list, short_options, long_options)
@@ -28,9 +29,10 @@ except getopt.error as err:
 
 #defaults
 mode='train'
-bettype='back'
 DATA_OFFSET = 25
 learning_rate=1e-4
+position='2nd'
+side='lay'
 
 for current_argument, current_value in arguments:
     if current_argument in ("-m", "--mode"):
@@ -38,17 +40,11 @@ for current_argument, current_value in arguments:
         print ("Enabling mode", mode)
     elif current_argument in ("-h", "--help"):
         print ("Displaying help")
-    elif current_argument in ("-b", "--bettype"):
-        bettype = current_value
-        print ("Enabling bettype", bettype)
-    elif current_argument in ("-l", "--learningrate"):
-        learning_rate = float(current_value)
-        print ("Enabling learningrate", learning_rate)
 
 
 class FakeHorse(object):
 
-  def __init__(self, mode='train', bettype='back'):
+  def __init__(self, mode='train', side='lay'):
     """a list of files, keep track of them.
     and in each file, keep track on what line we are on"""
     print('init')
@@ -58,10 +54,11 @@ class FakeHorse(object):
     self.racefile_name = []
     self.racefile_idx = 0
     self.mode = mode
-    self.bettype = bettype
-    self.dirname = os.environ.get('BOT_HISTORY') + '/data/ai/pong/2nd/' + self.bettype + '/win/' + self.mode
+    self.side = side
+    self.dirname = os.environ.get('BOT_HISTORY') + '/data/ai/pong/' + position + '/' + self.side + '/win/' + self.mode
     self.size = 1.0
     self.commision = 0.05
+    self.current_marketid = ''
 
     print(self.dirname)
     filelist = os.listdir(self.dirname)
@@ -79,35 +76,44 @@ class FakeHorse(object):
 
   def reward(self, marketid, selectionid, timestamp):
       #filename = os.environ.get('BOT_HISTORY') + '/data/ai/...'
-      dirname = '/Users/bnl/svn/bnlbot/botstart/bot-1-0/history/data/ai/win/rewards/back'
+      dirname = os.environ.get('BOT_HISTORY') + '/data/ai/win/rewards/' + self.side
       filename = dirname + '/' + marketid + '.dat'
-      selids = []
       rew = 0.0
+      print('params',marketid, selectionid, timestamp)
       try:
+        found = False
         first = True
         print('opened',filename)
         with open(filename) as rf:
             for line in rf:
                if first :
-                   selids.append(line.split(','))
+                   selids = line.split('|')
                    idx = 0 # find column of selid
+                   print('selids', selids)
                    for sel in selids:
-                       if sel == selectionid :
+                       print('sel',sel,'selectionid',selectionid)
+                       if sel != 'Timestamp ' and int(sel) == int(selectionid) :
                            break
                        else :
-                           idx = idx +1    
-                   first = False;               
+                           idx = idx +1
+                   first = False
+                   print ('sel',sel,'idx',idx)
                else:
-                   if line[0] == timestamp :
-                       rew = float(line[idx])
-        return rew
+                   fields = line.split('|')
+                   if fields[0] == timestamp :
+                       print(fields[0])
+                       found = True
+                       rew = float(fields[idx])
+
+        if found :
+          return rew/100.0 
+        else:
+          return -0.15
       except :
-        print('reward, exception ')
-        return 0.0
-       
+        return -0.2
+
 ################################
-      
-      
+
 
   def step(self,action):
     """ will do action and step one step further"""
@@ -126,41 +132,34 @@ class FakeHorse(object):
         idx_with_lowest_odds = int(float(ob[8])) + DATA_OFFSET
         print ("lowest_odds idx/odds",lowest_odds , float(ob[idx_with_lowest_odds]) , idx_with_lowest_odds)
         
-#        if lowest_odds != 1000.0 * float(ob[idx_with_lowest_odds]):
-#            print ("-----------BAD start----------")
-#            print (lowest_odds , 1000.0 * float(ob[idx_with_lowest_odds]))
-#            print (ob)
-#            print ("lowest_odds",lowest_odds)
-#            print ("idx_with_lowest_odds",idx_with_lowest_odds)
-#            print ("-----------BAD stop-----------")
-#            raise KeyboardInterrupt
+        rew = self.reward(self.current_marketid, idx_with_lowest_odds, ob[41])
 
         #used size = 1.0
         #commision = 5%
-        if self.bettype == 'back' :
-            #check for winner - or looser
-            if idx_with_lowest_odds == int(ob[0])   :
-                rew = self.size * (1.0 - self.commision) * ((1000.0 * lowest_odds) - 1.0)
-            elif idx_with_lowest_odds == int(ob[1]) :
-                rew = self.size * (1.0 - self.commision) * ((1000.0 * lowest_odds) - 1.0)
-            elif idx_with_lowest_odds == int(ob[2]) :
-                rew = self.size * (1.0 - self.commision) * ((1000.0 * lowest_odds) - 1.0)
-            else :
-                rew = -self.size
-        elif self.bettype == 'lay':  #lay bets - we do not want to be winners
-            if idx_with_lowest_odds == int(ob[0])   :
-                rew = -self.size * ((1000.0 * lowest_odds) - 1.0)
-            elif idx_with_lowest_odds == int(ob[1]) :
-                rew = -self.size * ((1000.0 * lowest_odds) - 1.0)
-            elif idx_with_lowest_odds == int(ob[2]) :
-                rew = -self.size * ((1000.0 * lowest_odds) - 1.0)
-            else :
-                rew = self.size * (1.0 - self.commision)
-        else:
-            raise Exception("bad bettype '" + self.bettype + "'" )
-        
-        
-        rew = rew/1000.0  # normering
+        #if self.bettype == 'back' :
+        #    #check for winner - or looser
+        #    if idx_with_lowest_odds == int(ob[0])   :
+        #        rew = self.size * (1.0 - self.commision) * ((1000.0 * lowest_odds) - 1.0)
+        #    elif idx_with_lowest_odds == int(ob[1]) :
+        #        rew = self.size * (1.0 - self.commision) * ((1000.0 * lowest_odds) - 1.0)
+        #    elif idx_with_lowest_odds == int(ob[2]) :
+        #        rew = self.size * (1.0 - self.commision) * ((1000.0 * lowest_odds) - 1.0)
+        #    else :
+        #        rew = -self.size
+        #elif self.bettype == 'lay':  #lay bets - we do not want to be winners
+        #    if idx_with_lowest_odds == int(ob[0])   :
+        #        rew = -self.size * ((1000.0 * lowest_odds) - 1.0)
+        #    elif idx_with_lowest_odds == int(ob[1]) :
+        #        rew = -self.size * ((1000.0 * lowest_odds) - 1.0)
+        #    elif idx_with_lowest_odds == int(ob[2]) :
+        #        rew = -self.size * ((1000.0 * lowest_odds) - 1.0)
+        #    else :
+        #        rew = self.size * (1.0 - self.commision)
+        #else:
+        #    raise Exception("bad bettype '" + self.bettype + "'" )
+        # 
+        #
+        #rew = rew/1000.0  # normering
 
         #if betting , then quit - only 1 bet/race
 #        done = True
@@ -207,6 +206,11 @@ class FakeHorse(object):
     self.racefile_idx = 0
     self.racefile_list_idx = self.racefile_list_idx +1
     try:
+        tmp = self.racefile_list[self.racefile_list_idx].split('/')
+        name = tmp[-1]
+        #marketid contains '.' in itself
+        self.current_marketid = '1.' + name.split('.')[1]
+
         with open(self.racefile_list[self.racefile_list_idx]) as rf:
             for line in rf:
                self.racefile_name.append(line.split(','))
@@ -228,7 +232,7 @@ gamma = 0.99 # discount factor for reward
 decay_rate = 0.99 # decay factor for RMSProp leaky sum of grad^2
 
 #bnl
-filename = "./horses_2_actions_2nd_" + bettype + ".p"
+filename = "./horses_2_actions_2nd_with_real_reward_" + side + ".p"
 my_file = Path(filename)
 resume = my_file.is_file()
 
@@ -241,7 +245,8 @@ render = False
 
 # model initialization
 #D = 80 * 80 # input dimensionality: 80x80 grid
-D = 16 * 1 # input dimensionality: 16x1 grid
+#D = 16 * 1 # input dimensionality: 16x1 grid
+D = 32 * 1 # input dimensionality: 16x1 grid
 if resume:
   model = pickle.load(open(filename, 'rb'))
 else:
@@ -256,14 +261,24 @@ def sigmoid(x):
   return 1.0 / (1.0 + np.exp(-x)) # sigmoid "squashing" function to interval [0,1]
 
 def prepro(I):
-  """ prepro 16x1  (16x1) 1D float vector """
-  J = np.zeros(16)
+#  """ prepro 16x1  (16x1) 1D float vector """
+#  J = np.zeros(16)
+#  cnt=0
+#  print(I)
+#  for odds in I[DATA_OFFSET:DATA_OFFSET+16]:
+#      J[cnt] = float(odds)
+#      cnt=cnt+1
+#      if cnt == 16 : break
+#  return J
+
+  """ prepro 32x1  (32x1) 1D float vector """
+  J = np.zeros(32)
   cnt=0
   print(I)
-  for odds in I[DATA_OFFSET:DATA_OFFSET+16]:
+  for odds in I[DATA_OFFSET:DATA_OFFSET+32]:
       J[cnt] = float(odds)
       cnt=cnt+1
-      if cnt == 16 : break
+      if cnt == 32 : break
   return J
 
 def discount_rewards(r):
@@ -292,7 +307,8 @@ def policy_backward(eph, epdlogp):
   return {'W1':dW1, 'W2':dW2}
 
 #env = gym.make("Pong-v0")
-env = FakeHorse(mode, bettype)
+print("mode",mode,"side",side)
+env = FakeHorse(mode, side)
 observation = env.reset()
 prev_x = None # used in computing the difference frame
 xs,hs,dlogps,drs = [],[],[],[]
@@ -301,7 +317,8 @@ reward_sum = 0
 episode_number = 0
 render = False
 
-print("test",env.reward( '1.160934105', 19450871, '16:55:41.578'))
+#print("test",env.reward( '1.160934105', 19450871, '06:55:41.572'))
+#a = 1.0 / 0
 
 while True:
     try:
