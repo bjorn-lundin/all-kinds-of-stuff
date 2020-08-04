@@ -56,6 +56,7 @@ class FakeHorse(object):
     self.racefile_list = []
     self.racefile_name = []
     self.racefile_idx = 0
+    self.OK_files_list = []
     self.mode = mode
     self.side = side
     self.dirname = os.environ.get('BOT_HISTORY') + '/data/ai/pong/' + position + '/' + self.side + '/win/' + self.mode
@@ -71,10 +72,26 @@ class FakeHorse(object):
             if filename == '.DS_Store' :
                 pass
             else :
-                self.racefile_list.append(self.dirname + '/' + filename)
-                print(self.dirname + '/' + filename)
+                if self.is_in_ok_list(filename):
+                    self.racefile_list.append(self.dirname + '/' + filename)
+                    print(self.dirname + '/' + filename)
         else:
             pass
+
+
+  def is_in_ok_list(self, filename):
+      if not self.OK_files_list :  # list is empty
+          fname = os.environ.get('BOT_HISTORY') + '/data/ai/pong/ok_marketids.dat'
+          with open(fname) as f:
+              for line in f:
+                  self.OK_files_list.append(line +'.csv')
+
+      return filename in self.OK_files_list
+
+
+################################
+
+
 
 
   def reward(self, marketid, selectionid, timestamp):
