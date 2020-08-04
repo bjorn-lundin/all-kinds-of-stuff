@@ -93,7 +93,6 @@ class FakeHorse(object):
 
 
 
-
   def reward(self, marketid, selectionid, timestamp):
       #filename = os.environ.get('BOT_HISTORY') + '/data/ai/...'
       dirname = os.environ.get('BOT_HISTORY') + '/data/ai/win/rewards/' + self.side
@@ -149,10 +148,10 @@ class FakeHorse(object):
     if action == MAKE_BET :
         #do bet on first runner found with lowest odds
         lowest_odds = float(ob[6])
-        idx_with_lowest_odds = int(float(ob[8])) + DATA_OFFSET
-        print ("lowest_odds idx/odds",lowest_odds , float(ob[idx_with_lowest_odds]) , idx_with_lowest_odds)
+        idx_with_lowest_odds = int(float(ob[7]))
+        print ("lowest_odds idx/odds",lowest_odds , ob[idx_with_lowest_odds] , idx_with_lowest_odds)
 
-        rew = self.reward(self.current_marketid, idx_with_lowest_odds, ob[41])
+        rew = self.reward(self.current_marketid, idx_with_lowest_odds, ob[57])
 
         #used size = 1.0
         #commision = 5%
