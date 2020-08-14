@@ -29,8 +29,8 @@ WHITE = (255, 255, 255)
 GREEN = (99, 255, 99)
 RED = (255, 66, 66)
 
-URL='https://lundin.duckdns.org'
-
+#URL='https://lundin.duckdns.org'
+URL='https://192.168.1.7'
 
 def isnumeric(s):
   try:
