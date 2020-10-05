@@ -11,6 +11,12 @@ from pathlib import Path
 import copy
 import getopt, sys
 
+
+import psycopg2 as pg
+import psycopg2.extras as ex
+
+
+
 # Get full command-line arguments
 full_cmd_arguments = sys.argv
 
@@ -46,94 +52,39 @@ for current_argument, current_value in arguments:
         print ("Displaying help")
 
 
-class FakeHorse(object):
+class FakeHorseDb(object):
 
   def __init__(self, mode='train', side='lay'):
     """a list of files, keep track of them.
     and in each file, keep track on what line we are on"""
     print('init')
     #set up data structure
-    self.racefile_list_idx = -1
-    self.racefile_list = []
-    self.racefile_name = []
-    self.racefile_idx = 0
-    self.OK_files_list = []
-    self.mode = mode
-    self.side = side
-    self.dirname = os.environ.get('BOT_HISTORY') + '/data/ai/pong/' + str(position) + '/' + self.side + '/win/' + self.mode
-    self.size = 1.0
+    
+    self.conn = pg.connect(
+      host="localhost",
+      database="bnl",
+      user="bnl",
+      password="bnl")
+    
     self.commision = 0.02
     self.current_marketid = ''
-
-    print(self.dirname)
-    filelist = os.listdir(self.dirname)
-    #print(filelist)
-    for filename in filelist:
-        if os.path.isfile(self.dirname + '/' + filename):
-            if filename == '.DS_Store' :
-                pass
-            else :
-                if self.is_in_ok_list(filename):
-                    self.racefile_list.append(self.dirname + '/' + filename)
-                   # print(self.dirname + '/' + filename)
-        else:
-            pass
-
-
-  def is_in_ok_list(self, filename):
-      if not self.OK_files_list :  # list is empty
-          fname = os.environ.get('BOT_HISTORY') + '/data/ai/pong/ok_marketids.dat'
-          with open(fname) as f:
-              for line in f:
-                  self.OK_files_list.append(line.strip() +'.csv')
-          #print (self.OK_files_list)
-
-     # print ('is_in_ok_list', filename, filename in self.OK_files_list)
-      return filename in self.OK_files_list
-
-
-################################
+    self.side = side.upper()
 
 
 
   def reward(self, marketid, selectionid, timestamp):
-      #filename = os.environ.get('BOT_HISTORY') + '/data/ai/...'
-      dirname = os.environ.get('BOT_HISTORY') + '/data/ai/win/rewards/' + self.side
-      filename = dirname + '/' + marketid + '.dat'
-      rew = 0.0
-      print('params',marketid, selectionid, timestamp)
-      try:
-        found = False
-        first = True
-        print('opened',filename)
-        with open(filename) as rf:
-            for line in rf:
-               if first :
-                   selids = line.split('|')
-                   idx = 0 # find column of selid
-                  # print('selids', selids)
-                   for sel in selids:
-                   #    print('sel',sel,'selectionid',selectionid)
-                       if sel != 'Timestamp ' and int(sel) == int(selectionid) :
-                           break
-                       else :
-                           idx = idx +1
-                   first = False
-                   print ('sel',sel,'idx',idx)
-               else:
-                   fields = line.split('|')
-                   if fields[0].strip() == timestamp.strip() :
-                   #    print(fields[0], 'found the timestamp, breaking out of loop')
-                       found = True
-                       rew = float(fields[idx])
-                       break
+      
+    rew = -15.0  
+    cur = self.conn.cursor()
+    cur.execute("select * from AREWARDS where MARKETID = %s and selectionid = %s and PRICETS = %s and SIDE = %s", (marketid, selectionid, timestamp, self.side))
+    row = cur.fetchone()
+    if row is not None:
+      print(row)
+      rew = float(row['profit'])
+    cur.close()
 
-        if found :
-          return rew/100.0
-        else:
-          return -0.15
-      except :
-        return -0.2
+  
+    return rew/100.0
 
 ################################
 
@@ -305,7 +256,7 @@ def policy_backward(eph, epdlogp):
 
 #env = gym.make("Pong-v0")
 print("mode",mode,"side",side)
-env = FakeHorse(mode, side)
+env = FakeHorseDb(mode, side)
 observation = env.reset()
 prev_x = None # used in computing the difference frame
 xs,hs,dlogps,drs = [],[],[],[]
