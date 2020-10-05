@@ -6,12 +6,12 @@ ONCE=0
 function finish {
   DO_EXIT=1
   echo "caught a signal"
-  kill $(cat pid_bash.dat)
+  kill -kill $(cat pid_bash.dat)
 }
 trap finish SIGHUP SIGINT SIGTERM
 
 
-#echo $$ > pid_bash.dat
+echo $$ > pid_bash.dat
 
 if [ "$1" == "once" ] ; then
   ONCE=1
@@ -31,6 +31,7 @@ do
   [ -r log/${logfile}.gz ] && rm -f log/${logfile}.gz
   gzip log/${logfile}
   i=$((i + 1))
+
   if [ $DO_EXIT -eq 1 ] ; then
     break
   fi

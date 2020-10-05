@@ -18,9 +18,9 @@ class AI_Model(object):
     #print('init-AI_Model')
     #set up data structure
     # model initialization
-#    self.D = 16 * 1 # input dimensionality: 16x1 grid
-    self.D = 32 * 1 # input dimensionality: 16x1 grid
-    self.filename = "./horses_2_actions_2nd_with_real_reward_lay.p"
+    self.D = 16 * 1 # input dimensionality: 16x1 grid
+#    self.D = 32 * 1 # input dimensionality: 32x1 grid
+    self.filename = "./horses_2_actions_1st1x16_with_real_reward_lay.p"
     self.model = pickle.load(open(self.filename, 'rb'))
 
   def sigmoid(self,x):
@@ -37,9 +37,9 @@ class AI_Model(object):
     x = np.zeros(self.D)
     cnt = 0
     #first look at the diff
-    for diffed_odds in diff:
-        x[cnt] = float(diffed_odds)
-        cnt = cnt + 1
+#    for diffed_odds in diff:
+#        x[cnt] = float(diffed_odds)
+#        cnt = cnt + 1
     #now add the current odds
     for odds in curr:
         x[cnt] = float(odds)
@@ -50,7 +50,7 @@ class AI_Model(object):
 
     #action = 2 => bet
     print("aprob",aprob) 
-    if aprob > 0.999 :  #let model decide
+    if aprob > 0.99 :  #let model decide
         action = 2 # bet
     else :
         action = 3 # no bet
