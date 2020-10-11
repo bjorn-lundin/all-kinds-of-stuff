@@ -7,20 +7,17 @@ def test():
 
   try:
     conn = pg.connect(
-      host="localhost",
+      host="192.168.1.136",
       database="bnl",
       user="bnl",
       password="bnl",
-      cursor_factory=ex.DictCursor)      
-  
-  
-  
-  
+      cursor_factory=ex.DictCursor)
+
     marketid = '1.146187859'
     selectionid = 19068149
     timestamp = '2018-08-01 15:14:06.826'
-    side='LAY'  
-  
+    side='LAY'
+
     cur = conn.cursor()
     cur.execute("select * from AREWARDS where MARKETID = %s and selectionid = %s and PRICETS = %s and SIDE = %s", (marketid, selectionid, timestamp, side))
     row = cur.fetchone()
@@ -28,11 +25,30 @@ def test():
       print(row)
       print(row['profit'])
     cur.close()
+
+
+    cur = conn.cursor()
+    cur.execute("select * from OKMARKETS OK, AMARKETS M where OK.MARKETID = M.MARKETID " +
+                "and OK.MARKETTYPE='WIN' order by M.STARTTS")
+    rows = cur.fetchall()
+    for row in rows:
+      print(row['marketid'])
+    cur.close()
+
+
+
+
+
   except (Exception, pg.DatabaseError) as error:
     print(error)
   finally:
     if conn is not None:
       conn.close()
+
+
+
+
+
 
 if __name__ == '__main__':
     test()

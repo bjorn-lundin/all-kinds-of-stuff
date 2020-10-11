@@ -11,7 +11,6 @@ from pathlib import Path
 import copy
 import getopt, sys
 
-
 import psycopg2 as pg
 import psycopg2.extras as ex
 
@@ -35,13 +34,12 @@ except getopt.error as err:
 
 #defaults
 mode='train'
-DATA_OFFSET = 25
+
 MAKE_BET = 2
 MAKE_NOTHING = 3
 
 learning_rate=1e-4
-#position='2nd'
-position='1st'
+position='1'
 side='lay'
 
 for current_argument, current_value in arguments:
@@ -54,36 +52,70 @@ for current_argument, current_value in arguments:
 
 class FakeHorseDb(object):
 
+###################################
   def __init__(self, mode='train', side='lay'):
     """a list of files, keep track of them.
     and in each file, keep track on what line we are on"""
     print('init')
     #set up data structure
-    
+
     self.conn = pg.connect(
-      host="localhost",
+      host="192.168.1.136",
       database="bnl",
       user="bnl",
-      password="bnl")
-    
+      password="bnl",
+      cursor_factory=ex.DictCursor)
+
     self.commision = 0.02
     self.current_marketid = ''
     self.side = side.upper()
+    self.marketid = None
+    self.selectionid = None
+    self.timestamp = None
+    self.cursor = None
+    self.selectionidlist = []
+    self.bestof = np.zeros(16)
+    self.marketidlist = []
 
-
-
-  def reward(self, marketid, selectionid, timestamp):
-      
-    rew = -15.0  
+    #list of marketids to use
     cur = self.conn.cursor()
-    cur.execute("select * from AREWARDS where MARKETID = %s and selectionid = %s and PRICETS = %s and SIDE = %s", (marketid, selectionid, timestamp, self.side))
-    row = cur.fetchone()
-    if row is not None:
-      print(row)
-      rew = float(row['profit'])
+    cur.execute("""
+      select OK.MARKETID from OKMARKETS OK, AMARKETS M
+        where true
+        and OK.MARKETID = M.MARKETID
+        and OK.MARKETTYPE = %s
+        order by M.STARTTS""",
+        ("WIN",))
+    rows = cur.fetchall()
+    for row in rows:
+#      print('init',row['marketid'])
+      self.marketidlist.append(row['marketid'])
+
     cur.close()
 
-  
+
+###################################
+  def reward(self):
+    print("reward",self.marketid, self.selectionid, self.timestamp, self.side)
+    rew = -15.0
+    cur = self.conn.cursor()
+    cur.execute("""
+      select * from AREWARDS
+        where true
+        and MARKETID = %s
+        and SELECTIONID = %s
+        and PRICETS = %s
+        and SIDE = %s """,
+        (self.marketid, self.selectionid, self.timestamp, self.side))
+    row = cur.fetchone()
+    if row is not None:
+      print('reward',row)
+      rew = float(row['profit'])
+    else:
+      print('reward','not found for',self.marketid, self.selectionid, self.timestamp, self.side )
+
+    cur.close()
+
     return rew/100.0
 
 ################################
@@ -91,82 +123,124 @@ class FakeHorseDb(object):
 
   def step(self,action):
     """ will do action and step one step further"""
-    #print('step')
-    #print('action ' + str(action))
-    #move one step into array
-    self.racefile_idx = self.racefile_idx +1
     ob = self.get_observation()
     done = False
+    if ob is None:
+        done = True
     rew = 0.0
     info = "no_info"
     #decide to bet or not
-    if action == MAKE_BET :
+    if action == MAKE_BET and not done :
         #do bet on first runner found with lowest odds
-        lowest_odds = float(ob[6])
-        selid_with_lowest_odds = int(float(ob[7]))
-        print ("lowest_odds",lowest_odds)
-        print ("lowest_odds idx",selid_with_lowest_odds)
-        print ("ts",ob[57])
-        ts_timepart = ob[57].split(' ')[1]
-        print ("ts_timepart",ts_timepart)
+        idx = -1
+        idx_with_lowest_odds = 0
+        lowest_odds = 10000000.0
+#        print ("step",ob)
+        for o in ob:
+          idx = idx +1
+#          print ("step",o)
+          if o > 1.0 :
+            if o < lowest_odds :
+              lowest_odds = o
+              idx_with_lowest_odds = idx
 
-        rew = self.reward(self.current_marketid, selid_with_lowest_odds, ts_timepart)
+        selid_with_lowest_odds = int(self.bestof[idx_with_lowest_odds])
+#        print ("lowest_odds",lowest_odds)
+#        print ("lowest_odds idx",idx_with_lowest_odds)
+#        print ("lowest_odds selid",selid_with_lowest_odds)
+        print('step',self.selectionid," -> ",selid_with_lowest_odds)
+        self.selectionid = selid_with_lowest_odds
+        rew = self.reward()
+        print('step','reward',rew)
     else:
         pass
 
-    #try only to end of file
-    if not done :
-        done = self.racefile_idx == len(self.racefile_name) -1
-        #print ("done",done,"self.racefile_idx" ,self.racefile_idx ,"len(self.racefile_name) -1", len(self.racefile_name) -1)
     return (ob,rew,done,info)
 
+  ######################################
 
-  def render():
-      print("render not implemented")
+  def render(self):
+      print("render", "marketid", self.marketid,"selid", self.selectionid, "timestamp",self.timestamp)
 
+  ######################################
 
   def get_observation(self):
-   # print('get_observation')
-   # print('get_observation.racefile_idx ', self.racefile_idx)
-   # print('get_observation rewardfile ' + self.reward_file )
-   # print('get_observation racefile_idx ' + str(self.racefile_idx) )
+    idx = 0
+    sql = """
+      select PH.* from APRICESHISTORY PH
+        where true
+        and PH.MARKETID = %s
+        and PH.SELECTIONID = %s
+        and PH.PRICETS > %s
+        order by PH.PRICETS"""
 
-    #wtf IS this shitlanguage
-    try:
-        tmp = copy.deepcopy(self.racefile_name[self.racefile_idx])
-    except IndexError:
-        print('get_observation.IndexError ')
-   #     print('get_observation.racefile_idx ', self.racefile_idx)
-   #     print('get_observation rewardfile ' + self.reward_file )
-   #     print('get_observation racefile_name ' + str(self.racefile_name) )
-   #     print('get_observation racefile_list_idx ' + str(self.racefile_list_idx) )
-   #     print('get_observation racefile_list[idx] ' + self.racefile_list[self.racefile_list_idx] )
+    if self.timestamp is None :
+      print('get_observation','incoming timestamp was None')
+      self.timestamp = '1900-01-01 00:00:00.000'
 
-    #print(tmp)
-    return tmp
+    ob = np.zeros(16)
+    self.bestof = np.zeros(16)
+    found = False
+    for selectionid in self.selectionidlist:
+      self.cursor = self.conn.cursor()
+      self.cursor.execute(sql, (self.marketid, selectionid, self.timestamp))
+      row = self.cursor.fetchone()
+      if row is not None :
+#        print('get_observation',row)
+        found = True
+        self.bestof[idx] = row['selectionid']
+        if self.side == 'BACK' :
+          ob[idx] = row['backprice']
+        elif self.side == 'LAY' :
+          ob[idx] = row['layprice']
+        else:
+          a = 1/0
+
+        idx = idx +1
+        self.timestamp = row['pricets']
+
+    print('get_observation','found',found)
+    print('get_observation',ob)
+    if not found :
+      #signal that this race is done, no rows found for any selid
+      self.timestamp = None
+      self.selectionid = None
+      self.marketid = None
+      return None
+
+    return ob
+
   ##########################################
 
 
   def reset(self):
-    """ will pickup and read next file"""
-    print('reset ',self.racefile_list_idx, '/',len(self.racefile_list))
-    self.racefile_name = []
-    self.racefile_idx = 0
-    self.racefile_list_idx = self.racefile_list_idx +1
-    try:
-        tmp = self.racefile_list[self.racefile_list_idx].split('/')
-        name = tmp[-1]
-        #marketid contains '.' in itself
-        self.current_marketid = '1.' + name.split('.')[1]
+    """ will pickup and read next market"""
+    #get one from top of list and delete the listitem
+    try :
+      self.marketid = self.marketidlist.pop(0)
+      print('reset','new marketid is', self.marketid)
+      #get a list if runners in sortorder
+      cur = self.conn.cursor()
+      cur.execute(
+        """
+        select SELECTIONID from ARUNNERS
+          where true
+          and MARKETID = %s
+          order by SORTPRIO
+        """,
+          (self.marketid,))
 
-        with open(self.racefile_list[self.racefile_list_idx]) as rf:
-            for line in rf:
-               self.racefile_name.append(line.split(','))
-            print('opened', self.racefile_list[self.racefile_list_idx])
-        return self.get_observation()
+      rows = cur.fetchall()
+      for row in rows:
+        print('reset',row['selectionid'])
+        self.selectionidlist.append(row['selectionid'])
+
+      cur.close()
+      self.timestamp = None
+
+      return self.get_observation()
     except IndexError:
-        print('reset.IndexError ')
-    return None
+      return None
 
   ##########################################
 
@@ -210,13 +284,16 @@ def sigmoid(x):
 
 def prepro(I):
   """ prepro 16x1  (16x1) 1D float vector """
+  return I ; # ger numera numpy vector
   J = np.zeros(16)
   cnt=0
-  print(I)
-  for odds in I[DATA_OFFSET:DATA_OFFSET+16]:
+#  print(prepro,I)
+#  for odds in I[DATA_OFFSET:DATA_OFFSET+16]:
+  for odds in I:
       J[cnt] = float(odds)
       cnt=cnt+1
       if cnt == 16 : break
+#  print(prepro,J)
   return J
 
 #  """ prepro 32x1  (32x1) 1D float vector """
@@ -263,7 +340,7 @@ xs,hs,dlogps,drs = [],[],[],[]
 running_reward = None
 reward_sum = 0
 episode_number = 0
-render = False
+render = True
 
 #print("test",env.reward( '1.160934105', 19450871, '06:55:41.572'))
 #a = 1.0 / 0
