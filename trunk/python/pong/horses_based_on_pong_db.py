@@ -84,8 +84,9 @@ class FakeHorseDb(object):
         where true
         and OK.MARKETID = M.MARKETID
         and OK.MARKETTYPE = %s
+        and M.STARTTS >= %s
         order by M.STARTTS""",
-        ("WIN",))
+        ("WIN",'2019-05-19 00:00:00.000'))
     rows = cur.fetchall()
     for row in rows:
 #      print('init',row['marketid'])
@@ -109,8 +110,8 @@ class FakeHorseDb(object):
         (self.marketid, self.selectionid, self.timestamp, self.side))
     row = cur.fetchone()
     if row is not None:
-      print('reward',row)
       rew = float(row['profit'])
+      print('reward','found',row['profit'],'row',row)
     else:
       print('reward','not found for',self.marketid, self.selectionid, self.timestamp, self.side )
 
