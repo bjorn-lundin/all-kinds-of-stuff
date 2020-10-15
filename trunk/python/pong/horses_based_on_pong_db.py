@@ -86,7 +86,7 @@ class FakeHorseDb(object):
         and OK.MARKETTYPE = %s
         and M.STARTTS >= %s
         order by M.STARTTS""",
-        ("WIN",'2019-05-19 00:00:00.000'))
+        ("WIN",'2016-04-01 00:00:00.000'))
     rows = cur.fetchall()
     for row in rows:
 #      print('init',row['marketid'])
@@ -187,15 +187,16 @@ class FakeHorseDb(object):
       self.cursor.execute(sql, (self.marketid, selectionid, self.timestamp))
       row = self.cursor.fetchone()
       if row is not None :
-#        print('get_observation',row)
+        print('get_observation','idx',idx,row)
         found = True
-        self.bestof[idx] = row['selectionid']
-        if self.side == 'BACK' :
-          ob[idx] = row['backprice']
-        elif self.side == 'LAY' :
-          ob[idx] = row['layprice']
-        else:
-          a = 1/0
+        if idx < 16 :
+          self.bestof[idx] = row['selectionid']
+          if self.side == 'BACK' :
+            ob[idx] = row['backprice']
+          elif self.side == 'LAY' :
+            ob[idx] = row['layprice']
+          else:
+            a = 1/0
 
         idx = idx +1
         self.timestamp = row['pricets']
@@ -436,7 +437,10 @@ while True:
                 reward_sum = 0
                 observation = env.reset() # get new observation for next turn
                 if observation is None :
-                    raise KeyboardInterrupt
+                    #try again
+                    observation, reward, done, info = env.step(MAKE_NOTHING) # get new observation for next turn
+                    if observation is None : # give up
+                       raise KeyboardInterrupt
                 prev_x = None # don't compare last input of race n with first input of race n+1
 
 
