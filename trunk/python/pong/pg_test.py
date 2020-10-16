@@ -31,16 +31,21 @@ def create_cache(marketid, conn):
 
   if cache_exists(filename):
     cache_matrix = pickle.load(open(filename, 'rb'))
+#    for a in range(cache_matrix.shape[0]):
+#        for b in range(cache_matrix.shape[1]):
+#            for c in range(cache_matrix.shape[2]):
+#                print ('cache_matrix2', a,b,c ,cache_matrix [a][b][c])
+
   else:
     num_rows = 0
     num_cols = 16
     cur = conn.cursor()
     cur.execute("select max(cnt) mx from (select SELECTIONID, count('a') cnt from APRICESHISTORY where MARKETID = %s group by SELECTIONID) tmp",(marketid,))
-    row = cur.fetchone()
-    if row is not None:
+    datarow = cur.fetchone()
+    if datarow is not None:
 #          print(row)
-      print(row['mx'])
-      num_rows = row['mx']
+      print(datarow['mx'])
+      num_rows = datarow['mx']
     cur.close()
     cache_matrix = np.zeros( (num_rows, num_cols, 4) )
 
@@ -48,16 +53,18 @@ def create_cache(marketid, conn):
     cur = conn.cursor()
     cur.execute("select SELECTIONID from ARUNNERS where MARKETID = %s and STATUS <> %s order by SORTPRIO",(marketid,'REMOVED'))
     idx=0
-    rows = cur.fetchall()
-    for row in rows:
-      selid=row['selectionid']
-      dictSelid_Idx[selid]=idx
+    datarows = cur.fetchall()
+    for datarow in datarows:
+      selid = datarow['selectionid']
+      dictSelid_Idx[selid] = idx
       idx=idx+1
     cur.close()
-#        print('dictSelid_Idx',dictSelid_Idx)
 
-    for selid, idx in dictSelid_Idx.items():
-      print('idx',idx,'selid',selid)
+    print('dictSelid_Idx',dictSelid_Idx)
+
+    for selid, col in dictSelid_Idx.items():
+#      col = dictSelid_Idx[selid]
+      print('selid',selid,'col',col)
       cur = conn.cursor()
       cur.execute("""
         select LR.PROFIT layprofit, BR.PROFIT backprofit, PH.*
@@ -74,18 +81,23 @@ def create_cache(marketid, conn):
         and PH.MARKETID = %s
         and PH.SELECTIONID = %s
         order by PH.PRICETS """,(marketid,selid))
-
-      rows = cur.fetchall()
-      for row in rows:
-        #print(row)
-        cache_matrix [idx] [dictSelid_Idx[selid]] [BACKPRICE]  = row['backprice']
-        cache_matrix [idx] [dictSelid_Idx[selid]] [LAYPRICE]   = row['layprice']
-        cache_matrix [idx] [dictSelid_Idx[selid]] [BACKREWARD] = row['backprofit']
-        cache_matrix [idx] [dictSelid_Idx[selid]] [LAYREWARD]  = row['layprofit']
+      row = 0
+      datarows = cur.fetchall()
+      for datarow in datarows:
+        cache_matrix [row] [col] [LAYREWARD]  = datarow['layprofit']
+        cache_matrix [row] [col] [BACKREWARD] = datarow['backprofit']
+        cache_matrix [row] [col] [LAYPRICE]   = datarow['layprice']
+        cache_matrix [row] [col] [BACKPRICE]  = datarow['backprice']
+#        for c in range(cache_matrix.shape[2]):
+#          print('cache_matrix1',cache_matrix [row] [col] [c], row, col, c)
+        row = row +1
 
       cur.close()
 
+    print('shapes',marketid, cache_matrix.shape[0],cache_matrix.shape[1],cache_matrix.shape[2])
     pickle.dump(cache_matrix, open(filename, 'wb'))
+
+
 
 ########################################################
 
