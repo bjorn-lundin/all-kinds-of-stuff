@@ -137,36 +137,46 @@ def do_cache():
       cursor_factory=ex.DictCursor)
 
 
-    marketidlist = []
+    marketlist = []
+    filename = "pickles/marketlist" + ".pickle"
 
-    #list of marketids to use
-    cur = conn.cursor()
-    cur.execute("""
-      select OK.MARKETID from OKMARKETS OK, AMARKETS M
+    if cache_exists(filename):
+      marketlist = pickle.load(open(filename, 'rb'))
+    else:
+      #list of markets to use
+      cur = conn.cursor()
+      cur.execute("""
+        select M.* from OKMARKETS OK, AMARKETS M
         where true
         and OK.MARKETID = M.MARKETID
         and OK.MARKETTYPE = %s
         and M.STARTTS >= %s
         order by M.STARTTS""",
         ("WIN",'2016-04-01 00:00:00.000'))
-    rows = cur.fetchall()
-    for row in rows:
-      marketidlist.append(row['marketid'])
+      rows = cur.fetchall()
+      for row in rows:
+      #  marketidlist.append(row['marketid'])
+        marketlist.append(row)
+      cur.close()
+      pickle.dump(marketlist, open(filename, 'wb'))
 
-    cur.close()
-    print("START")
-
-
+#    for market in marketlist:
+#      print(market)
+#      print(market['marketid'])
+#      print(market['markettype'])
+#      print(market['startts'])
+#      break
 #get_observation idx 0 ['1.124156004', 7789090, datetime.datetime(2016, 4, 10, 15, 4, 33, 607000), 'ACTIVE', Decimal('13854.00'), Decimal('360.00'),
 
-    for marketid in marketidlist:
+# market is a dict:
+    for market in marketlist:
       start_time = time.time()
-      print('marketid', marketid)
-      create_cache(marketid,conn)
+      print('marketid', market['marketid'])
+      create_cache(market['marketid'],conn)
       #per market
       elapsed_time = time.time() - start_time
-      print('elapsed_time', marketid, elapsed_time)
-
+      print('elapsed_time', market['marketid'], elapsed_time)
+#      break
   finally :
     conn.close();
 
