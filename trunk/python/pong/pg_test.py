@@ -26,17 +26,35 @@ def cache_exists(filenname):
 ############################################################
 
 
-def create_cache(marketid, conn):
-  filename = "pickles/cache_" + marketid + ".pickle"
+def create_cached_dicts(marketid, conn):
 
-  if cache_exists(filename):
-    cache_matrix = pickle.load(open(filename, 'rb'))
-#    for a in range(cache_matrix.shape[0]):
-#        for b in range(cache_matrix.shape[1]):
-#            for c in range(cache_matrix.shape[2]):
-#                print ('cache_matrix2', a,b,c ,cache_matrix [a][b][c])
+  filename_selid_idx = "pickles/selid_idx_" + marketid + ".pickle"
+  filename_idx_selid = "pickles/idx_selid_" + marketid + ".pickle"
 
+  if cache_exists(filename_selid_idx):
+    return = pickle.load(open(filename_selid_idx, 'rb'))
   else:
+    dict_selid_idx={}
+    dict_idx_selid={}
+    cur = conn.cursor()
+    cur.execute("select SELECTIONID from ARUNNERS where MARKETID = %s and STATUS <> %s order by SORTPRIO",(marketid,'REMOVED'))
+    idx=0
+    datarows = cur.fetchall()
+    for datarow in datarows:
+      selid = datarow['selectionid']
+      dict_selid_idx[selid] = idx
+      dict_idx_selid[idx] = selid
+      idx = idx +1
+    cur.close()
+
+    pickle.dump(dict_idx_selid, open(filename_idx_selid, 'wb'))
+    pickle.dump(dict_selid_idx, open(filename_selid_idx, 'wb'))
+
+    print('dict_selid_Idx',dict_selid_idx)
+    return dict_selid_idx
+
+############################################################
+def create_empty_matrix(marketid, conn):
     num_rows = 0
     num_cols = 16
     cur = conn.cursor()
@@ -48,22 +66,26 @@ def create_cache(marketid, conn):
       num_rows = datarow['mx']
     cur.close()
     cache_matrix = np.zeros( (num_rows, num_cols, 4) )
+############################################################
 
-    dictSelid_Idx={}
-    cur = conn.cursor()
-    cur.execute("select SELECTIONID from ARUNNERS where MARKETID = %s and STATUS <> %s order by SORTPRIO",(marketid,'REMOVED'))
-    idx=0
-    datarows = cur.fetchall()
-    for datarow in datarows:
-      selid = datarow['selectionid']
-      dictSelid_Idx[selid] = idx
-      idx=idx+1
-    cur.close()
 
-    print('dictSelid_Idx',dictSelid_Idx)
+def create_cache(marketid, conn):
+  filename = "pickles/cache_" + marketid + ".pickle"
 
-    for selid, col in dictSelid_Idx.items():
-#      col = dictSelid_Idx[selid]
+  if cache_exists(filename):
+    cache_matrix = pickle.load(open(filename, 'rb'))
+    dict_selid_idx = create_cached_dicts(marketid, conn)
+#    for a in range(cache_matrix.shape[0]):
+#        for b in range(cache_matrix.shape[1]):
+#            for c in range(cache_matrix.shape[2]):
+#                print ('cache_matrix2', a,b,c ,cache_matrix [a][b][c])
+
+  else:
+    dict_selid_idx = create_cached_dicts(marketid, conn)
+    cache_matrix = create_empty_matrix(marketid, conn)
+    print('dict_selid_Idx',dict_selid_idx)
+
+    for selid, col in dict_selid_idx.items():
       print('selid',selid,'col',col)
       cur = conn.cursor()
       cur.execute("""
@@ -102,7 +124,7 @@ def create_cache(marketid, conn):
 ########################################################
 
 
-def test():
+def do_cache():
   try:
     conn = pg.connect(
       host="192.168.1.136",
@@ -146,7 +168,7 @@ def test():
     conn.close();
 
 if __name__ == '__main__':
-  test()
+  do_cache()
 
 
 
