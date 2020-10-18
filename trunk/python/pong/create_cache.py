@@ -12,10 +12,10 @@ from pathlib import Path
 
 
 
-BACKPRICE = 0
-LAYPRICE = 1
+BACKPRICE  = 0
+LAYPRICE   = 1
 BACKREWARD = 2
-LAYREWARD = 3
+LAYREWARD  = 3
 
 
 def cache_exists(filenname):
@@ -32,7 +32,7 @@ def create_cached_dicts(marketid, conn):
   filename_idx_selid = "pickles/idx_selid_" + marketid + ".pickle"
 
   if cache_exists(filename_selid_idx):
-    return = pickle.load(open(filename_selid_idx, 'rb'))
+    return pickle.load(open(filename_selid_idx, 'rb'))
   else:
     dict_selid_idx={}
     dict_idx_selid={}
@@ -62,10 +62,10 @@ def create_empty_matrix(marketid, conn):
     datarow = cur.fetchone()
     if datarow is not None:
 #          print(row)
-      print(datarow['mx'])
+      print('datarow[mx]',datarow['mx'])
       num_rows = datarow['mx']
     cur.close()
-    cache_matrix = np.zeros( (num_rows, num_cols, 4) )
+    return np.zeros( (num_rows, num_cols, 4) )
 ############################################################
 
 
@@ -106,6 +106,9 @@ def create_cache(marketid, conn):
       row = 0
       datarows = cur.fetchall()
       for datarow in datarows:
+        #print('cache_matrix1',row, col)
+        #print('cache_matrix1',datarow)
+        #print('cache_matrix1',cache_matrix)
         cache_matrix [row] [col] [LAYREWARD]  = datarow['layprofit']
         cache_matrix [row] [col] [BACKREWARD] = datarow['backprofit']
         cache_matrix [row] [col] [LAYPRICE]   = datarow['layprice']
