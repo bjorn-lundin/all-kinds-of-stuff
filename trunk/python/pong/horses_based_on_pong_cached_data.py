@@ -41,6 +41,7 @@ LAYREWARD  = 3
 
 
 learning_rate=1e-4
+#learning_rate=1e-5
 position='1'
 side='lay'
 
@@ -74,14 +75,14 @@ class FakeHorseDb(object):
     self.dict_idx_selid = {}
     self.cache_matrix = None
     self.bestof = np.zeros(16)
-    self.marketidlist = []
     filename = "pickles/marketlist" + ".pickle"
     self.marketlist = pickle.load(open(filename, 'rb'))
+    print('init','num markets', len(self.marketlist))
 
 
 ###################################
   def reward(self):
-    print("reward",self.marketid, self.selectionid, self.timestamp, self.side)
+    print("reward",self.market['marketid'], self.selectionid, self.currentrow, self.side)
     rew = -15.0
     col = self.dict_selid_idx[self.selectionid]
 
@@ -92,7 +93,7 @@ class FakeHorseDb(object):
     else:
       a = 2/0
 
-    print('reward','for',self.marketid, self.selectionid, self.timestamp, self.side, rew )
+    print('reward','for',self.market['marketid'], self.selectionid, self.currentrow, self.side, rew )
 
     return rew/100.0
 
@@ -116,17 +117,18 @@ class FakeHorseDb(object):
 #        print ("step",ob)
         for o in ob:
           idx = idx +1
-#          print ("step",o)
+#          print ("step",o,idx)
           if o > 1.0 :
             if o < lowest_odds :
+#              print ("step",'lowest',o,idx)
               lowest_odds = o
               idx_with_lowest_odds = idx
 
-        selid_with_lowest_odds = int(self.dict_idx_selid[idx])
-#        print ("lowest_odds",lowest_odds)
+#        print ('step',"self.dict_idx_selid",self.dict_idx_selid,'idx',idx)
+        selid_with_lowest_odds = int(self.dict_idx_selid[idx_with_lowest_odds])
 #        print ("lowest_odds idx",idx_with_lowest_odds)
 #        print ("lowest_odds selid",selid_with_lowest_odds)
-        print('step',self.selectionid," -> ",selid_with_lowest_odds)
+#        print('step',self.selectionid," -> ",selid_with_lowest_odds)
         self.selectionid = selid_with_lowest_odds
         rew = self.reward()
         print('step','reward',rew)
@@ -138,7 +140,7 @@ class FakeHorseDb(object):
   ######################################
 
   def render(self):
-      print("render", "marketid", self.marketid,"selid", self.selectionid, "timestamp",self.timestamp)
+      print("render", "marketid", self.market['marketid'], "currentrow",self.currentrow)
 
   ######################################
 
@@ -150,20 +152,28 @@ class FakeHorseDb(object):
     else:
       self.currentrow = self.currentrow +1
 
-    if self.currentrow > self.numrows  :
+    if self.currentrow >= self.numrows  :
       #signal that this race is done, no rows found for any selid
       return None
 
     ob = np.zeros(16)
     for selid, col in self.dict_selid_idx.items():
       if self.side == 'BACK' :
-        ob[col] = self.cache_matrix [self.currentrow] [col] [BACKPRICE]
+        ob[col] = self.cache_matrix [self.currentrow] [col] [BACKPRICE]/1000.0
       elif self.side == 'LAY' :
-        ob[col] = self.cache_matrix [self.currentrow] [col] [LAYPRICE]
+        ob[col] = self.cache_matrix [self.currentrow] [col] [LAYPRICE]/1000.0
       else:
         a = 1/0
 
     print('get_observation',ob)
+    ok = False
+    for i in ob :
+      if i > 0.0:
+        ok = True
+        break
+
+    if not ok:
+      return None
 
     return ob
 
@@ -175,9 +185,8 @@ class FakeHorseDb(object):
     #get one from top of list and delete the listitem
     try :
       self.market = self.marketlist.pop(0)
-      print('reset','new marketid is', self.market['marketid'])
+      print('reset','num markets left', len(self.marketlist))
 
-      self.timestamp = 0
       filename_selid_idx = "pickles/selid_idx_" + self.market['marketid'] + ".pickle"
       filename_idx_selid = "pickles/idx_selid_" + self.market['marketid'] + ".pickle"
 
@@ -186,13 +195,36 @@ class FakeHorseDb(object):
 
       filename = "pickles/cache_" + self.market['marketid'] + ".pickle"
       self.cache_matrix = pickle.load(open(filename, 'rb'))
-      self.numrows = self.cache_matrix.shape[1]
+      self.numrows = self.cache_matrix.shape[0]
       self.currentrow = None
+      print('reset','new marketid is', self.market['marketid'],'numrows',self.numrows)
       return self.get_observation()
     except IndexError:
       return None
 
   ##########################################
+
+  def do_print(self):
+    ob = np.zeros(16)
+    row = 0
+    while row < self.numrows -1 :
+      for selid, col in self.dict_selid_idx.items():
+        ob[col] = self.cache_matrix [row] [col] [BACKPRICE]
+      ok = False
+      for i in ob :
+        if i > 0.0:
+          ok = True
+          break
+
+      if not ok:
+        break
+      else:
+        print(ob)
+        row = row+1
+   ##################################
+
+
+
 
 
 # hyperparameters
@@ -285,6 +317,7 @@ def policy_backward(eph, epdlogp):
 print("mode",mode,"side",side)
 env = FakeHorseDb(mode, side)
 observation = env.reset()
+env.do_print()
 prev_x = None # used in computing the difference frame
 xs,hs,dlogps,drs = [],[],[],[]
 running_reward = None
@@ -297,31 +330,28 @@ render = True
 
 while True:
     try:
-        if render: env.render()
-        print("")
         print("-------------------------------")
+        print("new turn in loop")
+        if render: 
+            env.render()
 
         # preprocess the observation, set input to network to be difference image
         cur_x = prepro(observation)
-        reread = False
+        print('main','cur_x',cur_x)
         if prev_x is None :
-            x = np.zeros(D)
-            reread = True
-        else:
-            x = cur_x - prev_x
+            prev_x = np.zeros(D)
+            print('main','prev_x was None')
 
+        x = cur_x - prev_x
         prev_x = cur_x
-        if reread : # get another sample so we get a diff. do NOT bet now (MAKE_NOTHING)
-            observation, reward, done, info = env.step(MAKE_NOTHING)
-            cur_x = prepro(observation)
-            x = cur_x - prev_x
-            prev_x = cur_x
-        else:
-
+        
+        if True:
             # forward the policy network and sample an action from the returned probability
             aprob, h = policy_forward(x)
-
-            if np.random.uniform() < aprob :   # roll the dice! [ 0  1  3  4 11 12]
+            rnd = np.random.uniform()
+            do_bet = rnd < aprob 
+            print('main','rnd',rnd,'aprob',aprob,'do_bet',do_bet)
+            if do_bet :   # roll the dice! [ 0  1  3  4 11 12]
                 action = MAKE_BET # lay favorite
             else :
                 action = MAKE_NOTHING # no bet
@@ -345,6 +375,7 @@ while True:
             drs.append(reward) # record reward (has to be done after we call step() to get reward for previous action)
 
             if done: # an episode/race finished
+                print ('main', 'done this race')
                 episode_number += 1
 
                 # stack together all inputs, hidden states, action gradients, and rewards for this episode
@@ -390,6 +421,7 @@ while True:
                     if observation is None : # give up
                        raise KeyboardInterrupt
                 prev_x = None # don't compare last input of race n with first input of race n+1
+                env.do_print()
 
 
     except KeyboardInterrupt:
