@@ -300,9 +300,12 @@ def discount_rewards(r):
 
 def policy_forward(x):
   h = np.dot(model['W1'], x)
+  print('h',h)
   h[h<0] = 0 # ReLU nonlinearity
   logp = np.dot(model['W2'], h)
+  print('logp',logp)
   p = sigmoid(logp)
+  print('p',p)
   return p, h # return probability of taking action 2=MAKE_BET, and hidden state
 
 def policy_backward(eph, epdlogp):
