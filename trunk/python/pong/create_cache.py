@@ -9,9 +9,6 @@ import os
 import os.path
 from pathlib import Path
 
-
-
-
 BACKPRICE  = 0
 LAYPRICE   = 1
 BACKREWARD = 2
@@ -75,6 +72,7 @@ def create_cache(marketid, conn):
   if cache_exists(filename):
     cache_matrix = pickle.load(open(filename, 'rb'))
     dict_selid_idx = create_cached_dicts(marketid, conn)
+
 #    for a in range(cache_matrix.shape[0]):
 #        for b in range(cache_matrix.shape[1]):
 #            for c in range(cache_matrix.shape[2]):
@@ -109,17 +107,18 @@ def create_cache(marketid, conn):
         #print('cache_matrix1',row, col)
         #print('cache_matrix1',datarow)
         #print('cache_matrix1',cache_matrix)
-        cache_matrix [row] [col] [LAYREWARD]  = datarow['layprofit']
-        cache_matrix [row] [col] [BACKREWARD] = datarow['backprofit']
-        cache_matrix [row] [col] [LAYPRICE]   = datarow['layprice']
-        cache_matrix [row] [col] [BACKPRICE]  = datarow['backprice']
+        else:
+          cache_matrix  [row] [col] [LAYREWARD]  = datarow['layprofit']
+          cache_matrix  [row] [col] [BACKREWARD] = datarow['backprofit']
+          cache_matrix  [row] [col] [LAYPRICE]   = datarow['layprice']
+          cache_matrix  [row] [col] [BACKPRICE]  = datarow['backprice']
+            
 #        for c in range(cache_matrix.shape[2]):
 #          print('cache_matrix1',cache_matrix [row] [col] [c], row, col, c)
         row = row +1
 
       cur.close()
 
-    print('shapes',marketid, cache_matrix.shape[0],cache_matrix.shape[1],cache_matrix.shape[2])
     pickle.dump(cache_matrix, open(filename, 'wb'))
 
 
