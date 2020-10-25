@@ -53,6 +53,19 @@ for current_argument, current_value in arguments:
         print ("Displaying help")
 
 
+
+
+
+def row_is_all_zero(observation):
+  all_zero = True  
+  for i in range(16):
+    if observation [i] > 1.0:
+      all_zero = False
+      break
+  return all_zero
+
+
+
 class FakeHorseDb(object):
 
 ###################################
@@ -146,34 +159,30 @@ class FakeHorseDb(object):
 
   def get_observation(self):
 
-    if self.currentrow is None :
-      print('get_observation','incoming currentrow was None, first in race')
-      self.currentrow = 0
-    else:
-      self.currentrow = self.currentrow +1
+    while True:
 
-    if self.currentrow >= self.numrows  :
-      #signal that this race is done, no rows found for any selid
-      return None
-
-    ob = np.zeros(16)
-    for selid, col in self.dict_selid_idx.items():
-      if self.side == 'BACK' :
-        ob[col] = self.cache_matrix [self.currentrow] [col] [BACKPRICE]/1000.0
-      elif self.side == 'LAY' :
-        ob[col] = self.cache_matrix [self.currentrow] [col] [LAYPRICE]/1000.0
+      if self.currentrow is None :
+        print('get_observation','incoming currentrow was None, first in race')
+        self.currentrow = 0
       else:
-        a = 1/0
+        self.currentrow = self.currentrow +1
 
-    print('get_observation',ob)
-    ok = False
-    for i in ob :
-      if i > 0.0:
-        ok = True
+      if self.currentrow >= self.numrows  :
+        #signal that this race is done, no rows found for any selid
+        return None
+
+      ob = np.zeros(16)
+      for selid, col in self.dict_selid_idx.items():
+        if self.side == 'BACK' :
+          ob[col] = self.cache_matrix [self.currentrow] [col] [BACKPRICE]/1000.0
+        elif self.side == 'LAY' :
+          ob[col] = self.cache_matrix [self.currentrow] [col] [LAYPRICE]/1000.0
+        else:
+          a = 1/0
+
+
+      if not row_is_all_zero(ob):
         break
-
-    if not ok:
-      return None
 
     return ob
 
@@ -192,8 +201,14 @@ class FakeHorseDb(object):
 
       self.dict_selid_idx = pickle.load(open(filename_selid_idx, 'rb'))
       self.dict_idx_selid = pickle.load(open(filename_idx_selid, 'rb'))
+      
+      filename_newer = "pickles/new_cache_" +  self.market['marketid'] + ".pickle"
+      filename       = "pickles/cache_"     +  self.market['marketid'] + ".pickle"
+    
+      if cache_exists(filename_newer):
+        filename = filename_newer   
 
-      filename = "pickles/cache_" + self.market['marketid'] + ".pickle"
+      #filename = "pickles/cache_" + self.market['marketid'] + ".pickle"
       self.cache_matrix = pickle.load(open(filename, 'rb'))
       self.numrows = self.cache_matrix.shape[0]
       self.currentrow = None
