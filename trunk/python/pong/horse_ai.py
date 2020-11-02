@@ -25,7 +25,7 @@ render = False
 
 #for horses always 1x16
 #each row in file corresponds to a frame
-#could actauly feed it row-diff, just like frame-diffs
+#could actually feed it row-diff, just like frame-diffs
 
 # model initialization
 D = 1 * 16 # input dimensionality: 1x16 grid
