@@ -314,8 +314,7 @@ reward_sum = 0
 episode_number = 0
 render = False
 
-#print("test",env.reward( '1.160934105', 19450871, '06:55:41.572'))
-#a = 1.0 / 0
+print("test",env.reward( '1.160934105', 19450871, '16:55:41.578'))
 
 while True:
     try:
