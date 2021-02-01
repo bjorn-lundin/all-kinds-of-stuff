@@ -40,8 +40,8 @@ package body Candy_Mine is
 
       loop
          delay 0.1;
-         --  Notification_Center.Protected_Center.Notify (To_String (Key_US));
-         Notification_Center.Unprotected_Notify (To_String (Key_US));
+         Notification_Center.Protected_Center.Notify (To_String (Key_US));
+         --Notification_Center.Unprotected_Notify (To_String (Key_US));
       end loop;
    end Candy_Miner;
 
