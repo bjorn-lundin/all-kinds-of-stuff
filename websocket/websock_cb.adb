@@ -37,12 +37,11 @@ package body WebSock_CB is
    use Ada;
    use type AWS.Net.WebSocket.Kind_Type;
 
-   WWW_Root : constant String := "../../web_elements";
+   WWW_Root : constant String := "../html";
 
    ------------
    -- Create --
    ------------
-
    function Create
      (Socket  : Net.Socket_Access;
       Request : Status.Data) return Net.WebSocket.Object'Class is
@@ -59,22 +58,12 @@ package body WebSock_CB is
       URI      : constant String := Status.URI (Request);
       Filename : constant String := URI (URI'First + 1 .. URI'Last);
    begin
-      if URI'Length > 6
-        and then URI (URI'First .. URI'First + 6) = "/we_js/"
-      then
-         return AWS.Response.Build
-           (MIME.Text_Javascript,
-            Message_Body => Templates.Parse
-              (WWW_Root & "/javascripts" & URI (URI'First + 6 .. URI'Last)));
-
-      elsif URI'Length = 12
+      if URI'Length = 12
         and then URI (URI'First .. URI'First + 11) = "/favicon.ico"
       then
          return AWS.Response.Acknowledge (Messages.S404);
-
       else
-         return Response.Build
-           ("text/html", String'(Templates.Parse ("page.thtml")));
+         return Response.File("text/html",Www_Root & "/page.html");
       end if;
    end HW_CB;
 
@@ -84,6 +73,7 @@ package body WebSock_CB is
 
    overriding procedure On_Close (Socket : in out Object; Message : String) is
    begin
+      Text_IO.Put_Line ("On_Close Received : " & Message);
       Notification_Center.Protected_Center.Unsubscribe (Socket);
    end On_Close;
 
@@ -93,6 +83,7 @@ package body WebSock_CB is
 
    overriding procedure On_Error (Socket : in out Object; Message : String) is
    begin
+      Text_IO.Put_Line ("On_Error Received : " & Message);
       Notification_Center.Protected_Center.Unsubscribe (Socket);
    end On_Error;
 
@@ -105,7 +96,7 @@ package body WebSock_CB is
    is
       Comma_Index : constant Natural := Strings.Fixed.Index (Message, ",");
    begin
-      Text_IO.Put_Line ("Received : " & Message);
+      Text_IO.Put_Line ("On_Message Received : " & Message);
 
       if Comma_Index /= 0 then
          declare
@@ -136,7 +127,7 @@ package body WebSock_CB is
 
    overriding procedure On_Open (Socket : in out Object; Message : String) is
    begin
-      null;
+      Text_IO.Put_Line ("On_Open : " & Message);
    end On_Open;
 
    -----------
