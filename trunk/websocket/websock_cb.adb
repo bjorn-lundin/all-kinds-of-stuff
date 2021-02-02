@@ -98,6 +98,14 @@ package body Websock_Cb is
     Text_Io.Put_Line ("On_Close : " & Message);
     Text_Io.Put_Line ("On_Close : " & Socket.To_String);
 
+    if Aws.Status.Has_Session(Socket.Request) then
+      Text_Io.Put_Line ("On_Close has session: True");
+      Text_Io.Put_Line ("On_Close session: " & AWS.Session.Image(Aws.Status.Session(Socket.Request)));
+    else
+      Text_Io.Put_Line ("On_Close has session: False");
+    end if;
+
+
     Notification_Center.Protected_Center.Unsubscribe (Socket);
   end On_Close;
 
@@ -109,6 +117,13 @@ package body Websock_Cb is
   begin
     Text_Io.Put_Line ("On_Error : " & Message);
     Text_Io.Put_Line ("On_Error : " & Socket.To_String);
+
+    if Aws.Status.Has_Session(Socket.Request) then
+      Text_Io.Put_Line ("On_Error has session: True");
+      Text_Io.Put_Line ("On_Error session: " & AWS.Session.Image(Aws.Status.Session(Socket.Request)));
+    else
+      Text_Io.Put_Line ("On_Error has session: False");
+    end if;
 
     Notification_Center.Protected_Center.Unsubscribe (Socket);
   end On_Error;
@@ -124,6 +139,16 @@ package body Websock_Cb is
   begin
     Text_Io.Put_Line ("On_Message : " & Message);
     Text_Io.Put_Line ("On_Message : " & Socket.To_String);
+
+    if Aws.Status.Has_Session(Socket.Request) then
+      Text_Io.Put_Line ("On_Message has session: True");
+      Text_Io.Put_Line ("On_Message session: " & AWS.Session.Image(Aws.Status.Session(Socket.Request)));
+    else
+      Text_Io.Put_Line ("On_Message has session: False");
+    end if;
+
+
+
 
     if Comma_Index /= 0 then
       declare
@@ -218,6 +243,11 @@ package body Websock_Cb is
     Append(Ubs, "| C: " & Socket.C'Img);
     Append(Ubs, "| Origin: " &    Aws.Status.Origin(Socket.Request));
     Append(Ubs, "| Peername: " &  Aws.Status.Peername(Socket.Request));
+    Append(Ubs, "| UID: " & Socket.Get_Uid'img);
+    Append(Ubs, "| Peer_Addr: " & Socket.Peer_Addr);
+    Append(Ubs, "| Peer_Port:" & Socket.Peer_Port'img);
+
+
   --  Append(Ubs, "| Origin: " &    Aws.Status.Origin(Socket.Request));
 
     return To_String(Ubs);
