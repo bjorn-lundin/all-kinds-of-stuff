@@ -72,10 +72,10 @@ package body Websock_Cb is
   begin
 
     if Aws.Status.Has_Session(Request) then
-      Text_Io.Put_Line ("has session: True");
-      Text_Io.Put_Line ("session: " & AWS.Session.Image(Aws.Status.Session(Request)));
+      Text_Io.Put_Line ("Hw_Cb has session: True");
+      Text_Io.Put_Line ("Hw_Cb session: " & AWS.Session.Image(Aws.Status.Session(Request)));
     else
-      Text_Io.Put_Line ("has session: False");
+      Text_Io.Put_Line ("Hw_Cb has session: False");
     end if;
 
 
