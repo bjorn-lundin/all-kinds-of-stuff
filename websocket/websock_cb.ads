@@ -18,48 +18,51 @@
 
 with Ada.Streams;
 
-with AWS.Net.Log;
-with AWS.Response;
-with AWS.Status;
+with Aws.Net.Log;
+with Aws.Response;
+with Aws.Status;
 
-with AWS.Net.WebSocket;
+with Aws.Net.Websocket;
 
-package WebSock_CB is
+package Websock_Cb is
 
-   use Ada.Streams;
-   use AWS;
+  use Ada.Streams;
+  use Aws;
 
-   function HW_CB (Request : Status.Data) return Response.Data;
+  function Hw_Cb (Request : Status.Data) return Response.Data;
 
-   procedure W_log
-     (Direction : Net.Log.Data_Direction;
-      Socket    : Net.Socket_Type'Class;
-      Data      : Stream_Element_Array;
-      Last      : Stream_Element_Offset);
+  procedure W_Log
+    (Direction : Net.Log.Data_Direction;
+     Socket    : Net.Socket_Type'Class;
+     Data      : Stream_Element_Array;
+     Last      : Stream_Element_Offset);
 
-   --  My WebSocket, just display the messages
+  --  My WebSocket, just display the messages
 
-   type Object is new AWS.Net.WebSocket.Object with private;
+  type Object is new Aws.Net.Websocket.Object with private;
 
-   function Create
-     (Socket  : Net.Socket_Access;
-      Request : Status.Data) return Net.WebSocket.Object'Class;
+  function Create
+    (Socket  : Net.Socket_Access;
+     Request : Status.Data) return Net.Websocket.Object'Class;
 
-   overriding procedure On_Message (Socket : in out Object; Message : String);
-   --  Message received from the server
+  overriding procedure On_Message (Socket : in out Object; Message : String);
+  --  Message received from the server
 
-   overriding procedure On_Open (Socket : in out Object; Message : String);
-   --  Open event received from the server
+  overriding procedure On_Open (Socket : in out Object; Message : String);
+  --  Open event received from the server
 
-   overriding procedure On_Close (Socket : in out Object; Message : String);
-   --  Close event received from the server
+  overriding procedure On_Close (Socket : in out Object; Message : String);
+  --  Close event received from the server
 
-   overriding procedure On_Error (Socket : in out Object; Message : String);
+  overriding procedure On_Error (Socket : in out Object; Message : String);
+
+  function To_String(Socket : Object) return String ; --bnl
+
 
 private
 
-   type Object is new Net.WebSocket.Object with record
-      C : Natural := 0;
-   end record;
+  type Object is new Net.Websocket.Object with record
+    C : Natural := 0;
+  end record;
 
-end WebSock_CB;
+end Websock_Cb;

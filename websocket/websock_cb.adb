@@ -19,160 +19,209 @@
 ------------------------------------------------------------------------------
 
 with Ada.Characters.Handling;
-with Ada.Integer_Text_IO;
+with Ada.Integer_Text_Io;
 with Ada.Strings.Fixed;
-with Ada.Text_IO;
+with Ada.Text_Io;
+with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 
-with AWS.Messages;
-with AWS.MIME;
-with AWS.Templates;
-with AWS.Translator;
+with Aws.Messages;
+with Aws.Mime;
+with Aws.Templates;
+with Aws.Translator;
+with Aws.Session;
 
-with GNAT.RegPat;
+with Gnat.Regpat;
 
 with Notification_Center;
 
-package body WebSock_CB is
+package body Websock_Cb is
 
-   use Ada;
-   use type AWS.Net.WebSocket.Kind_Type;
+  use Ada;
+  use type Aws.Net.Websocket.Kind_Type;
 
-   WWW_Root : constant String := "../html";
+  Www_Root : constant String := "../html";
 
-   ------------
-   -- Create --
-   ------------
-   function Create
-     (Socket  : Net.Socket_Access;
-      Request : Status.Data) return Net.WebSocket.Object'Class is
-   begin
-      return Object'(Net.WebSocket.Object
-                       (Net.WebSocket.Create (Socket, Request)) with C => 0);
-   end Create;
+  Cnt : Natural := 0;
 
-   -----------
-   -- HW_CB --
-   -----------
+  ------------
+  -- Create --
+  ------------
+  function Create
+    (Socket  : Net.Socket_Access;
+     Request : Status.Data) return Net.Websocket.Object'Class is
+  begin
+    if Aws.Status.Has_Session(Request) then
+      Text_Io.Put_Line ("Create - has session: True");
+      Text_Io.Put_Line ("Create - session: " & AWS.Session.Image(Aws.Status.Session(Request)));
+    else
+      Text_Io.Put_Line ("Create - has session: False");
+    end if;
 
-   function HW_CB (Request : Status.Data) return Response.Data is
-      URI      : constant String := Status.URI (Request);
-      Filename : constant String := URI (URI'First + 1 .. URI'Last);
-   begin
-      if URI'Length = 12
-        and then URI (URI'First .. URI'First + 11) = "/favicon.ico"
-      then
-         return AWS.Response.Acknowledge (Messages.S404);
+    Cnt := Cnt +1;
+    return Object'(Net.Websocket.Object
+                   (Net.Websocket.Create (Socket, Request)) with C => Cnt);
+  end Create;
+
+  -----------
+  -- HW_CB --
+  -----------
+
+  function Hw_Cb (Request : Status.Data) return Response.Data is
+    Uri      : constant String := Status.Uri (Request);
+    Filename : constant String := Uri (Uri'First + 1 .. Uri'Last);
+  begin
+
+    if Aws.Status.Has_Session(Request) then
+      Text_Io.Put_Line ("has session: True");
+      Text_Io.Put_Line ("session: " & AWS.Session.Image(Aws.Status.Session(Request)));
+    else
+      Text_Io.Put_Line ("has session: False");
+    end if;
+
+
+
+    if Uri'Length = 12
+      and then Uri (Uri'First .. Uri'First + 11) = "/favicon.ico"
+    then
+      return Aws.Response.Acknowledge (Messages.S404);
+    else
+      return Response.File("text/html",Www_Root & "/page.html");
+    end if;
+  end Hw_Cb;
+
+  --------------
+  -- On_Close --
+  --------------
+
+  overriding procedure On_Close (Socket : in out Object; Message : String) is
+  begin
+    Text_Io.Put_Line ("On_Close : " & Message);
+    Text_Io.Put_Line ("On_Close : " & Socket.To_String);
+
+    Notification_Center.Protected_Center.Unsubscribe (Socket);
+  end On_Close;
+
+  --------------
+  -- On_Error --
+  --------------
+
+  overriding procedure On_Error (Socket : in out Object; Message : String) is
+  begin
+    Text_Io.Put_Line ("On_Error : " & Message);
+    Text_Io.Put_Line ("On_Error : " & Socket.To_String);
+
+    Notification_Center.Protected_Center.Unsubscribe (Socket);
+  end On_Error;
+
+  ----------------
+  -- On_Message --
+  ----------------
+
+  overriding procedure On_Message
+    (Socket : in out Object; Message : String)
+  is
+    Comma_Index : constant Natural := Strings.Fixed.Index (Message, ",");
+  begin
+    Text_Io.Put_Line ("On_Message : " & Message);
+    Text_Io.Put_Line ("On_Message : " & Socket.To_String);
+
+    if Comma_Index /= 0 then
+      declare
+        Cmd   : constant String :=
+                  Message (Message'First .. Comma_Index-1);
+        Param : constant String :=
+                  Message (Comma_Index+1 .. Message'Last);
+      begin
+        if Cmd = "subscribe" then
+          Notification_Center.Protected_Center.Subscribe (Socket, Param);
+        elsif Cmd = "unsubscribe" then
+          Notification_Center.
+            Protected_Center.Unsubscribe (Socket, Param);
+        end if;
+      end;
+    else
+      if Message = "close" then
+        Socket.Shutdown;
+      end if;
+    end if;
+
+  end On_Message;
+
+  -------------
+  -- On_Open --
+  -------------
+
+  overriding procedure On_Open (Socket : in out Object; Message : String) is
+  begin
+    Text_Io.Put_Line ("On_Open : " & Message);
+    Text_Io.Put_Line ("On_Open : " & Socket.To_String);
+  end On_Open;
+
+  -----------
+  -- W_Log --
+  -----------
+
+  procedure W_Log
+    (Direction : Net.Log.Data_Direction;
+     Socket    : Net.Socket_Type'Class;
+     Data      : Stream_Element_Array;
+     Last      : Stream_Element_Offset)
+  is
+    Max : constant := 6;
+    Str : String (1 .. Max);
+    I   : Natural := Str'First - 1;
+  begin
+    Text_Io.Put_Line (Net.Log.Data_Direction'Image (Direction));
+    Text_Io.Put_Line ("[");
+
+    for K in Data'First .. Last loop
+      I := I + 1;
+      if Characters.Handling.Is_Graphic (Character'Val (Data (K))) then
+        Str (I) := Character'Val (Data (K));
       else
-         return Response.File("text/html",Www_Root & "/page.html");
-      end if;
-   end HW_CB;
-
-   --------------
-   -- On_Close --
-   --------------
-
-   overriding procedure On_Close (Socket : in out Object; Message : String) is
-   begin
-      Text_IO.Put_Line ("On_Close Received : " & Message);
-      Notification_Center.Protected_Center.Unsubscribe (Socket);
-   end On_Close;
-
-   --------------
-   -- On_Error --
-   --------------
-
-   overriding procedure On_Error (Socket : in out Object; Message : String) is
-   begin
-      Text_IO.Put_Line ("On_Error Received : " & Message);
-      Notification_Center.Protected_Center.Unsubscribe (Socket);
-   end On_Error;
-
-   ----------------
-   -- On_Message --
-   ----------------
-
-   overriding procedure On_Message
-     (Socket : in out Object; Message : String)
-   is
-      Comma_Index : constant Natural := Strings.Fixed.Index (Message, ",");
-   begin
-      Text_IO.Put_Line ("On_Message Received : " & Message);
-
-      if Comma_Index /= 0 then
-         declare
-            Cmd   : constant String :=
-                      Message (Message'First .. Comma_Index-1);
-            Param : constant String :=
-                      Message (Comma_Index+1 .. Message'Last);
-         begin
-            if Cmd = "subscribe" then
-               Notification_Center.Protected_Center.Subscribe (Socket, Param);
-            elsif Cmd = "unsubscribe" then
-               Notification_Center.
-                 Protected_Center.Unsubscribe (Socket, Param);
-            end if;
-         end;
-
-      else
-         if Message = "close" then
-            Socket.Shutdown;
-         end if;
+        Str (I) := '.';
       end if;
 
-   end On_Message;
+      Text_Io.Put (Str (I));
 
-   -------------
-   -- On_Open --
-   -------------
+      Text_Io.Put ('|');
+      Integer_Text_Io.Put (Integer (Data (K)), Base => 16, Width => 6);
+      Text_Io.Put ("   ");
 
-   overriding procedure On_Open (Socket : in out Object; Message : String) is
-   begin
-      Text_IO.Put_Line ("On_Open : " & Message);
-   end On_Open;
-
-   -----------
-   -- W_Log --
-   -----------
-
-   procedure W_log
-     (Direction : Net.Log.Data_Direction;
-      Socket    : Net.Socket_Type'Class;
-      Data      : Stream_Element_Array;
-      Last      : Stream_Element_Offset)
-   is
-      Max : constant := 6;
-      Str : String (1 .. Max);
-      I   : Natural := Str'First - 1;
-   begin
-      Text_IO.Put_Line (Net.Log.Data_Direction'Image (Direction));
-      Text_IO.Put_Line ("[");
-
-      for K in Data'First .. Last loop
-         I := I + 1;
-         if Characters.Handling.Is_Graphic (Character'Val (Data (K))) then
-            Str (I) := Character'Val (Data (K));
-         else
-            Str (I) := '.';
-         end if;
-
-         Text_IO.Put (Str (I));
-
-         Text_IO.Put ('|');
-         Integer_Text_IO.Put (Integer (Data (K)), Base => 16, Width => 6);
-         Text_IO.Put ("   ");
-
-         if K mod Max = 0 then
-            Text_IO.Put_Line (" " & Str (Str'First .. I));
-            I := Str'First - 1;
-         end if;
-      end loop;
-
-      if I > Str'First then
-         Text_IO.Set_Col (67);
-         Text_IO.Put_Line (" " & Str (Str'First .. I));
+      if K mod Max = 0 then
+        Text_Io.Put_Line (" " & Str (Str'First .. I));
+        I := Str'First - 1;
       end if;
+    end loop;
 
-      Text_IO.Put_Line ("]");
-   end W_Log;
+    if I > Str'First then
+      Text_Io.Set_Col (67);
+      Text_Io.Put_Line (" " & Str (Str'First .. I));
+    end if;
 
-end WebSock_CB;
+    Text_Io.Put_Line ("]");
+  end W_Log;
+
+
+ function To_String(Socket : Object) return String is  --bnl
+    Ubs : Unbounded_String;
+  begin
+
+    --Append(Ubs, "Id: " & Socket.Id'Img);
+    if Aws.Status.Has_Session(Socket.Request) then
+      Append(Ubs, "| has session: True");
+      Append(Ubs, "| session: " & AWS.Session.Image(aws.Status.Session(Socket.Request)));
+    else
+      Append(Ubs, "| has session: False");
+    end if;
+    Append(Ubs, "| Version: " & Socket.Protocol_Version'Img);
+    Append(Ubs, "| C: " & Socket.C'Img);
+    Append(Ubs, "| Origin: " &    Aws.Status.Origin(Socket.Request));
+    Append(Ubs, "| Peername: " &  Aws.Status.Peername(Socket.Request));
+  --  Append(Ubs, "| Origin: " &    Aws.Status.Origin(Socket.Request));
+
+    return To_String(Ubs);
+  end To_String;
+
+
+end Websock_Cb;
