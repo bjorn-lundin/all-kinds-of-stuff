@@ -24,6 +24,7 @@ with Ada.Strings.Fixed;
 with Ada.Text_Io;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 
+with Aws.Parameters;
 with Aws.Messages;
 with Aws.Mime;
 with Aws.Templates;
@@ -49,17 +50,15 @@ package body Websock_Cb is
   function Create
     (Socket  : Net.Socket_Access;
      Request : Status.Data) return Net.Websocket.Object'Class is
+    P_List : constant Aws.Parameters.List := Aws.Status.Parameters(Request);
   begin
-    if Aws.Status.Has_Session(Request) then
-      Text_Io.Put_Line ("Create - has session: True");
-      Text_Io.Put_Line ("Create - session: " & AWS.Session.Image(Aws.Status.Session(Request)));
-    else
-      Text_Io.Put_Line ("Create - has session: False");
-    end if;
+   Text_Io.Put_Line ("Create sid : " & Parameters.Get(P_List,"sid"));
 
     Cnt := Cnt +1;
     return Object'(Net.Websocket.Object
                    (Net.Websocket.Create (Socket, Request)) with C => Cnt);
+
+
   end Create;
 
   -----------
@@ -71,21 +70,19 @@ package body Websock_Cb is
     Filename : constant String := Uri (Uri'First + 1 .. Uri'Last);
   begin
 
-    if Aws.Status.Has_Session(Request) then
-      Text_Io.Put_Line ("Hw_Cb has session: True");
-      Text_Io.Put_Line ("Hw_Cb session: " & AWS.Session.Image(Aws.Status.Session(Request)));
-    else
-      Text_Io.Put_Line ("Hw_Cb has session: False");
-    end if;
-
-
-
     if Uri'Length = 12
       and then Uri (Uri'First .. Uri'First + 11) = "/favicon.ico"
     then
       return Aws.Response.Acknowledge (Messages.S404);
     else
-      return Response.File("text/html",Www_Root & "/page.html");
+      -- return Response.File("text/html",Www_Root & "/page.html");
+      return Response.Build("text/html",
+                            String'(Templates.Parse(
+                              Www_Root & "/page.html",
+                              (1 => Templates.Assoc(
+                                "SID",
+                                Aws.Session.Image(Aws.Status.Session(Request)))))));
+
     end if;
   end Hw_Cb;
 
@@ -98,14 +95,6 @@ package body Websock_Cb is
     Text_Io.Put_Line ("On_Close : " & Message);
     Text_Io.Put_Line ("On_Close : " & Socket.To_String);
 
-    if Aws.Status.Has_Session(Socket.Request) then
-      Text_Io.Put_Line ("On_Close has session: True");
-      Text_Io.Put_Line ("On_Close session: " & AWS.Session.Image(Aws.Status.Session(Socket.Request)));
-    else
-      Text_Io.Put_Line ("On_Close has session: False");
-    end if;
-
-
     Notification_Center.Protected_Center.Unsubscribe (Socket);
   end On_Close;
 
@@ -117,13 +106,6 @@ package body Websock_Cb is
   begin
     Text_Io.Put_Line ("On_Error : " & Message);
     Text_Io.Put_Line ("On_Error : " & Socket.To_String);
-
-    if Aws.Status.Has_Session(Socket.Request) then
-      Text_Io.Put_Line ("On_Error has session: True");
-      Text_Io.Put_Line ("On_Error session: " & AWS.Session.Image(Aws.Status.Session(Socket.Request)));
-    else
-      Text_Io.Put_Line ("On_Error has session: False");
-    end if;
 
     Notification_Center.Protected_Center.Unsubscribe (Socket);
   end On_Error;
@@ -233,12 +215,6 @@ package body Websock_Cb is
   begin
 
     --Append(Ubs, "Id: " & Socket.Id'Img);
-    if Aws.Status.Has_Session(Socket.Request) then
-      Append(Ubs, "| has session: True");
-      Append(Ubs, "| session: " & AWS.Session.Image(aws.Status.Session(Socket.Request)));
-    else
-      Append(Ubs, "| has session: False");
-    end if;
     Append(Ubs, "| Version: " & Socket.Protocol_Version'Img);
     Append(Ubs, "| C: " & Socket.C'Img);
     Append(Ubs, "| Origin: " &    Aws.Status.Origin(Socket.Request));
