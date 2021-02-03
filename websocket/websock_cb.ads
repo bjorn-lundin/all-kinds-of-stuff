@@ -23,6 +23,7 @@ with Aws.Response;
 with Aws.Status;
 
 with Aws.Net.Websocket;
+with Aws.Config;
 
 package Websock_Cb is
 
@@ -39,6 +40,7 @@ package Websock_Cb is
 
   --  My WebSocket, just display the messages
 
+  subtype Session_Id_Type is String (1 .. Config.Session_Id_Length);
   type Object is new Aws.Net.Websocket.Object with private;
 
   function Create
@@ -57,12 +59,15 @@ package Websock_Cb is
   overriding procedure On_Error (Socket : in out Object; Message : String);
 
   function To_String(Socket : Object) return String ; --bnl
+  function Get_Session_Id(Socket : Object) return Session_Id_Type;
+  procedure Set_Session_Id(Socket : in out Object; Sid : in session_Id_Type);
 
 
 private
 
   type Object is new Net.Websocket.Object with record
     C : Natural := 0;
+    Sid : Session_Id_Type := (others =>' ');
   end record;
 
 end Websock_Cb;
