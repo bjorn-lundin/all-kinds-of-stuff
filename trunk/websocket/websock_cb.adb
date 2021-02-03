@@ -20,7 +20,8 @@
 
 with Ada.Characters.Handling;
 with Ada.Integer_Text_Io;
-with Ada.Strings.Fixed;
+with Ada.Strings; use Ada.Strings;
+with Ada.Strings.Fixed; use Ada.Strings.Fixed;
 with Ada.Text_Io;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 
@@ -51,13 +52,24 @@ package body Websock_Cb is
     (Socket  : Net.Socket_Access;
      Request : Status.Data) return Net.Websocket.Object'Class is
     P_List : constant Aws.Parameters.List := Aws.Status.Parameters(Request);
+    S : String := Parameters.Get(P_List,"sid");
+    Sid : Session_Id_Type := (others => '@');
   begin
-   Text_Io.Put_Line ("Create sid : " & Parameters.Get(P_List,"sid"));
+    Text_Io.Put_Line ("create : " & "1");
+    Text_Io.Put_Line ("create : " & "1.5 '" & S & "'");
+    Text_Io.Put_Line ("create : " & "1.6 '" & Sid & "'");
+
+    Move( S(5..S'last), Sid); -- SID-6T9tb1F0wK8 - remove 'SID-'
+    Text_Io.Put_Line ("create : " & "2");
+    Text_Io.Put_Line ("Create sid : " & Sid);
+    Text_Io.Put_Line ("create : " & "3");
 
     Cnt := Cnt +1;
-    return Object'(Net.Websocket.Object
-                   (Net.Websocket.Create (Socket, Request)) with C => Cnt);
 
+    Text_Io.Put_Line ("create : " & "5");
+
+    return Object'(Net.Websocket.Object
+                   (Net.Websocket.Create (Socket, Request)) with C => Cnt, Sid => Sid);
 
   end Create;
 
@@ -121,16 +133,6 @@ package body Websock_Cb is
   begin
     Text_Io.Put_Line ("On_Message : " & Message);
     Text_Io.Put_Line ("On_Message : " & Socket.To_String);
-
-    if Aws.Status.Has_Session(Socket.Request) then
-      Text_Io.Put_Line ("On_Message has session: True");
-      Text_Io.Put_Line ("On_Message session: " & AWS.Session.Image(Aws.Status.Session(Socket.Request)));
-    else
-      Text_Io.Put_Line ("On_Message has session: False");
-    end if;
-
-
-
 
     if Comma_Index /= 0 then
       declare
@@ -222,12 +224,23 @@ package body Websock_Cb is
     Append(Ubs, "| UID: " & Socket.Get_Uid'img);
     Append(Ubs, "| Peer_Addr: " & Socket.Peer_Addr);
     Append(Ubs, "| Peer_Port:" & Socket.Peer_Port'img);
-
-
-  --  Append(Ubs, "| Origin: " &    Aws.Status.Origin(Socket.Request));
+    Append(Ubs, "| Sessionid: " & Socket.Get_Session_Id);
 
     return To_String(Ubs);
   end To_String;
+
+
+  function Get_Session_Id(Socket : Object) return Session_Id_Type is
+  begin
+    return Socket.Sid;
+  end Get_Session_Id;
+
+
+  procedure Set_Session_Id(Socket : in out Object; Sid : in Session_Id_Type) is
+  begin
+    Socket.Sid := Sid;
+  end Set_Session_Id;
+
 
 
 end Websock_Cb;
