@@ -15,9 +15,9 @@ for row in f:
     print(x, 'decreased',cnt)
   else:
     print(x, 'same',cnt)
-  
-  prev=x  
+
+  prev=x
   first=False
-  
+
 print('Antal', cnt)
 f.close()
