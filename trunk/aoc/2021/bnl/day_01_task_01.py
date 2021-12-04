@@ -1,6 +1,6 @@
 
 
-f = open("input_day_01_task_01.dat", "r")
+f = open("input_day_01_task_02.dat", "r")
 
 prev = 0
 cnt = 0
