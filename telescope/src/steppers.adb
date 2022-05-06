@@ -208,6 +208,14 @@ package body Steppers is
         Gpio.Pin_Mode(Pins(Pin), Gpio.Output);
         Gpio.Digital_Write(Pins(Pin), False);
       end loop;
+      
+      for Pin in Pin_Range_Type'Range loop
+        if Sequence(Sequence_Index, Pin) /= 0 then
+          Gpio.Digital_Write(Pins(Pin), True);
+        else
+          Gpio.Digital_Write(Pins(Pin), False);
+        end if;
+      end loop;      
     end Init;
     ----------------------------------------------------------
 
