@@ -169,14 +169,31 @@ begin
 
   --to avoid neeed to press joystick at boot -- toggle it a bit
 
+  Log("main","Motors.Set_Direction(Motors.Up)");
   Motors.Set_Direction(Motors.Up);
+  Log("main","Motor_2.Go");
   Motor_2.Go;
+  Log("main","Motor_3.Go");
   Motor_3.Go;
-  Motors.Set_Direction(Motors.Down);
-  Motor_2.Go;
-  Motor_3.Go;
-  Motors.Set_Direction(Motors.None);
 
+  Log("main","Motors.Set_Direction(Motors.None)");
+  Motors.Set_Direction(Motors.None); -- to exit the motor loop
+
+  delay 1.0;
+
+  Log("main","Motors.Set_Direction(Motors.Down)");
+  Motors.Set_Direction(Motors.Down);
+  Log("main","Motor_2.Go"); 
+  Motor_2.Go;
+  Log("main","Motor_3.Go"); 
+  Motor_3.Go;
+  Log("main","Motors.Set_Direction(Motors.None)");
+  Motors.Set_Direction(Motors.None); -- to exit the motor loop
+
+  delay 1.0;
+
+
+  Log("main","start event loop");
   loop
     Handle_Events(Quit);
     exit when Quit;
