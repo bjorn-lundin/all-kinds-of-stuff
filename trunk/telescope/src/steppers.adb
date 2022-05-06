@@ -94,7 +94,6 @@ package body Steppers is
   end Set_Slow_Is_Pressed;
   ----------------------------------
 
-
   Delay_Time : array (Speed_Type'Range) of Duration := (Extremly_Slow => 0.050,
                                                         Very_Slow     => 0.010,
                                                         Slow          => 0.005,
