@@ -124,6 +124,7 @@ package body Motors is
         end case;
 
         Move_Loop : loop
+          Put_line("Move_loop Direction_Keeper.Get - loop " & Local_Name'Img & " " & Direction_Keeper.Get'img); 
           exit Move_Loop when Direction_Keeper.Get = None;
           Speed := Speed_Keeper.Get;
           Write(Pin(Step), True);
