@@ -167,6 +167,16 @@ begin
 
   Joystick.Open;
 
+  --to avoid neeed to press joystick at boot -- toggle it a bit
+
+  Motors.Set_Direction(Motors.Up);
+  Motor_2.Go;
+  Motor_3.Go;
+  Motors.Set_Direction(Motors.Down);
+  Motor_2.Go;
+  Motor_3.Go;
+  Motors.Set_Direction(Motors.None);
+
   loop
     Handle_Events(Quit);
     exit when Quit;
