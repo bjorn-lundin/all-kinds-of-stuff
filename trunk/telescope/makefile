@@ -1,5 +1,8 @@
 
+SHELL := /bin/bash
 
+export CPU := $(shell uname -m)
+export OS := $(shell uname)
 
 
 .PHONYE :all clean test
