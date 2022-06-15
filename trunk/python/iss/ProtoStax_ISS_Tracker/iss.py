@@ -21,6 +21,8 @@
 #   BSD license. All text above must be included in any redistribution
 
 
+from exclusiveprocess import Lock, CannotAcquireLock
+
 import sys
 sys.path.append(r'lib')
 
@@ -39,6 +41,7 @@ from datetime import datetime
 from time import time, sleep
 
 import requests
+
 
 # Update Interval for fetching positions
 DATA_INTERVAL = 30 #seconds
@@ -149,6 +152,10 @@ class Display(object):
 
 # The main function
 def main():
+
+    Lock(die=True,name="iss-tracker").forever()
+
+
     # API to get ISS Current Location
     n=4 # num_passages
     URL = 'http://api.open-notify.org/iss-now.json'
@@ -254,6 +261,8 @@ def ctrl_c_handler(signal, frame):
     epdconfig.module_init()
     epdconfig.module_exit()
     print("Remeber to clear the display using cleardisplay.py if you plan to power down your Pi and store it, to prevent burn-in!")
+    epd = epd1in54b.EPD()
+    epd.Clear(0xFF)
     exit(0)
 
 signal.signal(signal.SIGINT, ctrl_c_handler)
