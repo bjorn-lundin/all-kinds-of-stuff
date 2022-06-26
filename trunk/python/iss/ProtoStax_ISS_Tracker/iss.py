@@ -207,7 +207,7 @@ def main():
     positions = []
 
     while(True):
-        t0 = time()
+        t0 = time1()
         try:
             r = requests.get(url = URL)
             r2 = requests.get(url = URL2)
@@ -271,7 +271,7 @@ def main():
             epd.sleep()
             sleep(10)
 
-        t1 = time()
+        t1 = time1()
         sleepTime = max(DATA_INTERVAL - (t1 - t0), 0)
         sleep(sleepTime) # sleep for 30 seconds minus duration of get request and display refresh
 
