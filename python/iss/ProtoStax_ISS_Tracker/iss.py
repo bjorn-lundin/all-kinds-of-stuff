@@ -38,7 +38,7 @@ import time
 
 from PIL import Image,  ImageDraw,  ImageFont, ImageOps
 from datetime import datetime
-from time import time, sleep
+#from time import time, sleep
 
 import requests
 
@@ -207,7 +207,7 @@ def main():
     positions = []
 
     while(True):
-        t0 = time1()
+        t0 = time.time()
         try:
             r = requests.get(url = URL)
             r2 = requests.get(url = URL2)
@@ -269,11 +269,11 @@ def main():
             print('Display world!')
             epd.display(epd.getbuffer(imageBlack))
             epd.sleep()
-            sleep(10)
+            time.sleep(10)
 
-        t1 = time1()
+        t1 = time.time()
         sleepTime = max(DATA_INTERVAL - (t1 - t0), 0)
-        sleep(sleepTime) # sleep for 30 seconds minus duration of get request and display refresh
+        time.sleep(sleepTime) # sleep for 30 seconds minus duration of get request and display refresh
 
 
 
