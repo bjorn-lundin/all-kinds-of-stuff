@@ -44,38 +44,61 @@ import requests
 
 import datetime
 #dict for keeping rise/set of sun
-sun={}
+
+
+def read_sundata_into_dict():
+  sun={}
+  num_in_file = 0
+  with open('sune_rise_and_set.dat') as file:
+    for line in file:
+      if line.rstrip()[0] == '#' : 
+        continue
+      num_in_file = num_in_file+1
+      if num_in_file == 366 :
+        num_in_file=365
+      times = line.rstrip().split()
+      rise = times[0].split(':')
+      sset = times[1].split(':')
+      d2 = datetime.datetime.fromisoformat('2021-12-31')
+      #print('d2',d2)
+      d3 = d2 + datetime.timedelta(days=num_in_file)
+      sunrise = d3.replace(hour=int(rise[0]), minute=int(rise[1]),second=0)
+      sunset = d3.replace(hour=int(sset[0]), minute=int(sset[1]),second=0)
+      sun[num_in_file] = [sunrise,sunset]
+  print('whole dict', sun)
+  return sun
 
 
 # function to see if sun is up
-def is_sun_up(t) :
-  now = datetime.datetime.now()
-  doy = now.timetuple().tm_yday
-  num_in_file = 0
-  times=None
-  
-  if len(sun) == 0 :
-  
-    with open('sune_rise_and_set.dat') as file:
-      for line in file:
-        if line.rstrip()[0] == '#' : continue  
-        num_in_file = num_in_file+1
-        if doy == 366 : 
-          doy=365
-        times = line.rstrip().split()
-        rise = times[0].split(':')
-        sset = times[1].split(':')
-        sunrise = now.replace(hour=int(rise[0]), minute=int(rise[1]),second=0)
-        sunset = now.replace(hour=int(sset[0]), minute=int(sset[1]),second=0)
-        sun[num_in_file] = [sunrise,sunset]  
-  
-  
-  print('2-dict',sun[doy])
-  print('doy',now.timetuple().tm_yday)
+def is_sun_up(sundict,t) :
+  doy = t.timetuple().tm_yday
+  print('/////is_sun_up start///////')
+  print('doy',t.timetuple().tm_yday)
+
+  print('dict-sunrise and sunset',sundict[doy])
+  print('doy',t.timetuple().tm_yday)
+
+  print('arg', t)
 
   sun_is_up=False
-  if sun[doy][0] < t and t < sun[doy][1]  : sun_is_up=True;
-  print('sun_is_up',sun_is_up)
+  if sundict[doy][0] < t and t < sundict[doy][1]  : sun_is_up=True;
+  print('sunrise',sundict[doy][0] ,'sunset',sundict[doy][1])
+  print('sun_is_up',sun_is_up,t)
+
+  if sundict[doy][0] < t :
+    print ('after sunrise')
+  else:
+    print('before sunrise')
+
+  if t < sundict[doy][1] :
+    print ('before sunset')
+  else:
+    print('after sunset')
+
+  print ('return', sun_is_up)
+  return sun_is_up
+#-----------------------
+
 
 # Update Interval for fetching positions
 DATA_INTERVAL = 30 #seconds
@@ -156,7 +179,7 @@ class Display(object):
         y = 10
         for p,d in passages:
           print('drawISS','duration','risetime',p,d)
-          time_draw.text((10, y), datetime.fromtimestamp(p).strftime('%Y-%m-%d %H:%M:%S') + " " + str(d) +"s", font = font, fill = 0)
+          time_draw.text((10, y), datetime.datetime.fromtimestamp(p).strftime('%Y-%m-%d %H:%M:%S') + " " + str(d) +"s", font = font, fill = 0)
           y = y+12
 
         imageBlack.paste(time_image,(0,138))
@@ -188,7 +211,7 @@ class Display(object):
 def main():
 
     Lock(die=True,name="iss-tracker").forever()
-
+    sun = read_sundata_into_dict()
 
     # API to get ISS Current Location
     n=100 # num_passages
@@ -229,14 +252,18 @@ def main():
 
         passages = []
         for i in range(n):
-          duration = int(data2['response'][i]['duration'])
-          risetime = int(data2['response'][i]['risetime'])
-          risetime = risetime + 3600 # compensate UTC
-          if time.daylight :  risetime + 3600 # compensate daylight savings time
-          print('main','duration','risetime',duration, risetime)
-          if len(passages) < 4 :
-            if not is_sun_up(datetime.datetime.fromtimestamp(risetime)) :
-              passages.append((risetime,duration))
+          print('i',i,len(data2['response']))
+          if len(data2['response']) > i :
+            duration = int(data2['response'][i]['duration'])
+            risetime = int(data2['response'][i]['risetime'])
+            risetime = risetime + 3600 # compensate UTC
+            if time.daylight :  risetime + 3600 # compensate daylight savings time
+            print('main','duration','risetime',duration, risetime)
+            if len(passages) < 4 :
+              dt = datetime.datetime.fromtimestamp(risetime)
+              print('call is_sun_up with', dt)
+              if not is_sun_up(sun, dt) :
+                passages.append((risetime,duration))
 
         # Refresh the display on the first fetch and then on every DISPLAY_REFRESH_INTERVAL fetch
         if ((len(positions) >= 1) and ((len(positions)-1) % DISPLAY_REFRESH_INTERVAL)):
