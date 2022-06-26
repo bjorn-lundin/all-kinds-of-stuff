@@ -45,3 +45,10 @@ else:
 
 is_sun_up(now2)
 is_sun_up(now2)
+
+datetime_obj2 = datetime.datetime.fromtimestamp(1656321888)
+print("Converted time stamp from datetime class",datetime_obj2)
+
+d = datetime.datetime.fromtimestamp(1656321888)
+print('d',d)
+

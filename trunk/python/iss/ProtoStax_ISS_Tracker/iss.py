@@ -235,7 +235,7 @@ def main():
           if time.daylight :  risetime + 3600 # compensate daylight savings time
           print('main','duration','risetime',duration, risetime)
           if len(passages) < 4 :
-            if not is_sun_up(datetime.fromtimestamp(risetime)) :
+            if not is_sun_up(datetime.datetime.fromtimestamp(risetime)) :
               passages.append((risetime,duration))
 
         # Refresh the display on the first fetch and then on every DISPLAY_REFRESH_INTERVAL fetch
