@@ -37,6 +37,7 @@ class Dexarm:
 
     def get_module_kind(self):
         self.ser.write('M888\r'.encode())
+        module_kind = 'UNK'
         while True:
             str = self.ser.readline().decode("utf-8")
             if len(str) > 0:

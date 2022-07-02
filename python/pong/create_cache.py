@@ -107,7 +107,7 @@ def create_cache(marketid, conn):
         #print('cache_matrix1',row, col)
         #print('cache_matrix1',datarow)
         #print('cache_matrix1',cache_matrix)
-        else:
+        #else:
           cache_matrix  [row] [col] [LAYREWARD]  = datarow['layprofit']
           cache_matrix  [row] [col] [BACKREWARD] = datarow['backprofit']
           cache_matrix  [row] [col] [LAYPRICE]   = datarow['layprice']
@@ -115,7 +115,7 @@ def create_cache(marketid, conn):
             
 #        for c in range(cache_matrix.shape[2]):
 #          print('cache_matrix1',cache_matrix [row] [col] [c], row, col, c)
-        row = row +1
+#          row = row +1
 
       cur.close()
 
@@ -129,7 +129,8 @@ def create_cache(marketid, conn):
 def do_cache():
   try:
     conn = pg.connect(
-      host="192.168.1.136",
+      host="127.0.0.1",
+      #host="192.168.1.202",
       database="bnl",
       user="bnl",
       password="bnl",

@@ -4,7 +4,7 @@ import scipy.special
 # library for plotting arrays
 #import matplotlib.pyplot
 # ensure the plots are inside this notebook, not an external window matplotlib inline
-
+import datetime
 
 # neural network class definition
 class neuralNetwork:
@@ -104,6 +104,7 @@ epochs = 5
 
 for e in range(epochs):
     # go through all records in the training data set
+    print('e',e, datetime.datetime.now())
     for record in training_data_list:
         # split the record by the ',' commas
         all_values = record.split(',')
