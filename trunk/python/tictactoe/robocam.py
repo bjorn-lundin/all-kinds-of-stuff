@@ -4,7 +4,7 @@
 import sys
 import datetime
 #to find opencv as root....
-sys.path.append('/usr/local/lib/python2.7/site-packages')
+#sys.path.append('/usr/local/lib/python2.7/site-packages')
 
 import cv2
 import time
@@ -132,8 +132,8 @@ class Robocam(object):
     def get_board_snapshop(self):
         #try:
         while True: 
-            print '-----START-------', datetime.datetime.now(), \
-                '----------------'
+            print ('-----START-------', datetime.datetime.now(), \
+                '----------------')
             grey = None
             blur = None
             frame = None
@@ -155,7 +155,7 @@ class Robocam(object):
             # frame = cv2.imread('/dev/shm/1.png')
             
             (height, width, channels) = frame.shape
-            print 'height, width, channels', height, width, channels
+            print ('height, width, channels', height, width, channels)
             
             grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             cv2.imwrite('/dev/shm/2.png', grey)
@@ -190,7 +190,7 @@ class Robocam(object):
                             if b < cmin:
                                 cmin = b
                     cmean /= cnt  
-                    print 'circle', i[0], i[1], i[2], cmin, cmax, cmean
+                    print ('circle', i[0], i[1], i[2], cmin, cmax, cmean)
                     c_list.append(( i[0], i[1], i[2], cmin, cmax, cmean))
                     cv2.circle(frame, (i[0], i[1]), i[2], (0, 255, 0), 2)
                     cv2.imwrite('/dev/shm/9.png', frame)
@@ -209,15 +209,15 @@ class Robocam(object):
                 elif c[0] > bottom_right[0]:
                     bottom_right = c
             
-            print "top_left", top_left             
-            print "bottom_right", bottom_right             
+            print ("top_left", top_left)            
+            print( "bottom_right", bottom_right)         
             
             def sort_by_mean(e):
               return e[5]
             
             c_list.sort(key=sort_by_mean)
             for c in c_list:
-                print c
+                print(c)
             
             #max black values is in 4th element, 5th item      
             hb = c_list[3][4]
@@ -288,7 +288,7 @@ class Robocam(object):
                         1,
                         cv2.LINE_AA)
                         
-                    print "board x,y", x, y
+                    print ("board x,y", x, y)
                     # use RC notation
                     self.board_dict.setdefault(str(x)+","+str(y),cl)
                     cv2.imwrite('/dev/shm/4.jpg', frame)
