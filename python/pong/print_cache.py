@@ -132,7 +132,8 @@ def do_print_cache(side):
 #      marketlist.append(y)
 #    myFile.close()
 
-    marketlist.append("1.125229061")
+    marketlist.append("1.123950415")
+
 
 # market is a dict:
     for marketid in marketlist:
