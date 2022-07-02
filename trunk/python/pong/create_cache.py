@@ -113,9 +113,10 @@ def create_cache(marketid, conn):
           cache_matrix  [row] [col] [LAYPRICE]   = datarow['layprice']
           cache_matrix  [row] [col] [BACKPRICE]  = datarow['backprice']
             
-#        for c in range(cache_matrix.shape[2]):
-#          print('cache_matrix1',cache_matrix [row] [col] [c], row, col, c)
-#          row = row +1
+          #for c in range(cache_matrix.shape[2]):
+          #  print('cache_matrix1',cache_matrix [row] [col] [c], row, col, c)
+
+          row = row +1
 
       cur.close()
 

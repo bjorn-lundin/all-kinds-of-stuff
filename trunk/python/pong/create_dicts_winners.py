@@ -32,7 +32,7 @@ def create_cached_dicts(marketid, conn):
     idx = idx +1
   cur.close()
   
-    
+  found=False
   cur = conn.cursor()
   cur.execute("""
      select MP.* from AMARKETS MW, AMARKETS MP
@@ -44,14 +44,13 @@ def create_cached_dicts(marketid, conn):
      and MW.MARKETTYPE = 'WIN' """,(marketid,3))
 
   datarows = cur.fetchall()
-  found=False
   for datarow in datarows:
     plcid = datarow['marketid']
     found=True
-
+    marketid = plcid
   cur.close()
 
-  if Found :
+  if found :
     cur = conn.cursor()
     cur.execute("""
       select R.SELECTIONID from ARUNNERS R
@@ -93,8 +92,7 @@ def do_cache():
     marketlist = []
     filename = "pickles/marketlist" + ".pickle"
 
-    if cache_exists(filename):
-      marketlist = pickle.load(open(filename, 'rb'))
+    marketlist = pickle.load(open(filename, 'rb'))
 
 
 # market is a dict:
