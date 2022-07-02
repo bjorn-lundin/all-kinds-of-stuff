@@ -21,10 +21,8 @@ def create_cached_dicts(marketid, conn):
   plc_dict={}
   cur = conn.cursor()
   cur.execute("""
-    select R.SELECTIONID from ARUNNERS R , AMARKETS M
+    select R.SELECTIONID from ARUNNERS R
     where R.MARKETID = %s
-    and R.MARKETID = M.MARKETID
-    and M.MARKETTYPE = 'WIN'
     and R.STATUS = %s """,(marketid,'WINNER'))
   idx=0
   datarows = cur.fetchall()
@@ -34,23 +32,43 @@ def create_cached_dicts(marketid, conn):
     idx = idx +1
   cur.close()
   
+    
   cur = conn.cursor()
   cur.execute("""
-    select R.SELECTIONID from ARUNNERS R , AMARKETS M
-    where R.MARKETID = %s
-    and R.MARKETID = M.MARKETID
-    and M.MARKETTYPE = 'PLACE'
-    and R.STATUS = %s """,(marketid,'WINNER'))
-  idx=0
+     select MP.* from AMARKETS MW, AMARKETS MP
+     where MW.EVENTID = MP.EVENTID
+     and MW.STARTTS = MP.STARTTS
+     and MW.MARKETID = %s
+     and MP.MARKETTYPE = 'PLACE'
+     and MP.NUMWINNERS = %s
+     and MW.MARKETTYPE = 'WIN' """,(marketid,3))
+
   datarows = cur.fetchall()
+  found=False
   for datarow in datarows:
-    selid = datarow['selectionid']
-    plc_dict[idx] = selid
-    idx = idx +1
+    plcid = datarow['marketid']
+    found=True
+
   cur.close()
+
+  if Found :
+    cur = conn.cursor()
+    cur.execute("""
+      select R.SELECTIONID from ARUNNERS R
+      where R.MARKETID = %s
+      and R.STATUS = %s """,(marketid,'WINNER'))
+    idx=0
+    datarows = cur.fetchall()
+    for datarow in datarows:
+      selid = datarow['selectionid']
+      plc_dict[idx] = selid
+      idx = idx +1
+    cur.close()
+    pickle.dump(plc_dict, open(filename_plc_dict, 'wb'))
+
+
   
   pickle.dump(win_dict, open(filename_win_dict, 'wb'))
-  pickle.dump(plc_dict, open(filename_plc_dict, 'wb'))
 
   print('create_cached_dicts','done')
 
