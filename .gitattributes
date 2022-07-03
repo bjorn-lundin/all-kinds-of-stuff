@@ -1,0 +1,1 @@
+python/neuralnetwork/mnist_dataset/mnist_train.csv filter=lfs -text
