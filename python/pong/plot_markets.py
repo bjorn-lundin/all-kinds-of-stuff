@@ -12,7 +12,7 @@ from pathlib import Path
 #########################################################
 
 def marketname_ok(marketname):
-      print('"' + marketname + '"')
+      #print('"' + marketname + '"')
       if marketname == "5f Hcap"    : return True
       if marketname == "6f Hcap"    : return True
       if marketname == "7f Hcap"    : return True
@@ -47,7 +47,7 @@ def cache_exists(filenname):
 ##################################
 
 def get_cached_dict(marketid, dict_type):
-  print(dict_type, marketid)
+  #print(dict_type, marketid)
 
   filename = 'pickles/' + dict_type + '_' + marketid + '.pickle'
 
@@ -154,7 +154,6 @@ def do_create_plot():
   last_market_list=[]
   cnt = 100
   last_market='0.128656761'
-  last_market='1.128656761'
   fname_last_market='pickles/last_market.pickle'
   if os.path.exists(fname_last_market):
     last_market_list=pickle.load(open(fname_last_market, 'rb'))
@@ -164,20 +163,21 @@ def do_create_plot():
   marketlist = pickle.load(open(filename, 'rb'))
 #  print(marketlist)
   for mrow in marketlist:
-    try:
-      m = mrow['marketid']
-      if marketname_ok(mrow['marketname']) :
-        if m > last_market :
+    m = mrow['marketid']
+    if marketname_ok(mrow['marketname']) :
+      if m > last_market :
+        try:
           create_plot(m,mrow['marketname'])
-          cnt = cnt -1
-          print('cnt',cnt)
-          if cnt == 0 :
-            last_market_list.clear()
-            last_market_list.append(m)
-            pickle.dump(last_market_list, open(fname_last_market, 'wb'))
-            break
-    except ZeroDivisionError:
-      print(m,'problem get at least 1 dict - plc perhaps')
+        except ZeroDivisionError:
+          print(m,'problem get at least 1 dict - plc perhaps')
+
+        cnt = cnt -1
+        print('cnt',cnt)
+        if cnt == 0 :
+          last_market_list.clear()
+          last_market_list.append(m)
+          pickle.dump(last_market_list, open(fname_last_market, 'wb'))
+          break
         
 #########################################################
 
