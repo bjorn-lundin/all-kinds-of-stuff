@@ -143,7 +143,13 @@ def create_plot(marketid,marketname):
   if not os.path.exists(directory):
     os.makedirs(directory)
     print('created dir:',directory)
-  plt.savefig(directory + '/' +  marketid + '.png')
+  fname=directory + '/' +  marketid + '.png'
+  plt.savefig(fname)
+  file_stats = os.stat(fname)
+  if file_stats.st_size/1024 < 60 :
+    #too small
+    os.remove(fname)
+
   #plt.show()
   plt.close()
   plt.clf()
@@ -153,7 +159,7 @@ def create_plot(marketid,marketname):
 def do_create_plot():
   last_market_list=[]
   cnt = 100
-  last_market='0.128656761'
+  last_market='0.135656761'
   fname_last_market='pickles/last_market.pickle'
   if os.path.exists(fname_last_market):
     last_market_list=pickle.load(open(fname_last_market, 'rb'))
@@ -167,6 +173,7 @@ def do_create_plot():
     if marketname_ok(mrow['marketname']) :
       if m > last_market :
         try:
+          print('treat', m)
           create_plot(m,mrow['marketname'])
         except ZeroDivisionError:
           print(m,'problem get at least 1 dict - plc perhaps')
