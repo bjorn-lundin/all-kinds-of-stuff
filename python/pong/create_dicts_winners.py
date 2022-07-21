@@ -12,10 +12,14 @@ from pathlib import Path
 
 ############################################################
 
-def create_cached_dicts(marketid, conn):
+def create_cached_dicts(marketid, marketname, conn):
 
-  filename_win_dict = "pickles/win_dict_" + marketid + ".pickle"
-  filename_plc_dict = "pickles/plc_dict_" + marketid + ".pickle"
+  mname = marketname.replace(' ','_')
+
+  pathname_dict = "pickles/" + mname
+  
+  filename_win_dict = pathname_dict + "/win_dict_" + marketid + ".pickle"
+  filename_plc_dict = pathname_dict + "/plc_dict_" + marketid + ".pickle"
 
   win_dict={}
   plc_dict={}
@@ -50,6 +54,11 @@ def create_cached_dicts(marketid, conn):
     marketid = plcid
   cur.close()
 
+
+  if not os.path.exists(pathname_dict):
+    print('create_dir', pathname_dict)
+    os.mkdir(pathname_dict)
+    
   if found :
     cur = conn.cursor()
     cur.execute("""
@@ -99,7 +108,7 @@ def do_cache():
     for market in marketlist:
       start_time = time.time()
       print('marketid', market['marketid'])
-      create_cached_dicts(market['marketid'], conn)
+      create_cached_dicts(market['marketid'],market['marketname'], conn)
       #per market
       elapsed_time = time.time() - start_time
       print('elapsed_time', market['marketid'], elapsed_time)
