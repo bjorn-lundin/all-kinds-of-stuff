@@ -49,7 +49,7 @@ import datetime
 def read_sundata_into_dict():
   sun={}
   num_in_file = 0
-  with open('sune_rise_and_set.dat') as file:
+  with open('sun_rise_and_set.dat') as file:
     for line in file:
       if line.rstrip()[0] == '#' :
         continue
@@ -338,3 +338,4 @@ signal.signal(signal.SIGINT, ctrl_c_handler)
 
 if __name__ == '__main__':
     main()
+
