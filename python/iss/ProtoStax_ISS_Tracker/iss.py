@@ -51,7 +51,7 @@ def read_sundata_into_dict():
   num_in_file = 0
   with open('sune_rise_and_set.dat') as file:
     for line in file:
-      if line.rstrip()[0] == '#' : 
+      if line.rstrip()[0] == '#' :
         continue
       num_in_file = num_in_file+1
       if num_in_file == 366 :
@@ -184,7 +184,7 @@ class Display(object):
 
         imageBlack.paste(time_image,(0,138))
 
-        # Rotate image 180 degrees - Remove the # comments of the lines below to rotate the image and allow for alternate positioning/mounting of the Raspberry Pi 
+        # Rotate image 180 degrees - Remove the # comments of the lines below to rotate the image and allow for alternate positioning/mounting of the Raspberry Pi
         imageRed = imageRed.transpose(Image.ROTATE_180)
         imageBlack = imageBlack.transpose(Image.ROTATE_180)
 
@@ -233,12 +233,15 @@ def main():
         t0 = time.time()
         try:
             r = requests.get(url = URL)
-            r2 = requests.get(url = URL2)
+            # - does not work anymore
+            #ISS Pass predictions are now turned off.
+            #Real time current ISS location and number of people in space will continue to operate.
+            #r2 = requests.get(url = URL2)
             # extracting data in json format
             data = r.json()
-            data2 = r2.json()
+            #data2 = r2.json()
             print(data)
-            print(data2)
+            #print(data2)
         except:
             print("error getting data.... might be a temporary hiccup so continuing")
             continue
@@ -251,19 +254,20 @@ def main():
         print(positions)
 
         passages = []
-        for i in range(n):
-          print('i',i,len(data2['response']))
-          if len(data2['response']) > i :
-            duration = int(data2['response'][i]['duration'])
-            risetime = int(data2['response'][i]['risetime'])
-            risetime = risetime + 3600 # compensate UTC
-            if time.daylight :  risetime + 3600 # compensate daylight savings time
-            print('main','duration','risetime',duration, risetime)
-            if len(passages) < 4 :
-              dt = datetime.datetime.fromtimestamp(risetime)
-              print('call is_sun_up with', dt)
-              if not is_sun_up(sun, dt) :
-                passages.append((risetime,duration))
+        #ISS Pass predictions are now turned off
+        #for i in range(n):
+        #  print('i',i,len(data2['response']))
+        #  if len(data2['response']) > i :
+        #    duration = int(data2['response'][i]['duration'])
+        #    risetime = int(data2['response'][i]['risetime'])
+        #    risetime = risetime + 3600 # compensate UTC
+        #    if time.daylight :  risetime + 3600 # compensate daylight savings time
+        #    print('main','duration','risetime',duration, risetime)
+        #    if len(passages) < 4 :
+        #      dt = datetime.datetime.fromtimestamp(risetime)
+        #      print('call is_sun_up with', dt)
+        #      if not is_sun_up(sun, dt) :
+        #        passages.append((risetime,duration))
 
         # Refresh the display on the first fetch and then on every DISPLAY_REFRESH_INTERVAL fetch
         if ((len(positions) >= 1) and ((len(positions)-1) % DISPLAY_REFRESH_INTERVAL)):
