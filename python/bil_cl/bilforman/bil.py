@@ -3,8 +3,10 @@ from rich.table import Table
 from rich.console import Console
 #from rich.table import Column
 
+styles=["black","black on #87CEFA"]
 
-t=Table(title='Leasingbil verklig månadskostnad')
+
+t=Table(title='Leasingbil verklig månadskostnad', row_styles=styles)
 c=Console()
 
 def find_tax(tbl,brt):
@@ -46,6 +48,7 @@ t.add_column('Kostnad', justify='right')
 #                netto_with_car='---------',
 #                cost='-------' ))
     
+    
                 
 with open('input.csv') as csvfile:
 #    reader = csv.DictReader(csvfile)
@@ -56,10 +59,9 @@ with open('input.csv') as csvfile:
         brutto=int(row['bruttolön'])
         bla=int(row['BLA'])
         fmv=int(row['FMV'])
-        income_after_BLA = brutto - bla
-        income_to_find_taxes = income_after_BLA + fmv
-        tax_with_no_car=find_tax(table,brutto)
-        tax_with_car=find_tax(table,income_to_find_taxes)
+        income_to_find_taxes = brutto - bla + fmv
+        tax_with_no_car = find_tax(table,brutto)
+        tax_with_car = find_tax(table,income_to_find_taxes)
         netto_no_car = brutto - tax_with_no_car
         netto_with_car = brutto - bla - tax_with_car
         cost = netto_no_car - netto_with_car
