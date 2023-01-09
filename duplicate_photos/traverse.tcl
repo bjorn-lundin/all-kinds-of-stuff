@@ -43,6 +43,8 @@ proc Traverse_Md5 {f} {
       
       if { $createdate == "-" } {
         set createdate null
+      } elseif { $createdate == "0000:00:00 00:00:00" } {
+        set createdate null
       } else {
         set createdate "'$createdate'"      
       }
@@ -52,10 +54,7 @@ proc Traverse_Md5 {f} {
       } else {
         set ext "'$ext'"      
       }
-      
-      
-      
-      
+            
       # get md5
       if {$OK} {
         #macos md5 -q file
