@@ -1,0 +1,51 @@
+
+
+project i2c is
+   for Languages use ("Ada");
+
+
+   Platform_Independent_Compiler_Switches := ("-g",
+                                              "-gnat12",
+                                              "-fstack-check",
+                                              "-gnata",
+                                              "-gnatoU", -- -v
+                                              "-gnatw.o",  -- Warnings about unreferenced out parameters
+                                              "-gnatwu",   -- Activate warnings on unused entities
+                                              "-gnatyO",   -- overriding proc must be marked 'overriding'
+                                              "-gnatwm",   -- Warnings about modified but unreferenced variables
+                                              "-gnatye",    -- require 'end procedurename'
+                                              "-gnatwlaKW");
+
+    for Object_Dir use "obj";
+    for Main use ("test_i2c");
+    for Source_Dirs use ("." ,
+                        "autogen",
+
+
+   package Compiler is
+     for Default_Switches ("ada") use Platform_Independent_Compiler_Switches & ("-O0");
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("ada") use ("-E");
+   end Binder;
+
+   
+   OS_Dependents_Linker_Switches := ("-L .", "-li2c_wrapper");
+
+   package Linker is
+     for Default_Switches ("ada") use OS_Dependents_Linker_Switches;
+   end Linker;
+
+   package Builder is
+      for Default_Switches ("ada") use ("-k", "-s", "-j4", "-m"); -- use 1 cpu , less recompile
+   end Builder;
+
+
+--   package Ide is
+--      for Compiler_Command ("ada") use "gnatmake";
+--      for Compiler_Command ("c") use "gcc";
+--   end Ide;
+
+
+end i2c;

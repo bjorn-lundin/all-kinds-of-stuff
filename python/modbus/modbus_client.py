@@ -9,6 +9,22 @@ from pyModbusTCP.client import ModbusClient
 c = ModbusClient(host='localhost', port=1502, auto_open=True, debug=False)
 bit = True
 
+reg_ad=2
+val=5
+
+
+while True:
+    reg_ad = reg_ad +1
+    val = val+1
+    is_ok = c.write_single_register(reg_ad, val)
+    if is_ok:
+        print('single_reg #%s: write to %s' % (reg_ad, val))
+    else:
+        print('single_reg #%s: unable to write %s' % (reg_ad, val))
+    time.sleep(1)
+
+
+
 # main loop
 while True:
     # write 4 bits in modbus address 0 to 3
@@ -39,3 +55,13 @@ while True:
     # sleep 2s before next polling
     print('')
     time.sleep(2)
+    
+    reg_ad = reg_ad +1
+    val = val+1
+    is_ok = c.write_single_register(reg_ad, val)
+    if is_ok:
+        print('single_reg #%s: write to %s' % (reg_ad, val))
+    else:
+        print('single_reg #%s: unable to write %s' % (reg_ad, val))
+    
+    
