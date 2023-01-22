@@ -38,32 +38,6 @@ void FailMessage(char *msg)
 }
 
 
-int I2CWrapperOpen(int BUS, int SlaveAddress)
-    {
-	  int handle;
-	  char I2C_dev[256];
-
-	  if(BUS < 0) return -1;
-	  if(BUS > 1) return -1;
-
-	  sprintf(I2C_dev,"/dev/i2c-%d", BUS);
-
-	  handle = open(I2C_dev, O_RDWR);
-	  if(handle < 0)
-	   {
-	     FailMessage("Failed to open the i2c bus \n");
-	    return -1;
-	   }
-	  if(I2CWrapperSlaveAddress(handle,SlaveAddress) < 0)
-	   {
-	      close(handle);
-		  return -2;
-	   }
-	   return handle;
-	}
-
-
-
 
 
 ////////////////////////////////////   I2CWrapperSlaveAddress
@@ -93,6 +67,36 @@ int I2CWrapperSlaveAddress(int handle, int SlaveAddress)
 		}
         return 0; // ok
     }
+    
+
+
+int I2CWrapperOpen(int BUS, int SlaveAddress)
+    {
+	  int handle;
+	  char I2C_dev[256];
+
+	  if(BUS < 0) return -1;
+	  if(BUS > 1) return -1;
+
+	  sprintf(I2C_dev,"/dev/i2c-%d", BUS);
+
+	  handle = open(I2C_dev, O_RDWR);
+	  if(handle < 0)
+	   {
+	     FailMessage("Failed to open the i2c bus \n");
+	    return -1;
+	   }
+	  if(I2CWrapperSlaveAddress(handle,SlaveAddress) < 0)
+	   {
+	      close(handle);
+		  return -2;
+	   }
+	   return handle;
+	}
+
+
+
+
 
 ////////////////////////////////////   I2CWrapperReadBlock
 //
