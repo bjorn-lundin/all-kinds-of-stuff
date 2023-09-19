@@ -7,8 +7,11 @@ import numpy as np
 
 name = 'PongDeterministic-v4'
 
+debug=True
+#set debug to true for rendering
+
 agent = the_agent.Agent(possible_actions=[0,2,3],starting_mem_len=50000,max_mem_len=750000,starting_epsilon = 1, learn_rate = .00025)
-env = environment.make_env(name,agent)
+env = environment.make_env(name,agent,debug)
 
 last_100_avg = [-21]
 scores = deque(maxlen = 100)
@@ -25,7 +28,7 @@ env.reset()
 for i in range(1000000):
     timesteps = agent.total_timesteps
     timee = time.time()
-    score = environment.play_episode(name, env, agent, debug = False) #set debug to true for rendering
+    score = environment.play_episode(name, env, agent, debug) 
     scores.append(score)
     if score > max_score:
         max_score = score

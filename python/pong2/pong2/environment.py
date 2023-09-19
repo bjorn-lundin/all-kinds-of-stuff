@@ -15,8 +15,12 @@ def initialize_new_game(name, env, agent):
     for i in range(3):
         agent.memory.add_experience(starting_frame, dummy_reward, dummy_action, dummy_done)
 
-def make_env(name, agent):
-    env = gym.make(name, render_mode="human")
+def make_env(name, agent, debug):
+    if debug :    
+        env = gym.make(name, render_mode="human")
+        env.metadata['render_fps']=25
+    else:
+        env = gym.make(name)
     return env
 
 def take_step(name, env, agent, score, debug):
@@ -58,7 +62,7 @@ def take_step(name, env, agent, score, debug):
 
     return (score + next_frames_reward),False
 
-def play_episode(name, env, agent, debug = False):
+def play_episode(name, env, agent, debug):
     initialize_new_game(name, env, agent)
     done = False
     score = 0
